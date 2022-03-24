@@ -9,6 +9,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using RalphLaurenPortal.Models;
+using RalphLaurenPortal.ViewModels;
 
 namespace RalphLaurenPortal.Controllers
 {
@@ -58,7 +59,7 @@ namespace RalphLaurenPortal.Controllers
         public ActionResult Login(string returnUrl)
         {
             ViewBag.ReturnUrl = returnUrl;
-            return View();
+            return View(new LoginViewModel(null, "Login", DateTime.Now));
         }
 
         //
@@ -81,7 +82,7 @@ namespace RalphLaurenPortal.Controllers
                 case SignInStatus.Success:
                     return RedirectToLocal(returnUrl);
                 case SignInStatus.LockedOut:
-                    return View("Lockout");
+                    return View("Lockout", new LoginViewModel(null, "Locked Out", DateTime.Now));
                 case SignInStatus.RequiresVerification:
                     return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
                 case SignInStatus.Failure:
@@ -99,9 +100,9 @@ namespace RalphLaurenPortal.Controllers
             // Require that the user has already logged in via username/password or external login
             if (!await SignInManager.HasBeenVerifiedAsync())
             {
-                return View("Error");
+                return View("Error", new BaseViewModel(null, "Verify Code", DateTime.Now));
             }
-            return View(new VerifyCodeViewModel { Provider = provider, ReturnUrl = returnUrl, RememberMe = rememberMe });
+            return View(new VerifyCodeViewModel(null, "Verify Code", DateTime.Now) { Provider = provider, ReturnUrl = returnUrl, RememberMe = rememberMe });
         }
 
         //
@@ -126,7 +127,7 @@ namespace RalphLaurenPortal.Controllers
                 case SignInStatus.Success:
                     return RedirectToLocal(model.ReturnUrl);
                 case SignInStatus.LockedOut:
-                    return View("Lockout");
+                    return View("Lockout", new BaseViewModel(null, "Locked Out", DateTime.Now));
                 case SignInStatus.Failure:
                 default:
                     ModelState.AddModelError("", "Invalid code.");
@@ -136,22 +137,22 @@ namespace RalphLaurenPortal.Controllers
 
         //
         // GET: /Account/Register
-        [AllowAnonymous]
+        [Authorize]
         public ActionResult Register()
         {
-            return View();
+            return View(new BaseViewModel(null, "Register", DateTime.Now));
         }
 
         //
         // POST: /Account/Register
         [HttpPost]
-        [AllowAnonymous]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Register(RegisterViewModel model)
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                var user = new Member { UserName = model.Email, Email = model.Email };
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
@@ -175,14 +176,14 @@ namespace RalphLaurenPortal.Controllers
         //
         // GET: /Account/ConfirmEmail
         [AllowAnonymous]
-        public async Task<ActionResult> ConfirmEmail(string userId, string code)
+        public async Task<ActionResult> ConfirmEmail(int userId, string code)
         {
-            if (userId == null || code == null)
+            if (code == null)
             {
-                return View("Error");
+                return View("Error", new BaseViewModel(null, "Error", DateTime.Now));
             }
             var result = await UserManager.ConfirmEmailAsync(userId, code);
-            return View(result.Succeeded ? "ConfirmEmail" : "Error");
+            return View(result.Succeeded ? "ConfirmEmail" : "Error", new BaseViewModel(null, result.Succeeded ? "ConfirmEmail" : "Error", DateTime.Now));
         }
 
         //
@@ -190,7 +191,7 @@ namespace RalphLaurenPortal.Controllers
         [AllowAnonymous]
         public ActionResult ForgotPassword()
         {
-            return View();
+            return View(new BaseViewModel(null, "Forgot Password", DateTime.Now));
         }
 
         //
@@ -226,7 +227,7 @@ namespace RalphLaurenPortal.Controllers
         [AllowAnonymous]
         public ActionResult ForgotPasswordConfirmation()
         {
-            return View();
+            return View(new BaseViewModel(null, "Forgot Password Confirmation", DateTime.Now));
         }
 
         //
@@ -234,7 +235,7 @@ namespace RalphLaurenPortal.Controllers
         [AllowAnonymous]
         public ActionResult ResetPassword(string code)
         {
-            return code == null ? View("Error") : View();
+            return code == null ? View("Error", new BaseViewModel(null, "Reset Password", DateTime.Now)) : View(new BaseViewModel(null, "Reset Password", DateTime.Now));
         }
 
         //
@@ -268,7 +269,7 @@ namespace RalphLaurenPortal.Controllers
         [AllowAnonymous]
         public ActionResult ResetPasswordConfirmation()
         {
-            return View();
+            return View(new BaseViewModel(null, "Reset Password Confirmation", DateTime.Now));
         }
 
         //
@@ -287,14 +288,14 @@ namespace RalphLaurenPortal.Controllers
         [AllowAnonymous]
         public async Task<ActionResult> SendCode(string returnUrl, bool rememberMe)
         {
-            var userId = await SignInManager.GetVerifiedUserIdAsync();
-            if (userId == null)
+            var user = await UserManager.FindByIdAsync(await SignInManager.GetVerifiedUserIdAsync());
+            if (user == null)
             {
                 return View("Error");
             }
-            var userFactors = await UserManager.GetValidTwoFactorProvidersAsync(userId);
+            var userFactors = await UserManager.GetValidTwoFactorProvidersAsync(user.Id);
             var factorOptions = userFactors.Select(purpose => new SelectListItem { Text = purpose, Value = purpose }).ToList();
-            return View(new SendCodeViewModel { Providers = factorOptions, ReturnUrl = returnUrl, RememberMe = rememberMe });
+            return View(new SendCodeViewModel(null, "Send Code", DateTime.Now) { Providers = factorOptions, ReturnUrl = returnUrl, RememberMe = rememberMe });
         }
 
         //
@@ -312,7 +313,7 @@ namespace RalphLaurenPortal.Controllers
             // Generate the token and send it
             if (!await SignInManager.SendTwoFactorCodeAsync(model.SelectedProvider))
             {
-                return View("Error");
+                return View("Error", new BaseViewModel(null, "Error", DateTime.Now));
             }
             return RedirectToAction("VerifyCode", new { Provider = model.SelectedProvider, ReturnUrl = model.ReturnUrl, RememberMe = model.RememberMe });
         }
@@ -343,7 +344,7 @@ namespace RalphLaurenPortal.Controllers
                     // If the user does not have an account, then prompt the user to create an account
                     ViewBag.ReturnUrl = returnUrl;
                     ViewBag.LoginProvider = loginInfo.Login.LoginProvider;
-                    return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = loginInfo.Email });
+                    return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel(null, "External Login Confirmation", DateTime.Now) { Email = loginInfo.Email });
             }
         }
 
@@ -367,7 +368,7 @@ namespace RalphLaurenPortal.Controllers
                 {
                     return View("ExternalLoginFailure");
                 }
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                var user = new Member { UserName = model.Email, Email = model.Email };
                 var result = await UserManager.CreateAsync(user);
                 if (result.Succeeded)
                 {
@@ -400,7 +401,7 @@ namespace RalphLaurenPortal.Controllers
         [AllowAnonymous]
         public ActionResult ExternalLoginFailure()
         {
-            return View();
+            return View(new BaseViewModel(null, "External Login Failure", DateTime.Now));
         }
 
         protected override void Dispose(bool disposing)

@@ -45,10 +45,30 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Dapper, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dapper.2.0.123\lib\net461\Dapper.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.1\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.EntityFramework, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.EntityFramework.2.2.1\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Owin, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Owin.2.2.1\lib\net45\Microsoft.AspNet.Identity.Owin.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.Linq" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.2\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.2\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -102,6 +122,18 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="Unity.Abstractions, Version=5.11.1.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.Abstractions.5.11.1\lib\net47\Unity.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Container, Version=5.11.1.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.Container.5.11.1\lib\net47\Unity.Container.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Mvc, Version=5.11.1.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.Mvc.5.11.1\lib\net47\Unity.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="WebActivatorEx, Version=2.0.0.0, Culture=neutral, PublicKeyToken=7b26dc2a43f6a0d4, processorArchitecture=MSIL">
+      <HintPath>..\packages\WebActivatorEx.2.2.0\lib\net40\WebActivatorEx.dll</HintPath>
+    </Reference>
     <Reference Include="WebGrease">
       <Private>True</Private>
       <HintPath>..\packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
@@ -129,15 +161,6 @@
     </Reference>
     <Reference Include="EntityFramework.SqlServer">
       <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.AspNet.Identity.Core">
-      <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.3\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.AspNet.Identity.Owin">
-      <HintPath>..\packages\Microsoft.AspNet.Identity.Owin.2.2.3\lib\net45\Microsoft.AspNet.Identity.Owin.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.AspNet.Identity.EntityFramework">
-      <HintPath>..\packages\Microsoft.AspNet.Identity.EntityFramework.2.2.3\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
     </Reference>
     <Reference Include="Owin">
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
@@ -179,9 +202,14 @@
     <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
+    <Compile Include="App_Start\UnityConfig.cs" />
+    <Compile Include="App_Start\UnityMvcActivator.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\BaseController.cs" />
+    <Compile Include="Controllers\GeneralAPIController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\ImageController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -189,31 +217,118 @@
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\PortalDbContext.cs" />
+    <Compile Include="Models\Resource\Resource.cs" />
+    <Compile Include="Models\Resource\ResourceCacheProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="Utilities\Framework.cs" />
+    <Compile Include="Utilities\HtmlHelperExtra.cs" />
+    <Compile Include="Utilities\IdentityExtensions.cs" />
+    <Compile Include="Utilities\Render.cs" />
+    <Compile Include="ViewModels\BaseViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\bootstrap-theme.css" />
-    <Content Include="Content\bootstrap-theme.min.css" />
-    <Content Include="Content\bootstrap.css" />
-    <Content Include="Content\bootstrap.min.css" />
+    <Content Include="css\common\common.css">
+      <DependentUpon>common.scss</DependentUpon>
+    </Content>
+    <Content Include="css\common\common.css.map">
+      <DependentUpon>common.css</DependentUpon>
+    </Content>
+    <Content Include="css\common\common.min.css">
+      <DependentUpon>common.css</DependentUpon>
+    </Content>
+    <Content Include="css\common\common.min.css.map">
+      <DependentUpon>common.min.css</DependentUpon>
+    </Content>
+    <Content Include="css\common\desktop.css">
+      <DependentUpon>desktop.scss</DependentUpon>
+    </Content>
+    <Content Include="css\common\desktop.css.map">
+      <DependentUpon>desktop.css</DependentUpon>
+    </Content>
+    <Content Include="css\common\desktop.min.css">
+      <DependentUpon>desktop.css</DependentUpon>
+    </Content>
+    <Content Include="css\common\desktop.min.css.map">
+      <DependentUpon>desktop.min.css</DependentUpon>
+    </Content>
+    <Content Include="css\common\mobile.css">
+      <DependentUpon>mobile.scss</DependentUpon>
+    </Content>
+    <Content Include="css\common\mobile.css.map">
+      <DependentUpon>mobile.css</DependentUpon>
+    </Content>
+    <Content Include="css\common\mobile.min.css">
+      <DependentUpon>mobile.css</DependentUpon>
+    </Content>
+    <Content Include="css\common\mobile.min.css.map">
+      <DependentUpon>mobile.min.css</DependentUpon>
+    </Content>
+    <Content Include="css\fonts\bootstrap-icons.css" />
+    <Content Include="css\lib\bootstrap\dist\bootstrap.css" />
+    <Content Include="css\lib\bootstrap\dist\bootstrap.css.map">
+      <DependentUpon>bootstrap.css</DependentUpon>
+    </Content>
+    <Content Include="css\lib\bootstrap\dist\bootstrap.min.css">
+      <DependentUpon>bootstrap.css</DependentUpon>
+    </Content>
+    <Content Include="css\lib\bootstrap\dist\bootstrap.min.css.map">
+      <DependentUpon>bootstrap.min.css</DependentUpon>
+    </Content>
     <Content Include="favicon.ico" />
-    <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
-    <Content Include="Content\Site.css" />
-    <Content Include="Scripts\bootstrap.js" />
-    <Content Include="Scripts\bootstrap.min.js" />
-    <None Include="Scripts\jquery-3.4.1.intellisense.js" />
-    <Content Include="Scripts\jquery-3.4.1.js" />
-    <Content Include="Scripts\jquery-3.4.1.min.js" />
-    <Content Include="Scripts\jquery-3.4.1.slim.js" />
-    <Content Include="Scripts\jquery-3.4.1.slim.min.js" />
-    <None Include="Scripts\jquery.validate-vsdoc.js" />
-    <Content Include="Scripts\jquery.validate.js" />
-    <Content Include="Scripts\jquery.validate.min.js" />
-    <Content Include="Scripts\jquery.validate.unobtrusive.js" />
-    <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
-    <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="gulpfile.js" />
+    <Content Include="js\common\common.js" />
+    <Content Include="js\common\error-modal.js" />
+    <Content Include="js\lib\bootstrap\dist\bootstrap.bundle.js" />
+    <Content Include="js\lib\bootstrap\dist\bootstrap.bundle.js.map">
+      <DependentUpon>bootstrap.bundle.js</DependentUpon>
+    </Content>
+    <Content Include="js\lib\bootstrap\dist\bootstrap.bundle.min.js">
+      <DependentUpon>bootstrap.bundle.js</DependentUpon>
+    </Content>
+    <Content Include="js\lib\bootstrap\dist\bootstrap.bundle.min.js.map">
+      <DependentUpon>bootstrap.bundle.min.js</DependentUpon>
+    </Content>
+    <Content Include="js\lib\jquery\jquery.js" />
+    <Content Include="js\lib\jquery\jquery.min.js">
+      <DependentUpon>jquery.js</DependentUpon>
+    </Content>
+    <Content Include="js\lib\jquery\jquery.min.map">
+      <DependentUpon>jquery.min.js</DependentUpon>
+    </Content>
+    <Content Include="js\lib\jquery\jquery.validate.js" />
+    <Content Include="js\lib\jquery\jquery.validate.unobtrusive.js">
+      <DependentUpon>jquery.validate.js</DependentUpon>
+    </Content>
+    <Content Include="js\lib\knockout\custom\knockout-extensions.js" />
+    <Content Include="js\lib\knockout\custom\knockout-extensions.min.js">
+      <DependentUpon>knockout-extensions.js</DependentUpon>
+    </Content>
+    <Content Include="js\lib\knockout\custom\knockout-extensions.min.js.map">
+      <DependentUpon>knockout-extensions.min.js</DependentUpon>
+    </Content>
+    <Content Include="js\lib\knockout\dist\knockout-kendo.js" />
+    <Content Include="js\lib\knockout\dist\knockout-kendo.min.js">
+      <DependentUpon>knockout-kendo.js</DependentUpon>
+    </Content>
+    <Content Include="js\lib\knockout\dist\knockout-latest.debug.js" />
+    <Content Include="js\lib\knockout\dist\knockout-latest.js">
+      <DependentUpon>knockout-latest.debug.js</DependentUpon>
+    </Content>
+    <Content Include="js\lib\knockout\dist\knockout-pre-rendered.js" />
+    <Content Include="js\lib\knockout\dist\knockout-pre-rendered.min.js">
+      <DependentUpon>knockout-pre-rendered.js</DependentUpon>
+    </Content>
+    <Content Include="js\lib\knockout\dist\knockout-validation.js" />
+    <Content Include="js\lib\knockout\dist\knockout-validation.min.js">
+      <DependentUpon>knockout-validation.js</DependentUpon>
+    </Content>
+    <Content Include="js\lib\knockout\dist\knockout-validation.min.js.map">
+      <DependentUpon>knockout-validation.min.js</DependentUpon>
+    </Content>
+    <Content Include="js\lib\linq\linq.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -253,17 +368,114 @@
     <Folder Include="App_Data\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="fonts\glyphicons-halflings-regular.woff2" />
-    <Content Include="fonts\glyphicons-halflings-regular.woff" />
-    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
-    <Content Include="fonts\glyphicons-halflings-regular.eot" />
-    <Content Include="Content\bootstrap.min.css.map" />
-    <Content Include="Content\bootstrap.css.map" />
-    <Content Include="Content\bootstrap-theme.min.css.map" />
-    <Content Include="Content\bootstrap-theme.css.map" />
+    <Content Include="package.json" />
+    <Content Include="css\fonts\fonts.css" />
+    <Content Include="css\fonts\font-awesome.css" />
+    <Content Include="css\fonts\src\bootstrap-icons.woff2" />
+    <Content Include="css\fonts\src\fontawesome-webfont.woff2" />
+    <Content Include="css\fonts\src\material-icons.woff2" />
+    <Content Include="css\fonts\src\open-sans-400.woff2" />
+    <Content Include="css\fonts\src\open-sans-700.woff2" />
+    <Content Include="css\common\common.scss" />
+    <Content Include="package-lock.json" />
+    <Content Include="bundleconfig.json" />
+    <Content Include="css\lib\bootstrap\scss\bootstrap-grid.scss" />
+    <Content Include="css\lib\bootstrap\scss\bootstrap-reboot.scss" />
+    <Content Include="css\lib\bootstrap\scss\bootstrap-utilities.scss" />
+    <Content Include="css\lib\bootstrap\scss\bootstrap.scss" />
+    <Content Include="css\lib\bootstrap\scss\forms\_floating-labels.scss" />
+    <Content Include="css\lib\bootstrap\scss\forms\_form-check.scss" />
+    <Content Include="css\lib\bootstrap\scss\forms\_form-control.scss" />
+    <Content Include="css\lib\bootstrap\scss\forms\_form-range.scss" />
+    <Content Include="css\lib\bootstrap\scss\forms\_form-select.scss" />
+    <Content Include="css\lib\bootstrap\scss\forms\_form-text.scss" />
+    <Content Include="css\lib\bootstrap\scss\forms\_input-group.scss" />
+    <Content Include="css\lib\bootstrap\scss\forms\_labels.scss" />
+    <Content Include="css\lib\bootstrap\scss\forms\_validation.scss" />
+    <Content Include="css\lib\bootstrap\scss\helpers\_clearfix.scss" />
+    <Content Include="css\lib\bootstrap\scss\helpers\_colored-links.scss" />
+    <Content Include="css\lib\bootstrap\scss\helpers\_position.scss" />
+    <Content Include="css\lib\bootstrap\scss\helpers\_ratio.scss" />
+    <Content Include="css\lib\bootstrap\scss\helpers\_stacks.scss" />
+    <Content Include="css\lib\bootstrap\scss\helpers\_stretched-link.scss" />
+    <Content Include="css\lib\bootstrap\scss\helpers\_text-truncation.scss" />
+    <Content Include="css\lib\bootstrap\scss\helpers\_visually-hidden.scss" />
+    <Content Include="css\lib\bootstrap\scss\helpers\_vr.scss" />
+    <Content Include="css\lib\bootstrap\scss\mixins\_alert.scss" />
+    <Content Include="css\lib\bootstrap\scss\mixins\_backdrop.scss" />
+    <Content Include="css\lib\bootstrap\scss\mixins\_border-radius.scss" />
+    <Content Include="css\lib\bootstrap\scss\mixins\_box-shadow.scss" />
+    <Content Include="css\lib\bootstrap\scss\mixins\_breakpoints.scss" />
+    <Content Include="css\lib\bootstrap\scss\mixins\_buttons.scss" />
+    <Content Include="css\lib\bootstrap\scss\mixins\_caret.scss" />
+    <Content Include="css\lib\bootstrap\scss\mixins\_clearfix.scss" />
+    <Content Include="css\lib\bootstrap\scss\mixins\_color-scheme.scss" />
+    <Content Include="css\lib\bootstrap\scss\mixins\_container.scss" />
+    <Content Include="css\lib\bootstrap\scss\mixins\_deprecate.scss" />
+    <Content Include="css\lib\bootstrap\scss\mixins\_forms.scss" />
+    <Content Include="css\lib\bootstrap\scss\mixins\_gradients.scss" />
+    <Content Include="css\lib\bootstrap\scss\mixins\_grid.scss" />
+    <Content Include="css\lib\bootstrap\scss\mixins\_image.scss" />
+    <Content Include="css\lib\bootstrap\scss\mixins\_list-group.scss" />
+    <Content Include="css\lib\bootstrap\scss\mixins\_lists.scss" />
+    <Content Include="css\lib\bootstrap\scss\mixins\_pagination.scss" />
+    <Content Include="css\lib\bootstrap\scss\mixins\_reset-text.scss" />
+    <Content Include="css\lib\bootstrap\scss\mixins\_resize.scss" />
+    <Content Include="css\lib\bootstrap\scss\mixins\_ripple.scss" />
+    <Content Include="css\lib\bootstrap\scss\mixins\_table-variants.scss" />
+    <Content Include="css\lib\bootstrap\scss\mixins\_text-truncate.scss" />
+    <Content Include="css\lib\bootstrap\scss\mixins\_transition.scss" />
+    <Content Include="css\lib\bootstrap\scss\mixins\_utilities.scss" />
+    <Content Include="css\lib\bootstrap\scss\mixins\_visually-hidden.scss" />
+    <Content Include="css\lib\bootstrap\scss\utilities\_api.scss" />
+    <Content Include="css\lib\bootstrap\scss\vendor\_rfs.scss" />
+    <Content Include="css\lib\bootstrap\scss\_accordion.scss" />
+    <Content Include="css\lib\bootstrap\scss\_alert.scss" />
+    <Content Include="css\lib\bootstrap\scss\_badge.scss" />
+    <Content Include="css\lib\bootstrap\scss\_breadcrumb.scss" />
+    <Content Include="css\lib\bootstrap\scss\_button-group.scss" />
+    <Content Include="css\lib\bootstrap\scss\_buttons.scss" />
+    <Content Include="css\lib\bootstrap\scss\_card.scss" />
+    <Content Include="css\lib\bootstrap\scss\_carousel.scss" />
+    <Content Include="css\lib\bootstrap\scss\_close.scss" />
+    <Content Include="css\lib\bootstrap\scss\_containers.scss" />
+    <Content Include="css\lib\bootstrap\scss\_dropdown.scss" />
+    <Content Include="css\lib\bootstrap\scss\_forms.scss" />
+    <Content Include="css\lib\bootstrap\scss\_functions.scss" />
+    <Content Include="css\lib\bootstrap\scss\_grid.scss" />
+    <Content Include="css\lib\bootstrap\scss\_helpers.scss" />
+    <Content Include="css\lib\bootstrap\scss\_images.scss" />
+    <Content Include="css\lib\bootstrap\scss\_list-group.scss" />
+    <Content Include="css\lib\bootstrap\scss\_mixins.scss" />
+    <Content Include="css\lib\bootstrap\scss\_modal.scss" />
+    <Content Include="css\lib\bootstrap\scss\_nav.scss" />
+    <Content Include="css\lib\bootstrap\scss\_navbar.scss" />
+    <Content Include="css\lib\bootstrap\scss\_offcanvas.scss" />
+    <Content Include="css\lib\bootstrap\scss\_pagination.scss" />
+    <Content Include="css\lib\bootstrap\scss\_placeholders.scss" />
+    <Content Include="css\lib\bootstrap\scss\_popover.scss" />
+    <Content Include="css\lib\bootstrap\scss\_progress.scss" />
+    <Content Include="css\lib\bootstrap\scss\_reboot.scss" />
+    <Content Include="css\lib\bootstrap\scss\_ripple.scss" />
+    <Content Include="css\lib\bootstrap\scss\_root.scss" />
+    <Content Include="css\lib\bootstrap\scss\_spinners.scss" />
+    <Content Include="css\lib\bootstrap\scss\_tables.scss" />
+    <Content Include="css\lib\bootstrap\scss\_toasts.scss" />
+    <Content Include="css\lib\bootstrap\scss\_tooltip.scss" />
+    <Content Include="css\lib\bootstrap\scss\_transitions.scss" />
+    <Content Include="css\lib\bootstrap\scss\_type.scss" />
+    <Content Include="css\lib\bootstrap\scss\_utilities.scss" />
+    <Content Include="css\lib\bootstrap\scss\_variables.scss" />
+    <Content Include="css\common\desktop.scss" />
+    <Content Include="css\common\mobile.scss" />
+    <Content Include="img\logo\dg-logo-1024-73.webp" />
+    <Content Include="img\logo\dg-logo-2048-145.webp" />
+    <Content Include="img\logo\dg-logo-256-17.webp" />
+    <Content Include="img\logo\dg-logo-256-19.webp" />
+    <Content Include="img\logo\dg-logo-512-37.webp" />
+    <Content Include="css\common\variables.scss" />
     <None Include="packages.config" />
-    <Content Include="Scripts\jquery-3.4.1.slim.min.map" />
-    <Content Include="Scripts\jquery-3.4.1.min.map" />
+    <Content Include="Views\Shared\_Layout-JS.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

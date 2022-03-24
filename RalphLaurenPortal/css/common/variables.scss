@@ -1,0 +1,13 @@
+﻿:root {
+    --vsm-gutter: 0.25rem;
+    --sm-gutter: 0.5rem;
+    --m-gutter: 0.75rem;
+    --l-gutter: 1.0rem;
+    --disco-color: #e51f7c;
+}
+
+$bespoke-breakpoints: ( 
+    navbar-0-btn: 390px, 
+    navbar-1-btn: 414px, 
+    navbar-2-btn: 495px, 
+    pagination-shift: 440px) !default;

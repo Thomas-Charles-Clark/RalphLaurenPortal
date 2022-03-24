@@ -1,44 +1,106 @@
-﻿<!DOCTYPE html>
+﻿@model BaseViewModel
+@{ 
+    var l = Model.LanguageID;
+    var c = Model.CountryID;
+    var d = Model.ContentDate;
+}
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - My ASP.NET Application</title>
-    @Styles.Render("~/Content/css")
-    @Scripts.Render("~/bundles/modernizr")
+    <title>
+        @Model.PageTitle - Designers Guild
+    </title>
+    <!-- #region CSS Libraries -->
+    @Render.Styles("~/bundles/css/bootstrap")
+    <!-- #endregion -->
 
+    <!-- #region CSS Fonts -->
+    @Render.Styles("~/bundles/css/fonts")
+    @Render.Styles("~/bundles/css/font-awesome")
+    @Render.Styles("~/bundles/css/bootstrap-icons")
+    @if (c == 118 @* Japanese *@)
+     {
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Sans+JP:normal|bold&display=swap">
+        <style type="text/css">
+            html * {
+                font-family: 'Noto Sans JP', sans-serif;
+            }
+        </style>
+     }
+    <!-- #endregion -->
+
+    <!-- #region Global CSS -->
+    @Render.Styles("~/bundles/css/common")
+    @*@if (!dgFramework.IsMobileDevice())
+    {
+    @Render.Styles("~/bundles/css/desktop")
+    }
+    else
+    {*@
+    @Render.Styles("~/bundles/css/mobile")
+    @*}*@
+    <!-- #endregion -->
+
+    <!-- #region JS Libraries (Deferred) -->
+    @Render.ScriptDefer("~/bundles/js/bootstrap")
+    @*@Render.ScriptDefer("~/bundles/js/jquery")*@
+    @Render.ScriptDefer("~/bundles/js/ko")
+    @Render.ScriptDefer("~/bundles/js/linq")
+    <!-- #endregion -->
+
+    <!-- #region Global JS -->
+    @Render.ScriptDefer("~/bundles/js/common")
+    @Html.Partial("~/Views/Shared/_Layout-JS.cshtml")
+    <!-- #endregion -->
+
+    @RenderSection("TemplateScripts", required: false)
+    @RenderSection("TemplateStyles", required: false)
 </head>
 <body>
-    <div class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                @Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+    <nav id="main-navbar" class="navbar navbar-light">
+        <div class="container-fluid">
+            <button class="navbar-toggler" 
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#navbar-content"
+                    aria-controls="navbar-content"
+                    aria-expanded="false"
+                    aria-label="@HtmlHelperExtra.Resource("ToggleNavigation", l, c, d)">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <a id="navbar-logo-anchor" href="/" title="@HtmlHelperExtra.Resource("DesignersGuild", l, c, d)" target="_self">
+                <img id="navbar-logo" width="256" height="17" title="@HtmlHelperExtra.Resource("DesignersGuild", l, c, d)" alt="@HtmlHelperExtra.Resource("DesignersGuildLogo", l, c, d)" 
+                        src="/img/logo/dg-logo-256-17.webp" 
+                        srcset="/img/logo/dg-logo-256-17.webp 1x, /img/logo/dg-logo-512-37.webp 3x, /img/logo/dg-logo-1024-73.webp 4x, /img/logo/dg-logo-2048-145.webp 5x"
+                        sizes="(max-width: 420px) 256px, (max-width: 992px) 512px, (max-width: 1200px) 1024px, (max-width: 1400px) 2048px"/>
+            </a>
+           @if (Request.IsAuthenticated)
+            {
+            <div id="navbar-content" class="collapse navbar-collapse">
+                <div class="navbar-nav bg-light">
+                   @using (Html.BeginForm("LogOff", "Account", new { Area = "" }, FormMethod.Post, new { id = "logout-form" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.ActionLink(HtmlHelperExtra.Resource("Hello", l, c, d).ToString() + " " + Extensions.GetFullName(User.Identity), 
+                                        "Index", "manage", routeValues: new { Area = "" }, htmlAttributes: new { @class = "nav-link", title = "Manage" })
+                        <a class="nav-link" href="javascript:document.getElementById('logout-form').submit()">
+                            Log off
+                        </a>
+                    }
+                </div>
             </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                    <li>@Html.ActionLink("About", "About", "Home")</li>
-                    <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
-                </ul>
-                @Html.Partial("_LoginPartial")
-            </div>
+            }
         </div>
-    </div>
-    <div class="container body-content">
+    </nav>
+    <div class="py-5 px-2">
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+            <p>&copy; @DateTime.Now.Year - Designers Guild</p>
         </footer>
     </div>
-
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/bootstrap")
-    @RenderSection("scripts", required: false)
+    @RenderSection("Scripts", required: false)
 </body>
 </html>

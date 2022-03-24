@@ -1,33 +1,124 @@
-﻿using System.Data.Entity;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Entity;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System.Web;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.AspNet.Identity.Owin;
+using Microsoft.Owin;
+using Microsoft.Owin.Security;
+using Newtonsoft.Json;
 
 namespace RalphLaurenPortal.Models
 {
-    // You can add profile data for the user by adding more properties to your ApplicationUser class, please visit https://go.microsoft.com/fwlink/?LinkID=317594 to learn more.
-    public class ApplicationUser : IdentityUser
+    // You can add profile data for the user by adding more properties to your ApplicationUser class, please visit http://go.microsoft.com/fwlink/?LinkID=317594 to learn more.
+    [Table("Member", Schema = "RalphLauren")]
+    public class Member : IdentityUser<int, Member_Login, Member_Role, Member_Claim>
     {
-        public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
+        public Member()
+        {
+            Roles = new List<Member_Role>();
+        }
+
+        public string FullName { get; set; }
+
+        public int MemberID
+        {
+            get
+            {
+                return Id;
+            }
+        }
+
+        public int TradeAccountID { get; set; }
+
+        public string DotNetCulture { get; set; }
+
+        public short CountryID { get; set; }
+
+        public byte LanguageID { get; set; }
+
+        public bool DisplayTradePrice { get; set; }
+
+        public short RRPPriceListID { get; set; }
+
+        public short TradePriceListID { get; set; }
+
+        public DateTime? DeletedDT { get; set; }
+
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public bool Deleted { get; set; }
+
+        [JsonIgnore]
+        public override ICollection<Member_Role> Roles { get; }
+
+        public async Task<ClaimsIdentity> GenerateUserIdentityAsync(ApplicationUserManager manager)
         {
             // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
             var userIdentity = await manager.CreateIdentityAsync(this, DefaultAuthenticationTypes.ApplicationCookie);
             // Add custom user claims here
             return userIdentity;
         }
+
+        public async Task<ClaimsIdentity> GenerateUserIdentityAsync(ApplicationUserManager manager, string authenticationType)
+        {
+            // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
+            var userIdentity = await manager.CreateIdentityAsync(this, authenticationType);
+            // Add custom user claims here
+            return userIdentity;
+        }
     }
 
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    // New derived classes
+    [Table("Member_Role", Schema = "RalphLauren")]
+    public class Member_Role : IdentityUserRole<int> // user belonging to a role
     {
-        public ApplicationDbContext()
-            : base("DefaultConnection", throwIfV1Schema: false)
+        public virtual Member Member { get; set; }
+        public virtual Role Role { get; set; }
+    }
+
+    [Table("Member_Claim", Schema = "RalphLauren")]
+    public class Member_Claim : IdentityUserClaim<int> // one specific user claim
+    {
+
+    }
+
+    [Table("Member_Login", Schema = "RalphLauren")]
+    public class Member_Login : IdentityUserLogin<int> // type for a user's login (i.e. facebook, google)
+    {
+
+    }
+
+    [Table("Role", Schema = "RalphLauren")]
+    public class Role : IdentityRole<int, Member_Role> // a role entity
+    {
+        public Role()
         {
+
         }
 
-        public static ApplicationDbContext Create()
+        public Role(string name)
         {
-            return new ApplicationDbContext();
+            Name = name;
+        }
+    }
+
+    public class UserStore : UserStore<Member, Role, int, Member_Login, Member_Role, Member_Claim>
+    {
+        public UserStore(PortalDbContext context) : base(context)
+        {
+
+        }
+    }
+
+    public class RoleStore : RoleStore<Role, int, Member_Role>
+    {
+        public RoleStore(PortalDbContext context) : base(context)
+        {
+
         }
     }
 }

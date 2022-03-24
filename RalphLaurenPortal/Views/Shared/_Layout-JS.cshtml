@@ -1,0 +1,147 @@
+﻿@model BaseViewModel
+@{ 
+    var l = Model.LanguageID;
+    var c = Model.CountryID;
+    var d = Model.ContentDate;
+    var cu = Model.DotNetCulture;
+}<script type="text/javascript" defer>
+@if (Convert.ToBoolean(System.Web.Configuration.WebConfigurationManager.AppSettings["productionVersion"]))
+{
+    @:console.trace = function () { };
+    @:console.log = function () { };
+}
+
+    window.addLoadFunction = function (fnc) {
+        let prevFn = window.onload;
+        if (typeof prevFn != 'function') {
+            window.onload = fnc;
+        } else {
+            window.onload = function () {
+                if (prevFn) {
+                    prevFn();
+                }
+                fnc();
+            }
+        }
+    }
+    window.fetchHeaders = {
+        'Accept': 'application/json',
+        'Content-type': 'application/json'
+    }
+    window.onerror = function (message, source, lineno, colno, error) {
+        try {
+            console.error(error);
+            showError();
+            window.logClientSideError(JSON.stringify({
+                message: message + '\n' + (error.stack || ''),
+                source: source,
+                lineno: lineno,
+                colno: colno,
+                error: error,
+                url: window.location.href
+            }));
+        } catch (e) {
+            console.error(e)
+        }
+    }
+    window.onunhandledrejection = function (errorEvent) {
+        showError();
+        try {
+            window.logClientSideError(JSON.stringify({
+                message: errorEvent.reason
+            }));
+        } catch (e) {
+            console.error(e);
+        }
+    }
+    window.logClientSideError = function (message) {
+        fetch('/api/generalapi/LogClientError', {
+            method: 'POST',
+            headers: window.fetchHeaders,
+            body: message
+        }).catch((e) => {
+            console.error(e);
+        })
+    }
+    if (window.navigator.userAgent.match(/MSIE|Trident/) !== null) {
+        alert('@HtmlHelperExtra.EscapeForJS(HtmlHelperExtra.Resource("IE11Warning", l, c, d))');
+    }
+    if (typeof window.operamini != 'undefined') {
+        alert('@HtmlHelperExtra.EscapeForJS(HtmlHelperExtra.Resource("OperaMiniWarning", l, c, d))');
+    }
+    function getCountryId() {
+        return @c;
+    }
+    function getLanguageId() {
+        return @l;
+    }
+    function getCulture() {
+        return '@cu';
+    }
+    function getDate() {
+        return '@d'
+    }
+    function parseBool(str) {
+        return str?.trim() === "true";
+    }
+    function formatNumber(value, digits, culture) {
+        var formatter = new Intl.NumberFormat(
+            culture, {
+                minimumFractionDigits: digits,
+                maximumFractionDigits: digits
+            });
+
+        return formatter.format(value);
+    }
+    window.handleFetchResponse = async (response, requestData) => {
+        if (response.ok) {
+            return await response.json();
+        } else {
+            throw {
+                message: `${response.status} - ${response.url}`,
+                source: requestData
+            }
+        }
+    }
+    window.catchFetchErrors = (error) => {
+        console.error(error);
+        if (error instanceof TypeError)
+            error = { message: error.message };
+        window.logClientSideError(JSON.stringify(error));
+    }
+    window.getResource = function (resources) {
+        let singular = false;
+        if (!(resources instanceof Array)) {
+            singular = true;
+            resources = [resources];
+        }
+        return fetch('/api/generalapi/FetchResources', {
+            method: 'POST',
+            headers: window.fetchHeaders,
+            body: JSON.stringify({
+                resources: resources,
+                countryId: getCountryId(),
+                languageId: getLanguageId(),
+                useDate: getDate()
+            })
+        })
+        .then(window.handleFetchResponse)
+        .then((data) => {
+            if (singular)
+                return data[0]
+            else
+                return data
+        })
+        .catch(window.catchFetchErrors);
+    }
+</script>
+<script id="carousel-image-template" type="text/html">
+    <div class="carousel-item ripple">
+        <div class="d-none" data-bind="init: { convert: JSON.parse }, text: data, remove">
+        </div>
+        <img src="/image/986/0" width="986" height="986" class="d-block w-100" alt="" />
+    </div>|
+</script>
+<script id="ko-blank-template" type="text/html">
+    <span></span>
+</script>

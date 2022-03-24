@@ -1,0 +1,92 @@
+﻿[
+  {
+    "outputFileName": "Scripts/knockout-pre-rendered.min.js",
+    "inputFiles": [
+      "Scripts/knockout-pre-rendered.js"
+    ]
+  },
+  {
+    "outputFileName": "js/lib/knockout/custom/knockout-extensions.min.js",
+    "inputFiles": [
+      "js/lib/knockout/custom/knockout-extensions.js"
+    ]
+  },
+  {
+    "outputFileName": "js/common/common.min.js",
+    "inputFiles": [
+      "js/common/common.js"
+    ]
+  },
+  {
+    "outputFileName": "js/lib/linq/linq.min.js",
+    "inputFiles": [
+      "js/lib/linq/linq.js"
+    ]
+  },
+  {
+    "outputFileName": "js/models/common/error-modal.min.js",
+    "inputFiles": [
+      "js/models/common/error-modal.js"
+    ]
+  },
+  {
+    "outputFileName": "js/lib/bootstrap/dist/bootstrap.bundle.min.js",
+    "inputFiles": [
+      "js/lib/bootstrap/dist/bootstrap.bundle.js"
+    ]
+  },
+  {
+    "outputFileName": "css/lib/bootstrap/dist/bootstrap.css",
+    "inputFiles": [
+      "css/lib/bootstrap/scss/bootstrap.scss"
+    ]
+  },
+  {
+    "outputFileName": "css/lib/bootstrap/dist/bootstrap.min.css",
+    "inputFiles": [
+      "css/lib/bootstrap/dist/bootstrap.css"
+    ]
+  },
+  {
+    "outputFileName": "css/common/common.css",
+    "inputFiles": [
+      "css/common/common.scss"
+    ]
+  },
+  {
+    "outputFileName": "css/common/common.min.css",
+    "inputFiles": [
+      "css/common/common.css"
+    ]
+  },
+  {
+    "outputFileName": "css/common/common.css",
+    "inputFiles": [
+      "css/common/common.scss"
+    ]
+  },
+  {
+    "outputFileName": "css/common/desktop.css",
+    "inputFiles": [
+      "css/common/desktop.scss"
+    ]
+  },
+  {
+    "outputFileName": "css/common/desktop.min.css",
+    "inputFiles": [
+      "css/common/desktop.css"
+    ]
+  },
+  {
+    "outputFileName": "css/common/mobile.css",
+    "inputFiles": [
+      "css/common/mobile.scss"
+    ]
+  },
+  {
+    "outputFileName": "css/common/mobile.min.css",
+    "inputFiles": [
+      "css/common/mobile.css"
+    ]
+  }
+]
