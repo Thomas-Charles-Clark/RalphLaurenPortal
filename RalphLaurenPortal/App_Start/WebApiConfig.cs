@@ -5,6 +5,7 @@ using System.Web.Http;
 
 namespace RalphLaurenPortal
 {
+    [Authorize]
     public static class WebApiConfig
     {
         public static void Register(HttpConfiguration config)
@@ -16,7 +17,7 @@ namespace RalphLaurenPortal
 
             config.Routes.MapHttpRoute(
                 name: "DefaultApi",
-                routeTemplate: "api/{controller}/{id}",
+                routeTemplate: "api/{controller}/{action}/{id}",
                 defaults: new { id = RouteParameter.Optional }
             );
         }

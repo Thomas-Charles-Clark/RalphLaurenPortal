@@ -55,6 +55,9 @@ namespace RalphLaurenPortal.Models
         [JsonIgnore]
         public override ICollection<Member_Role> Roles { get; }
 
+        [ForeignKey("TradeAccountID")]
+        public virtual TradeAccount.TradeAccount TradeAccount { get; set; }
+
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(ApplicationUserManager manager)
         {
             // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType

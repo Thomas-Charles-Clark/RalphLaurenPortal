@@ -60,7 +60,7 @@
 </head>
 <body>
     <nav id="main-navbar" class="navbar navbar-light">
-        <div class="container-fluid">
+        <div class="navbar-container">
             <button class="navbar-toggler" 
                     type="button"
                     data-bs-toggle="collapse"
@@ -76,11 +76,12 @@
                         srcset="/img/logo/dg-logo-256-17.webp 1x, /img/logo/dg-logo-512-37.webp 3x, /img/logo/dg-logo-1024-73.webp 4x, /img/logo/dg-logo-2048-145.webp 5x"
                         sizes="(max-width: 420px) 256px, (max-width: 992px) 512px, (max-width: 1200px) 1024px, (max-width: 1400px) 2048px"/>
             </a>
+            <div></div>
            @if (Request.IsAuthenticated)
             {
             <div id="navbar-content" class="collapse navbar-collapse">
-                <div class="navbar-nav bg-light">
-                   @using (Html.BeginForm("LogOff", "Account", new { Area = "" }, FormMethod.Post, new { id = "logout-form" }))
+                <div class="navbar-nav">
+                   @using (Html.BeginForm("LogOff", "Account", new { Area = "" }, FormMethod.Post, new { id = "logout-form", @class = "bg-light" }))
                     {
                         @Html.AntiForgeryToken()
                         @Html.ActionLink(HtmlHelperExtra.Resource("Hello", l, c, d).ToString() + " " + Extensions.GetFullName(User.Identity), 
