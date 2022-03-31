@@ -57,7 +57,8 @@ body {
         line-height: 1;
         display: flex;
         align-items: center;
-        margin-left: auto;
+        /*margin-left: auto;*/
+        padding-inline-start: var(--m-gutter);
         margin-inline-end: var(--l-gutter);
 
         #navbar-dg-logo {

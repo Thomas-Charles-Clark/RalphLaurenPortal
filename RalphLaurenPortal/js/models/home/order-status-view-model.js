@@ -729,13 +729,13 @@
             title: resources.Product,
             width: 120
         }, {
-            field: 'Batch',
-            title: resources.Batch,
-            width: 120
-        }, {
             field: 'Description',
             title: resources.Description,
             width: 140
+        }, {
+            field: 'Batch',
+            title: resources.Batch,
+            width: 120
         }, {
             field: 'CustomerOrderReference',
             title: resources.YourReference,
@@ -892,13 +892,13 @@
             title: resources.Product,
             width: 120
         }, {
-            field: 'Batch',
-            title: resources.Batch,
-            width: 120
-        }, {
             field: 'Description',
             title: resources.Description,
             width: 140
+        }, {
+            field: 'Batch',
+            title: resources.Batch,
+            width: 120
         }, {
             field: 'CustomerOrderReference',
             title: resources.YourReference,
@@ -978,13 +978,13 @@
             title: resources.Product,
             width: 120
         }, {
-            field: 'Batch',
-            title: resources.Batch,
-            width: 120
-        }, {
             field: 'Description',
             title: resources.Description,
             width: 140
+        }, {
+            field: 'Batch',
+            title: resources.Batch,
+            width: 120
         }, {
             field: 'CustomerOrderReference',
             title: resources.YourReference,
@@ -1070,12 +1070,12 @@
             title: resources.Product,
             width: 120
         }, {
+            field: 'Description',
+            title: resources.Description
+        }, {
             field: 'Batch',
             title: resources.Batch,
             width: 120
-        }, {
-            field: 'Description',
-            title: resources.Description
         }, {
             field: 'CustomerOrderReference',
             title: resources.YourReference,
@@ -1152,12 +1152,12 @@
             title: resources.Product,
             width: 120
         }, {
+            field: 'Description',
+            title: resources.Description
+        }, {
             field: 'Batch',
             title: resources.Batch,
             width: 120
-        }, {
-            field: 'Description',
-            title: resources.Description
         }, {
             field: 'CustomerOrderReference',
             title: resources.YourReference,
@@ -1213,13 +1213,13 @@
             title: resources.Product,
             width: 120
         }, {
-            field: 'Batch',
-            title: resources.Batch,
-            width: 120
-        }, {
             field: 'Description',
             title: resources.Description,
             width: 140
+        }, {
+            field: 'Batch',
+            title: resources.Batch,
+            width: 120
         }, {
             field: 'Quantity',
             title: resources.Quantity,
