@@ -247,12 +247,12 @@
                                                         (<span data-bind="text: totalDueIn"></span>)
                                                     </span>
                                                 </button>
-                                                <button class="btn nav-link" id="nav-supplier-tab" data-bs-toggle="tab" data-bs-target="#nav-supplier" type="button" role="tab" aria-controls="nav-supplier" aria-selected="false">
+                                                @*<button class="btn nav-link" id="nav-supplier-tab" data-bs-toggle="tab" data-bs-target="#nav-supplier" type="button" role="tab" aria-controls="nav-supplier" aria-selected="false">
                                                     <span>
                                                     @HtmlHelperExtra.Resource("SupplierStock", l, c, d)
                                                     (<span data-bind="text: totalSupplier"></span>)
                                                     </span>
-                                                </button>
+                                                </button>*@
                                             </div>
                                         </nav>
                                         <div class="tab-content py-4 px-2 px-sm-4" id="nav-stock-tabs-content">
@@ -282,7 +282,7 @@
                                                     </colgroup>
                                                     <tbody>
                                                         <tr>
-                                                            <th>
+                                                            <th class="text-center">
                                                                 @HtmlHelperExtra.Resource("BatchNo", l, c, d)
                                                             </th>
                                                             <th class="text-right">
@@ -363,7 +363,7 @@
                                                     </tbody>
                                                 </table>
                                             </div>
-                                            <div class="tab-pane fade" id="nav-supplier" role="tabpanel" aria-labelledby="nav-supplier-tab">
+                                            @*<div class="tab-pane fade" id="nav-supplier" role="tabpanel" aria-labelledby="nav-supplier-tab">
                                                 <!-- ko if: supplierHasStock() -->
                                                 <div id="stock-tab-supplier">
                                                     <table class="stock-table stock-total-table table table-bordered">
@@ -433,7 +433,7 @@
                                                     @HtmlHelperExtra.Resource("NoSupplierStock", l, c, d)
                                                 </p>
                                                 <!-- /ko -->
-                                            </div>
+                                            </div>*@
                                         </div>
                                     </div>
                                 </div>

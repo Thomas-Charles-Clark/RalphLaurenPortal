@@ -29,8 +29,8 @@
                 name="SearchTerm"
                 type="text"
                 class="form-control"
-                placeholder="@HtmlHelperExtra.Resource("ProductSearchExt", l, c, d)"
-                aria-label="@HtmlHelperExtra.Resource("ProductSearchExt", l, c, d)"
+                placeholder="@HtmlHelperExtra.Resource("RalphLaurenProductSearch", l, c, d)"
+                aria-label="@HtmlHelperExtra.Resource("RalphLaurenProductSearch", l, c, d)"
                 data-bind="forceNullOnEmpty: searchTerm, 
                             enterKey: search,
                             textInput: searchTerm" />
@@ -118,6 +118,9 @@
                                 <!-- /ko -->
                             </div>
                         </div>
+                        <!-- ko if: AKA -->
+                        <span class="d-block mt-3" data-bind="text: AKA"></span>
+                        <!-- /ko -->
                     </div>
                 </div>
             </div>

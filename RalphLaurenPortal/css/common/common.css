@@ -546,4 +546,8 @@ footer {
 .k-grid-header th.k-header a {
   font-weight: bold;
 }
+
+.text-right {
+  text-align: right;
+}
 /*# sourceMappingURL=common.css.map */
