@@ -43,17 +43,32 @@
     @*}*@
     <!-- #endregion -->
 
+    <!-- #region JS Libraries (Up front) -->
+    @Scripts.Render("~/bundles/js/jquery")
+    @Scripts.Render("~/bundles/js/kendo")
+    @switch(Model.CountryID)
+    {
+        case 238:
+            @Scripts.Render("~/js/lib/kendo/dist/2018.3.1017/kendo.culture.en-US.min.js")
+            break;
+        default:
+            @Scripts.Render("~/js/lib/kendo/dist/2018.3.1017/kendo.culture.en-GB.min.js")
+            break;
+    }
+    <!-- /ko -->
+
     <!-- #region JS Libraries (Deferred) -->
     @Render.ScriptDefer("~/bundles/js/bootstrap")
-    @*@Render.ScriptDefer("~/bundles/js/jquery")*@
     @Render.ScriptDefer("~/bundles/js/ko")
     @Render.ScriptDefer("~/bundles/js/linq")
+    @Render.ScriptDefer("~/bundles/js/luxon")
     <!-- #endregion -->
 
-    <!-- #region Global JS -->
-    @Render.ScriptDefer("~/bundles/js/common")
+    <!--
+    #region Global JS -->
     @Html.Partial("~/Views/Shared/_Layout-JS.cshtml")
-    <!-- #endregion -->
+    <!--
+    #endregion -->
 
     @RenderSection("TemplateScripts", required: false)
     @RenderSection("TemplateStyles", required: false)
@@ -70,33 +85,42 @@
                     aria-label="@HtmlHelperExtra.Resource("ToggleNavigation", l, c, d)">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <a id="navbar-logo-anchor" href="/" title="@HtmlHelperExtra.Resource("DesignersGuild", l, c, d)" target="_self">
-                <img id="navbar-logo" width="256" height="17" title="@HtmlHelperExtra.Resource("DesignersGuild", l, c, d)" alt="@HtmlHelperExtra.Resource("DesignersGuildLogo", l, c, d)" 
+            <a id="navbar-dg-logo-anchor" href="https://www.designersguild.com" target="_blank" title="@HtmlHelperExtra.Resource("DesignersGuild", l, c, d)" target="_self">
+                <img id="navbar-dg-logo" width="256" height="17" title="@HtmlHelperExtra.Resource("DesignersGuild", l, c, d)" alt="@HtmlHelperExtra.Resource("DesignersGuildLogo", l, c, d)" 
                         src="/img/logo/dg-logo-256-17.webp" 
-                        srcset="/img/logo/dg-logo-256-17.webp 1x, /img/logo/dg-logo-512-37.webp 3x, /img/logo/dg-logo-1024-73.webp 4x, /img/logo/dg-logo-2048-145.webp 5x"
-                        sizes="(max-width: 420px) 256px, (max-width: 992px) 512px, (max-width: 1200px) 1024px, (max-width: 1400px) 2048px"/>
+                        srcset="/img/logo/dg-logo-256-17.webp 1x, /img/logo/dg-logo-512-37.webp 3x, /img/logo/dg-logo-1024-73.webp 4x"
+                        sizes="(max-width: 420px) 256px, (max-width: 992px) 512px, (max-width: 1200px) 1024px"/>
             </a>
-            <div></div>
-           @if (Request.IsAuthenticated)
-            {
-            <div id="navbar-content" class="collapse navbar-collapse">
-                <div class="navbar-nav">
-                   @using (Html.BeginForm("LogOff", "Account", new { Area = "" }, FormMethod.Post, new { id = "logout-form", @class = "bg-light" }))
-                    {
-                        @Html.AntiForgeryToken()
-                        @Html.ActionLink(HtmlHelperExtra.Resource("Hello", l, c, d).ToString() + " " + Extensions.GetFullName(User.Identity), 
-                                        "Index", "manage", routeValues: new { Area = "" }, htmlAttributes: new { @class = "nav-link", title = "Manage" })
-                        <a class="nav-link" href="javascript:document.getElementById('logout-form').submit()">
-                            Log off
-                        </a>
-                    }
-                </div>
-            </div>
-            }
+            <a id="navbar-rl-logo-anchor" href="https://www.ralphlaurenhome.com" target="_blank" title="@HtmlHelperExtra.Resource("DesignersGuild", l, c, d)" target="_self">
+                <img id="navbar-rl-logo" width="256" height="14" title="@HtmlHelperExtra.Resource("DesignersGuild", l, c, d)" alt="@HtmlHelperExtra.Resource("DesignersGuildLogo", l, c, d)" 
+                        src="/img/logo/rl-logo-256-14.webp" 
+                        srcset="/img/logo/rl-logo-256-14.webp 1x, /img/logo/rl-logo-512-28.webp 3x, /img/logo/rl-logo-1024-56.webp 4x"
+                        sizes="(max-width: 420px) 256px, (max-width: 992px) 512px, (max-width: 1200px) 1024px"/>
+            </a>
         </div>
+        @if (Request.IsAuthenticated)
+        {
+        <div id="navbar-content" class="collapse navbar-collapse">
+            <div class="navbar-nav">
+                @using (Html.BeginForm("LogOff", "Account", new { Area = "" }, FormMethod.Post, new { id = "logout-form", @class = "bg-light" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ActionLink(HtmlHelperExtra.Resource("Hello", l, c, d).ToString() + " " + Extensions.GetFullName(User.Identity), 
+                                    "Index", "manage", routeValues: new { Area = "" }, htmlAttributes: new { @class = "nav-link", title = "Manage" })
+                    <a class="nav-link" href="javascript:document.getElementById('logout-form').submit()">
+                        Log off
+                    </a>
+                }
+            </div>
+        </div>
+        }
     </nav>
-    <div class="py-5 px-2">
-        @RenderBody()
+    <div class="pt-3 pt-sm-4">
+        <div id="ko-wrapper">
+            <div class="container-md">
+                @RenderBody()
+            </div>
+        </div>
         <hr />
         <footer>
             <p>&copy; @DateTime.Now.Year - Designers Guild</p>

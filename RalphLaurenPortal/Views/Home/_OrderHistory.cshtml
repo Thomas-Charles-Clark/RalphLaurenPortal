@@ -1,0 +1,288 @@
+﻿@model HomeViewModel
+@{
+    var l = Model.LanguageID;
+    var c = Model.CountryID;
+    var d = Model.ContentDate;
+    var cu = Model.DotNetCulture;
+
+    var firstTab = 0;
+    var firstStatus = "outstanding";
+
+    if (Request.QueryString.AllKeys.Contains("tab"))
+    {
+        switch (Request.QueryString["tab"])
+        {
+            case "backOrders":
+                firstTab = 1;
+                firstStatus = Request.QueryString["tab"];
+                break;
+            case "reserveOrders":
+                firstTab = 2;
+                firstStatus = Request.QueryString["tab"];
+                break;
+            case "dispatched":
+            case "despatched":
+            case "dispatchedOrders":
+            case "despatchedOrders":
+                firstTab = 3;
+                firstStatus = "despatchedOrders";
+                break;
+            case "ordersInProgress":
+                firstTab = 4;
+                firstStatus = Request.QueryString["tab"];
+                break;
+            case "held":
+                firstTab = 5;
+                firstStatus = Request.QueryString["tab"];
+                break;
+            default:
+                break;
+        }
+    }
+}<style type="text/css">
+    .k-calendar td:not(.k-state-disabled) {
+        background-color: unset;
+    }
+    .k-calendar .k-state-selected.k-state-focused a {
+        color: black;
+    }
+</style>
+<script id="search-controls-template" type="text/html">
+    <div class="search-controls d-flex justify-content-between py-3">
+        <!-- ko if: showSampleControl -->
+        <select class="form-select" data-bind="value: sampleOrders, options: [{ 
+                name: '@HtmlHelperExtra.EscapeForJS(HtmlHelperExtra.Resource("ProductOrders", l, c, d))', 
+                value: false 
+            }, { 
+                name: '@HtmlHelperExtra.EscapeForJS(HtmlHelperExtra.Resource("SampleOrders", l, c, d))', 
+                value: true 
+            }], optionsText: 'name', optionsValue: 'value'"></select>
+        <!-- /ko -->
+        <select class="form-select" data-bind="value: dateRangeType, options: availableDateRangeTypes, optionsValue: 'dateRangeTypeId', optionsText: 'name'"></select>
+        <div class="form-select-wrapper">
+            <select class="form-select" data-bind="value: dateRange, options: dateRanges, optionsValue: 'dateRangeId', optionsText: 'name'"></select>
+            <!-- ko if: dateRange() == -1 -->
+            <div class="custom-date-wrapper">
+                <label>
+                    @HtmlHelperExtra.Resource("FromProperCase", l, c, d)
+                </label>
+                <div class="d-flex align-items-center">
+                    <input id="custom-from-date" class="date-picker form-control" data-bind="kendoDatePicker: customFromDatePicker" />
+                    <label class="date-clear" data-bind="click: function () { customFromDatePicker.clear(); }">
+                        &times;
+                    </label>
+                </div>
+            </div>
+            <div class="custom-date-wrapper">
+                <label>
+                    @HtmlHelperExtra.Resource("ToProperCase", l, c, d)
+                </label>
+                <div class="d-flex align-items-center">
+                    <input id="custom-to-date" class="date-picker form-control" data-bind="kendoDatePicker: customToDatePicker" />
+                    <label class="date-clear" data-bind="click: function () { customToDatePicker.clear(); }">
+                        &times;
+                    </label>
+                </div>
+                <span class="validation-message text-danger" data-bind="validationMessage: customFromDate"></span>
+                <span class="validation-message text-danger" data-bind="validationMessage: customToDate"></span>
+                <span class="validation-message text-danger" data-bind="validationMessage: fromPreceedsTo"></span>
+            </div>
+            <!-- /ko -->
+        </div>
+        <div class="input-group">
+            <input type="text" class="form-control" data-bind="enterKey: search, textInput: searchTerm, attr: { placeholder: '@HtmlHelperExtra.EscapeForJS(HtmlHelperExtra.Resource("SearchByOrderProductReference", l, c, d))' }" />
+            <button class="btn btn-outline-secondary" data-bind="click: search">
+                @HtmlHelperExtra.Resource("EnterSearch", l, c, d)
+            </button>
+        </div>
+    </div>
+</script>
+<div id="trade-wrapper" style="display: none;" data-bind="visible: true, with: orderStatusModel">
+    <nav id="order-status-tabs" class="nav nav-pills nav-justified">
+        <button class="btn nav-link active" aria-current="page" href="#outstanding-orders" data-bs-toggle="tab" data-bs-target="#outstanding-orders">
+            @HtmlHelperExtra.Resource("AllOutstandingOrders", l, c, d)
+        </button>
+        <button class="btn nav-link" href="#back-orders" data-bs-toggle="tab" data-bs-target="#back-orders">
+            @HtmlHelperExtra.Resource("BackOrders", l, c, d)
+        </button>
+        <button class="btn nav-link" href="#reserve-orders" data-bs-toggle="tab" data-bs-target="#reserve-orders">
+            @HtmlHelperExtra.Resource("ReservedStock", l, c, d)
+        </button>
+        <button class="btn nav-link" href="#despatched-orders" data-bs-toggle="tab" data-bs-target="#despatched-orders">
+            @HtmlHelperExtra.Resource("DespatchedOrders", l, c, d)
+        </button>
+        <button class="btn nav-link" href="#orders-in-progress" data-bs-toggle="tab" data-bs-target="#orders-in-progress">
+            @HtmlHelperExtra.Resource("OrdersInProgress", l, c, d)
+        </button>
+    </nav>
+    <div class="tab-content">
+        <div id="outstanding-orders" class="outstanding-pane tab-pane active" data-refresh="outstanding">
+            <div class="blocker" style="display: none;" data-bind="fadeVisible: outstandingOrdersBusy">
+                <div class="spinner-border" role="status"></div>
+                <h2 data-bind="visible: !exportingBusy()">
+                    @HtmlHelperExtra.Resource("Searching", l, c, d)
+                </h2>
+                <h2 data-bind="visible: exportingBusy()">
+                    @HtmlHelperExtra.Resource("Exporting", l, c, d)
+                </h2>
+                <div class="exporting-progress" data-bind="visible: exportingBusy">
+                    <span class="barberpole"></span>
+                    <span class="cover" data-bind="style: { 'width': 100 - exportingProgress() + '%' }"></span>
+                    <span class="progress" data-bind="text: Math.round(((exportingProgress())*100)/100) + ' %'"></span>
+                </div>
+                <h3 data-bind="visible: showLongSearch">
+                    @HtmlHelperExtra.Resource("TradeOutstandingOrdersPleaseWait", l, c, d)
+                </h3>
+            </div>
+            <div class="flex-container" data-bind="template: { name: 'search-controls-template' }"></div>
+            <h6 class="d-flex justify-content-between align-items-center my-2 my-sm-3">
+                <span>
+                    @HtmlHelperExtra.Resource("AllOutstandingOrders", l, c, d)
+                </span>
+                <a data-bind="attr: { href: 'javascript:;' }, text: '@HtmlHelperExtra.EscapeForJS(HtmlHelperExtra.Resource("DownloadToExcel", l, c, d))', 
+                    click: function () { saveAsExcel(outstandingOrdersGrid); }"></a>
+            </h6>
+            <div class="accounts-grid" data-bind="kendoGrid: outstandingOrdersGrid"></div>
+        </div>
+        <div id="back-orders" class="outstanding-pane tab-pane" data-refresh="backOrders">
+            <div class="blocker" style="display: none;" data-bind="fadeVisible: backOrdersBusy">
+                <div class="spinner-border" role="status"></div>
+                <h2 data-bind="visible: !exportingBusy()">
+                    @HtmlHelperExtra.Resource("Searching", l, c, d)
+                </h2>
+                <h2 data-bind="visible: exportingBusy()">
+                    @HtmlHelperExtra.Resource("Exporting", l, c, d)
+                </h2>
+                <div class="exporting-progress" data-bind="visible: exportingBusy">
+                    <span class="barberpole"></span>
+                    <span class="cover" data-bind="style: { 'width': 100 - exportingProgress() + '%' }"></span>
+                    <span class="progress" data-bind="text: Math.round(((exportingProgress())*100)/100) + ' %'"></span>
+                </div>
+                <h3 data-bind="visible: showLongSearch">
+                    @HtmlHelperExtra.Resource("TradeOutstandingOrdersPleaseWait", l, c, d)
+                </h3>
+            </div>
+            <div class="flex-container" data-bind="template: { name: 'search-controls-template' }"></div>
+            <h5 class="d-flex justify-content-between align-items-center my-2 my-sm-3">
+                <span>
+                    @HtmlHelperExtra.Resource("BackOrders", l, c, d)
+                </span>
+                <a class="pull-right" data-bind="attr: { href: 'javascript:;' }, text: '@HtmlHelperExtra.EscapeForJS(HtmlHelperExtra.Resource("DownloadToExcel", l, c, d))', 
+                    click: function () { saveAsExcel(backOrdersGrid); }"></a>
+            </h5>
+            <div data-bind="kendoGrid: backOrdersGrid"></div>
+        </div>
+        <div id="reserve-orders" class="outstanding-pane tab-pane" data-refresh="reserveOrders">
+            <div class="blocker" style="display: none;" data-bind="fadeVisible: reserveOrdersBusy">
+                <div class="spinner-border" role="status"></div>
+                <h2 data-bind="visible: !exportingBusy()">
+                    @HtmlHelperExtra.Resource("Searching", l, c, d)
+                </h2>
+                <h2 data-bind="visible: exportingBusy()">
+                    @HtmlHelperExtra.Resource("Exporting", l, c, d)
+                </h2>
+                <div class="exporting-progress" data-bind="visible: exportingBusy">
+                    <span class="barberpole"></span>
+                    <span class="cover" data-bind="style: { 'width': 100 - exportingProgress() + '%' }"></span>
+                    <span class="progress" data-bind="text: Math.round(((exportingProgress())*100)/100) + ' %'"></span>
+                </div>
+                <h3 data-bind="visible: showLongSearch">
+                    @HtmlHelperExtra.Resource("TradeOutstandingOrdersPleaseWait", l, c, d)
+                </h3>
+            </div>
+            <div class="flex-container" data-bind="template: { name: 'search-controls-template' }"></div>
+            <h5 class="d-flex justify-content-between align-items-center my-2 my-sm-3">
+                <span>
+                    @HtmlHelperExtra.Resource("ReservedStock", l, c, d)
+                </span>
+                <a class="pull-right" data-bind="attr: { href: 'javascript:;' }, text: '@HtmlHelperExtra.EscapeForJS(HtmlHelperExtra.Resource("DownloadToExcel", l, c, d))', 
+                    click: function () { saveAsExcel(reserveOrdersGrid); }"></a>
+            </h5>
+            <div data-bind="kendoGrid: reserveOrdersGrid"></div>
+        </div>
+        <div id="despatched-orders" class="outstanding-pane tab-pane" data-refresh="despatchedOrders">
+            <div class="blocker" style="display: none;" data-bind="fadeVisible: despatchedOrdersBusy">
+                <div class="spinner-border" role="status"></div>
+                <h2 data-bind="visible: !exportingBusy()">
+                    @HtmlHelperExtra.Resource("Searching", l, c, d)
+                </h2>
+                <h2 data-bind="visible: exportingBusy()">
+                    @HtmlHelperExtra.Resource("Exporting", l, c, d)
+                </h2>
+                <div class="exporting-progress" data-bind="visible: exportingBusy">
+                    <span class="barberpole"></span>
+                    <span class="cover" data-bind="style: { 'width': 100 - exportingProgress() + '%' }"></span>
+                    <span class="progress" data-bind="text: Math.round(((exportingProgress())*100)/100) + ' %'"></span>
+                </div>
+                <h3 data-bind="visible: showLongSearch">
+                    @HtmlHelperExtra.Resource("TradeOutstandingOrdersPleaseWait", l, c, d)
+                </h3>
+            </div>
+            <div class="flex-container" data-bind="template: { name: 'search-controls-template' }"></div>
+            <h5 class="d-flex justify-content-between align-items-center my-2 my-sm-3">
+                <span>
+                    @HtmlHelperExtra.Resource("DespatchedOrders", l, c, d)
+                </span>
+                <a class="pull-right" data-bind="attr: { href: 'javascript:;' }, text: '@HtmlHelperExtra.EscapeForJS(HtmlHelperExtra.Resource("DownloadToExcel", l, c, d))', 
+                    click: function () { saveAsExcel(despatchedOrdersGrid); }"></a>
+            </h5>
+            <div data-bind="kendoGrid: despatchedOrdersGrid"></div>
+        </div>
+        <div id="orders-in-progress" class="outstanding-pane tab-pane" data-refresh="ordersInProgress">
+            <div class="blocker" style="display: none;" data-bind="fadeVisible: ordersInProgressBusy">
+                <div class="spinner-border" role="status"></div>
+                <h2 data-bind="visible: !exportingBusy()">
+                    @HtmlHelperExtra.Resource("Searching", l, c, d)
+                </h2>
+                <h2 data-bind="visible: exportingBusy()">
+                    @HtmlHelperExtra.Resource("Exporting", l, c, d)
+                </h2>
+                <div class="exporting-progress" data-bind="visible: exportingBusy">
+                    <span class="barberpole"></span>
+                    <span class="cover" data-bind="style: { 'width': 100 - exportingProgress() + '%' }"></span>
+                    <span class="progress" data-bind="text: Math.round(((exportingProgress())*100)/100) + ' %'"></span>
+                </div>
+                <h3 data-bind="visible: showLongSearch">
+                    @HtmlHelperExtra.Resource("TradeOutstandingOrdersPleaseWait", l, c, d)
+                </h3>
+            </div>
+            <div class="flex-container" data-bind="template: { name: 'search-controls-template' }"></div>
+            <h5 class="d-flex justify-content-between align-items-center my-2 my-sm-3">
+                <span>
+                    @HtmlHelperExtra.Resource("OrdersInProgress", l, c, d)
+                </span>
+                <a class="pull-right" data-bind="attr: { href: 'javascript:;' }, text: '@HtmlHelperExtra.EscapeForJS(HtmlHelperExtra.Resource("DownloadToExcel", l, c, d))', 
+                    click: function () { saveAsExcel(ordersInProgressGrid); }"></a>
+            </h5>
+            <div data-bind="kendoGrid: ordersInProgressGrid"></div>
+        </div>
+        <div id="held-orders" class="outstanding-pane tab-pane" data-refresh="held">
+            <div class="blocker" style="display: none;" data-bind="fadeVisible: heldOrdersBusy">
+                <div class="spinner-border" role="status"></div>
+                <h2 data-bind="visible: !exportingBusy()">
+                    @HtmlHelperExtra.Resource("Searching", l, c, d)
+                </h2>
+                <h2 data-bind="visible: exportingBusy()">
+                    @HtmlHelperExtra.Resource("Exporting", l, c, d)
+                </h2>
+                <div class="exporting-progress" data-bind="visible: exportingBusy">
+                    <span class="barberpole"></span>
+                    <span class="cover" data-bind="style: { 'width': 100 - exportingProgress() + '%' }"></span>
+                    <span class="progress" data-bind="text: Math.round(((exportingProgress())*100)/100) + ' %'"></span>
+                </div>
+                <h3 data-bind="visible: showLongSearch">
+                    @HtmlHelperExtra.Resource("TradeOutstandingOrdersPleaseWait", l, c, d)
+                </h3>
+            </div>
+            <div class="flex-container" data-bind="template: { name: 'search-controls-template' }"></div>
+            <h5 class="d-flex justify-content-between align-items-center my-2 my-sm-3">
+                <span>
+                    @HtmlHelperExtra.Resource("HeldOrders", l, c, d)
+                </span>
+                <a class="pull-right" data-bind="attr: { href: 'javascript:;' }, text: '@HtmlHelperExtra.EscapeForJS(HtmlHelperExtra.Resource("DownloadToExcel", l, c, d))', 
+                    click: function () { saveAsExcel(heldOrdersGrid); }"></a>
+            </h5>
+            <div class="accounts-grid" data-bind="kendoGrid: heldOrdersGrid"></div>
+        </div>
+    </div>
+</div>

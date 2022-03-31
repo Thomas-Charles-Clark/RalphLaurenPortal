@@ -1,8 +1,8 @@
 ﻿[
   {
-    "outputFileName": "Scripts/knockout-pre-rendered.min.js",
+    "outputFileName": "js/lib/knockout/dist/knockout-pre-rendered.min.js",
     "inputFiles": [
-      "Scripts/knockout-pre-rendered.js"
+      "js/lib/knockout/dist/knockout-pre-rendered.js"
     ]
   },
   {
@@ -12,21 +12,45 @@
     ]
   },
   {
-    "outputFileName": "js/common/common.min.js",
+    "outputFileName": "js/models/home/tech-info-view-model.min.js",
     "inputFiles": [
-      "js/common/common.js"
+      "js/models/home/tech-info-view-model.js"
     ]
   },
   {
-    "outputFileName": "js/lib/linq/linq.min.js",
+    "outputFileName": "js/models/home/stock-view-model.min.js",
     "inputFiles": [
-      "js/lib/linq/linq.js"
+      "js/models/home/stock-view-model.js"
     ]
   },
   {
-    "outputFileName": "js/models/common/error-modal.min.js",
+    "outputFileName": "js/models/home/order-status-view-model.min.js",
     "inputFiles": [
-      "js/models/common/error-modal.js"
+      "js/models/home/order-status-view-model.js"
+    ]
+  },
+  {
+    "outputFileName": "js/models/home/page-view-model.min.js",
+    "inputFiles": [
+      "js/models/home/page-view-model.js"
+    ]
+  },
+  {
+    "outputFileName": "js/lib/linq/dist/linq.min.js",
+    "inputFiles": [
+      "js/lib/linq/dist/linq.js"
+    ]
+  },
+  {
+    "outputFileName": "js/common/error-modal.min.js",
+    "inputFiles": [
+      "js/common/error-modal.js"
+    ]
+  },
+  {
+    "outputFileName": "js/lib/luxon/dist/luxon.min.js",
+    "inputFiles": [
+      "js/lib/luxon/dist/luxon.js"
     ]
   },
   {
@@ -63,6 +87,30 @@
     "outputFileName": "css/common/common.css",
     "inputFiles": [
       "css/common/common.scss"
+    ]
+  },
+  {
+    "outputFileName": "css/lib/kendo/dist/2018.3.1017/kendo.common.min.css",
+    "inputFiles": [
+      "css/lib/kendo/dist/2018.3.1017/kendo.common.css"
+    ]
+  },
+  {
+    "outputFileName": "css/lib/kendo/dist/2018.3.1017/kendo.default.min.css",
+    "inputFiles": [
+      "css/lib/kendo/dist/2018.3.1017/kendo.default.css"
+    ]
+  },
+  {
+    "outputFileName": "css/lib/kendo/dist/2018.3.1017/kendo.bootstrap.min.css",
+    "inputFiles": [
+      "css/lib/kendo/dist/2018.3.1017/kendo.bootstrap.css"
+    ]
+  },
+  {
+    "outputFileName": "css/lib/kendo/dist/2018.3.1017/kendo.common-bootstrap.min.css",
+    "inputFiles": [
+      "css/lib/kendo/dist/2018.3.1017/kendo.common-bootstrap.css"
     ]
   },
   {

@@ -7,6 +7,7 @@ using System.Web;
 
 namespace RalphLaurenPortal.Models.TradeAccount
 {
+    [Table("TradeAccount", Schema = "dbo")]
     public class TradeAccount
     {
         public int TradeAccountID { get; set; }
@@ -137,148 +138,8 @@ namespace RalphLaurenPortal.Models.TradeAccount
 
         public bool RetailCustomer { get; set; }
 
-
-
         [JsonIgnore]
         [InverseProperty("TradeAccount")]
         public virtual ICollection<Member> RalphLaurenMembers { get; set; }
-
-
-
-
-
-
-
-
-        //[NotMapped]
-        //public string Label
-        //{
-        //    get
-        //    {
-        //        return $"{Code} - {Name} - (Rep: {(SalesRepresentative?.Name ?? "Unknown Rep")})";
-        //    }
-        //}
-
-        //[ForeignKey("DefaultInvoiceTradeAccountAddressID")]
-        //public virtual TradeAccountAddress DefaultInvoiceAddress { get; set; }
-
-        //[ForeignKey("DefaultDeliveryTradeAccountAddressID")]
-        //public virtual TradeAccountAddress DefaultDeliveryAddress { get; set; }
-
-        //[ForeignKey("DefaultVisitTradeAccountAddressID")]
-        //public virtual TradeAccountAddress DefaultVisitAddress { get; set; }
-
-        //[ForeignKey("TradeAccountGroupID")]
-        //public virtual TradeAccountGroup TradeAccountGroup { get; set; }
-        //public virtual TradePriceList TradePriceList { get; set; }
-        //public virtual SalesRepresentative SalesRepresentative { get; set; }
-        //public virtual Currency Currency { get; set; }
-        //public virtual TradeArea TradeArea { get; set; }
-        //public virtual Language Language { get; set; }
-        //public virtual TradeAccountType TradeAccountType { get; set; }
-        //public virtual Country Country { get; set; }
-        //public virtual TradeLanguage TradeLanguage { get; set; }
-        //public virtual PaymentTerms PaymentTerms { get; set; }
-
-        //[NotMapped]
-        //public string CompanyName
-        //{
-        //    get
-        //    {
-        //        return Name;
-        //    }
-        //}
-
-        //[NotMapped]
-        //public string CurrencyCulture
-        //{
-        //    get
-        //    {
-        //        return Currency?.FormattingCulture;
-        //    }
-        //}
-
-        //[NotMapped]
-        //public string CurrencyCode
-        //{
-        //    get
-        //    {
-        //        return Currency?.Code;
-        //    }
-        //}
-
-        ////[JsonIgnore]
-        ////public virtual ICollection<Member> Members { get; set; }
-
-        //[JsonIgnore]
-        //public virtual ICollection<TradeAccount_Competitor> Competitors { get; set; }
-
-        //[JsonIgnore]
-        //public virtual ICollection<TradeAccountPotential> TradeAccountPotential { get; set; }
-
-        //[JsonIgnore]
-        //public virtual ICollection<TradeAccount_TradeAdvertiser> TradeAdvertisers { get; set; }
-
-        //public virtual ICollection<TradeAccountVisit> Visits { get; set; }
-
-        //[JsonIgnore]
-        //public virtual ICollection<TradeAccount_Tag> Tags { get; set; }
-
-        //[JsonIgnore]
-        //[InverseProperty("TradeAccount")]
-        //public virtual ICollection<Member_TradeAccount> RelatedMembers { get; set; }
-
-        //[JsonIgnore]
-        //[InverseProperty("TradeAccount")]
-        //public virtual ICollection<ProjectStakeholder> ProjectStakeholdings { get; set; }
-
-        //public virtual ICollection<TradeAccountNote> Notes { get; set; }
-
-        //[InverseProperty("TradeAccount")]
-        //public virtual ICollection<TradeAccountContact> Contacts { get; set; }
-
-        //[ForeignKey("DefaultTradeAccountContactID")]
-        //public virtual TradeAccountContact DefaultContact { get; set; }
-
-        //[JsonIgnore]
-        //[InverseProperty("TradeAccount")]
-        //public virtual ICollection<SalesRepresentative_TradeAccount> MiscellaneousTradeAccounts { get; set; }
-
-        //[JsonIgnore]
-        //[InverseProperty("TradeAccount")]
-        //public virtual ICollection<Member_Basket> Member_Baskets { get; set; }
-
-        //[NotMapped]
-        //public string AdScheme
-        //{
-        //    get
-        //    {
-        //        return "Pattern book lite [Dummy Data]";
-        //    }
-        //}
-
-        //[JsonIgnore]
-        //[InverseProperty("TradeAccount")]
-        //public virtual ICollection<Basket> Baskets { get; set; }
-
-        //[JsonIgnore]
-        //[InverseProperty("TradeAccount")]
-        //public virtual ICollection<TradeDeliveryContractPrice> TradeDeliveryContractPrices { get; set; }
-
-        //[JsonIgnore]
-        //[InverseProperty("TradeAccount")]
-        //public virtual ICollection<TradeAccount_TradeHaulier_Override> TradeHaulierOverrides { get; set; }
-
-        //[JsonIgnore]
-        //[InverseProperty("TradeAccount")]
-        //public virtual ICollection<RingFencePreAllocation> RingFencePreAllocations { get; set; }
-
-        //[JsonIgnore]
-        //[InverseProperty("TradeAccount")]
-        //public virtual ICollection<Return> Returns { get; set; }
-
-        //[JsonIgnore]
-        //[InverseProperty("TradeAccount")]
-        //public virtual ICollection<Tuffnells.TuffnellsConsignment> TuffnellsConsignments { get; set; }
     }
 }

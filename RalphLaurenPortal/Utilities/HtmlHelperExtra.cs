@@ -21,7 +21,7 @@ namespace RalphLaurenPortal.Utilities
 
         public static IHtmlString Resource(string name, byte languageId, short countryId, DateTime useDate)
         {
-            var resourceDefinition = new Resource().loadResourcesFromCms(countryId, languageId, useDate);
+            var resourceDefinition = new Resource().FetchResources(countryId, languageId, useDate);
 
             var value = resourceDefinition.Result.Resources.Where(p => p.Name == name).Select(p => p.Value).SingleOrDefault();
 
@@ -32,7 +32,7 @@ namespace RalphLaurenPortal.Utilities
         {
             var ti = new CultureInfo("en-GB", false).TextInfo;
 
-            var resourceDefinition = new Resource().loadResourcesFromCms(countryId, languageId, useDate);
+            var resourceDefinition = new Resource().FetchResources(countryId, languageId, useDate);
 
             var value = resourceDefinition.Result.Resources.Where(p => p.Name == name).Select(p => p.Value).SingleOrDefault();
 

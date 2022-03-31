@@ -48,6 +48,9 @@
     <Reference Include="Dapper, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Dapper.2.0.123\lib\net461\Dapper.dll</HintPath>
     </Reference>
+    <Reference Include="MertexerV2">
+      <HintPath>..\..\MertexerV2\MertexerV2\bin\Release\MertexerV2.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.3\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
     </Reference>
@@ -223,6 +226,8 @@
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\PortalDbContext.cs" />
     <Compile Include="Models\ProductSearch\PassProductSearch.cs" />
+    <Compile Include="Models\ProductType\ProductType.cs" />
+    <Compile Include="Models\ProductType\ProductTypeCacheProvider.cs" />
     <Compile Include="Models\Resource\Resource.cs" />
     <Compile Include="Models\Resource\ResourceCacheProvider.cs" />
     <Compile Include="Models\StockInfo\PassStockInfoFetch.cs" />
@@ -236,6 +241,7 @@
     <Compile Include="Utilities\IdentityExtensions.cs" />
     <Compile Include="Utilities\Render.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
+    <Compile Include="ViewModels\HomeViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="css\common\common.css">
@@ -285,11 +291,53 @@
     <Content Include="css\lib\bootstrap\dist\bootstrap.min.css.map">
       <DependentUpon>bootstrap.min.css</DependentUpon>
     </Content>
+    <Content Include="css\lib\kendo\dist\2018.3.1017\default\loading-image.gif" />
+    <Content Include="css\lib\kendo\dist\2018.3.1017\kendo.bootstrap.css" />
+    <Content Include="css\lib\kendo\dist\2018.3.1017\kendo.bootstrap.min.css">
+      <DependentUpon>kendo.bootstrap.css</DependentUpon>
+    </Content>
+    <Content Include="css\lib\kendo\dist\2018.3.1017\kendo.bootstrap.min.css.map">
+      <DependentUpon>kendo.bootstrap.min.css</DependentUpon>
+    </Content>
+    <Content Include="css\lib\kendo\dist\2018.3.1017\kendo.common-bootstrap.css" />
+    <Content Include="css\lib\kendo\dist\2018.3.1017\kendo.common-bootstrap.min.css">
+      <DependentUpon>kendo.common-bootstrap.css</DependentUpon>
+    </Content>
+    <Content Include="css\lib\kendo\dist\2018.3.1017\kendo.common-bootstrap.min.css.map">
+      <DependentUpon>kendo.common-bootstrap.min.css</DependentUpon>
+    </Content>
+    <Content Include="css\lib\kendo\dist\2018.3.1017\kendo.common.css" />
+    <Content Include="css\lib\kendo\dist\2018.3.1017\kendo.common.min.css">
+      <DependentUpon>kendo.common.css</DependentUpon>
+    </Content>
+    <Content Include="css\lib\kendo\dist\2018.3.1017\kendo.common.min.css.map">
+      <DependentUpon>kendo.common.min.css</DependentUpon>
+    </Content>
+    <Content Include="css\lib\kendo\dist\2018.3.1017\kendo.default.css" />
+    <Content Include="css\lib\kendo\dist\2018.3.1017\kendo.default.min.css">
+      <DependentUpon>kendo.default.css</DependentUpon>
+    </Content>
+    <Content Include="css\lib\kendo\dist\2018.3.1017\kendo.default.min.css.map">
+      <DependentUpon>kendo.default.min.css</DependentUpon>
+    </Content>
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="gulpfile.js" />
-    <Content Include="js\common\common.js" />
+    <Content Include="js\common\error-modal.min.js">
+      <DependentUpon>error-modal.js</DependentUpon>
+    </Content>
+    <Content Include="js\common\error-modal.min.js.map">
+      <DependentUpon>error-modal.min.js</DependentUpon>
+    </Content>
+    <Content Include="js\models\home\order-status-view-model.min.js">
+      <DependentUpon>order-status-view-model.js</DependentUpon>
+    </Content>
+    <Content Include="js\models\home\order-status-view-model.min.js.map">
+      <DependentUpon>order-status-view-model.min.js</DependentUpon>
+    </Content>
+    <Content Include="js\models\home\page-view-model.js" />
     <Content Include="js\common\error-modal.js" />
+    <Content Include="js\models\home\order-status-view-model.js" />
     <Content Include="js\lib\bootstrap\dist\bootstrap.bundle.js" />
     <Content Include="js\lib\bootstrap\dist\bootstrap.bundle.js.map">
       <DependentUpon>bootstrap.bundle.js</DependentUpon>
@@ -300,17 +348,22 @@
     <Content Include="js\lib\bootstrap\dist\bootstrap.bundle.min.js.map">
       <DependentUpon>bootstrap.bundle.min.js</DependentUpon>
     </Content>
-    <Content Include="js\lib\jquery\jquery.js" />
-    <Content Include="js\lib\jquery\jquery.min.js">
+    <Content Include="js\lib\jquery\dist\jquery.js" />
+    <Content Include="js\lib\jquery\dist\jquery.min.js">
       <DependentUpon>jquery.js</DependentUpon>
     </Content>
-    <Content Include="js\lib\jquery\jquery.min.map">
+    <Content Include="js\lib\jquery\dist\jquery.min.map">
       <DependentUpon>jquery.min.js</DependentUpon>
     </Content>
-    <Content Include="js\lib\jquery\jquery.validate.js" />
-    <Content Include="js\lib\jquery\jquery.validate.unobtrusive.js">
+    <Content Include="js\lib\jquery\dist\jquery.validate.js" />
+    <Content Include="js\lib\jquery\dist\jquery.validate.unobtrusive.js">
       <DependentUpon>jquery.validate.js</DependentUpon>
     </Content>
+    <Content Include="js\lib\kendo\dist\2018.3.1017\jszip.min.js" />
+    <Content Include="js\lib\kendo\dist\2018.3.1017\kendo.all.js" />
+    <Content Include="js\lib\kendo\dist\2018.3.1017\kendo.aspnetmvc.min.js" />
+    <Content Include="js\lib\kendo\dist\2018.3.1017\kendo.culture.en-US.min.js" />
+    <Content Include="js\lib\kendo\dist\2018.3.1017\kendo.culture.en-GB.min.js" />
     <Content Include="js\lib\knockout\custom\knockout-extensions.js" />
     <Content Include="js\lib\knockout\custom\knockout-extensions.min.js">
       <DependentUpon>knockout-extensions.js</DependentUpon>
@@ -337,7 +390,28 @@
     <Content Include="js\lib\knockout\dist\knockout-validation.min.js.map">
       <DependentUpon>knockout-validation.min.js</DependentUpon>
     </Content>
-    <Content Include="js\lib\linq\linq.js" />
+    <Content Include="js\lib\linq\dist\linq.js" />
+    <Content Include="js\lib\luxon\dist\luxon.js" />
+    <Content Include="js\models\home\page-view-model.min.js">
+      <DependentUpon>page-view-model.js</DependentUpon>
+    </Content>
+    <Content Include="js\models\home\page-view-model.min.js.map">
+      <DependentUpon>page-view-model.min.js</DependentUpon>
+    </Content>
+    <Content Include="js\models\home\stock-view-model.js" />
+    <Content Include="js\models\home\stock-view-model.min.js">
+      <DependentUpon>stock-view-model.js</DependentUpon>
+    </Content>
+    <Content Include="js\models\home\stock-view-model.min.js.map">
+      <DependentUpon>stock-view-model.min.js</DependentUpon>
+    </Content>
+    <Content Include="js\models\home\tech-info-view-model.js" />
+    <Content Include="js\models\home\tech-info-view-model.min.js">
+      <DependentUpon>tech-info-view-model.js</DependentUpon>
+    </Content>
+    <Content Include="js\models\home\tech-info-view-model.min.js.map">
+      <DependentUpon>tech-info-view-model.min.js</DependentUpon>
+    </Content>
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -375,6 +449,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="img\icons\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="package.json" />
@@ -483,8 +558,19 @@
     <Content Include="img\logo\dg-logo-256-19.webp" />
     <Content Include="img\logo\dg-logo-512-37.webp" />
     <Content Include="css\common\variables.scss" />
+    <Content Include="css\lib\kendo\dist\2018.3.1017\images\kendoui.ttf" />
+    <Content Include="css\lib\kendo\dist\2018.3.1017\images\kendoui.woff" />
+    <Content Include="css\lib\kendo\dist\2018.3.1017\fonts\glyphs\WebComponentsIcons.ttf" />
+    <Content Include="css\lib\kendo\dist\2018.3.1017\fonts\glyphs\WebComponentsIcons.woff" />
+    <Content Include="img\logo\rl-logo-1024-56.webp" />
+    <Content Include="img\logo\rl-logo-256-14.webp" />
+    <Content Include="img\logo\rl-logo-512-28.webp" />
     <None Include="packages.config" />
     <Content Include="Views\Shared\_Layout-JS.cshtml" />
+    <Content Include="Views\Home\_ProductSearch.cshtml" />
+    <Content Include="Views\Home\_OrderHistory.cshtml" />
+    <None Include="Properties\PublishProfiles\Portal-Dev.pubxml" />
+    <None Include="Properties\PublishProfiles\Production.pubxml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

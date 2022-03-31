@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Microsoft.AspNet.Identity.EntityFramework;
 using RalphLaurenPortal.Models.ProductSearch;
+using RalphLaurenPortal.Models.ProductType;
 using RalphLaurenPortal.Models.Resource;
 using RalphLaurenPortal.Models.StockInfo;
 using RalphLaurenPortal.Models.TechInfo;
@@ -147,16 +148,13 @@ namespace RalphLaurenPortal.Models
                 Date = useDate
             }, null, 30, CommandType.StoredProcedure);
 
-            var preresult = results.Read<ProductStockFetchResult>();
+            var preresult = results.Read<ProductStockFetchResult>().ToList();
 
             // pub.Stock_Message piggybacks on portal.Stock_Message which actually outputs what we're after but doesn't
             // bother translating it - and won't ever bother translating it. Skip this result set:
-            _ = results.Read();
+            _ = results.Read().ToList();
 
-            // This final result set can be translated. It isn't, at the time of writing, but at least it can be.
-            _ = results.Read();
-
-            result.SupplierAvailabilityMessage = results.ReadSingle<string>();
+            result.SupplierAvailabilityMessage = results.ReadSingleOrDefault<string>();
 
             if (preresult.Any())
             {
@@ -194,6 +192,25 @@ namespace RalphLaurenPortal.Models
             }
 
             return result;
+        }
+
+        public ProductTypeDropDown FetchProductTypes(short countryId, byte languageId, DateTime useDate)
+        {
+            return new ProductTypeDropDown()
+            {
+                ProductTypes = this.Database.Connection.Query<ProductTypeSelect>(
+                    "[RalphLauren].[Product_Search_ProductTypes_Select]", 
+                    new { 
+                       CountryID = countryId,
+                       LanguageID = languageId,
+                       Date = useDate
+                    },
+                    null,
+                    true,
+                    10,
+                    CommandType.StoredProcedure
+                )
+            };
         }
     }
 }

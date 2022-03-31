@@ -1548,3 +1548,11 @@ ko.bindingHandlers.remove = {
         element.remove();
     }
 }
+
+ko.bindingHandlers.forceNullOnEmpty = {
+    update: function (element, valueAccessor) {
+        var val = valueAccessor();
+        if (ko.unwrap(val) === '')
+            val(null);
+    }
+}

@@ -4,6 +4,7 @@ using RalphLaurenPortal.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
@@ -17,9 +18,9 @@ namespace RalphLaurenPortal.Controllers
 
         }
 
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
-            var model = new BaseViewModel(UserManager.FindById(User.Identity.GetUserId<int>()), "Home", DateTime.Now);
+            var model = await HomeViewModel.CreateAsync(UserManager.FindById(User.Identity.GetUserId<int>()), "Home", DateTime.Now);
 
             return View(model);
         }

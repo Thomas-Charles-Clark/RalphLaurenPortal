@@ -82,6 +82,7 @@ $dark:          $gray-900 !default;
 $theme-colors: (
   "primary":    $primary,
   "secondary":  $secondary,
+  "light-gray": $gray-300,
   "success":    $success,
   "info":       $info,
   "warning":    $warning,
@@ -345,8 +346,8 @@ $enable-gradients:            false !default;
 $enable-transitions:          true !default;
 $enable-reduced-motion:       true !default;
 $enable-smooth-scroll:        true !default;
-$enable-grid-classes:         true !default;
-$enable-cssgrid:              false !default;
+$enable-grid-classes:         false !default;
+$enable-cssgrid:              true !default;
 $enable-button-pointers:      true !default;
 $enable-rfs:                  true !default;
 $enable-validation-icons:     true !default;
@@ -1099,8 +1100,9 @@ $nav-tabs-link-active-bg:           $body-bg !default;
 $nav-tabs-link-active-border-color: $gray-300 $gray-300 $nav-tabs-link-active-bg !default;
 
 $nav-pills-border-radius:           $border-radius !default;
-$nav-pills-link-active-color:       $component-active-color !default;
-$nav-pills-link-active-bg:          $component-active-bg !default;
+/*$nav-pills-link-active-color:       $component-active-color !default;*/
+$nav-pills-link-active-color:       $white !default;
+$nav-pills-link-active-bg:          $gray-600 !default;
 // scss-docs-end nav-variables
 
 

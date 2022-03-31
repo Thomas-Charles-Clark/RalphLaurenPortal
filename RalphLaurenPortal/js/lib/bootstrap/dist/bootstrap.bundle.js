@@ -630,8 +630,12 @@
       const instanceMap = elementMap.get(element); // make it clear we only want one instance per element
       // can be removed later when multiple key/instances are fine to be used
 
+      // yeah nah, mdb.ripple works nicely alongside other stuff
+      instanceMap.delete('mdb.ripple');
+
       if (!instanceMap.has(key) && instanceMap.size !== 0) {
         // eslint-disable-next-line no-console
+        
         console.error(`Bootstrap doesn't allow more than one instance per element. Bound instance: ${Array.from(instanceMap.keys())[0]}.`);
         return;
       }
@@ -6840,7 +6844,6 @@
      */
 
     const NAME$e = 'ripple';
-    const NAME$f = 'POTATO!';
     const DATA_KEY$e = 'mdb.ripple';
     const CLASSNAME_RIPPLE = 'ripple-surface';
     const CLASSNAME_RIPPLE_WAVE = 'ripple-wave';
@@ -6853,6 +6856,7 @@
     const BOOTSTRAP_COLORS = [
         'primary',
         'secondary',
+        'light-gray',
         'success',
         'danger',
         'warning',
@@ -7204,13 +7208,15 @@
      * Data Api implementation - auto initialization
      * ------------------------------------------------------------------------
      */
-   
+
+
     SELECTOR_COMPONENT.forEach((selector) => {
         //EventHandler.one(document, 'mousedown', selector, Ripple.autoInitial(new Ripple()));
         document.querySelectorAll(selector).forEach(function (element) {
             new Ripple(element)
         });
     });
+
 
 
     /**

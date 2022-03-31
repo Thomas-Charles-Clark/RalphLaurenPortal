@@ -1,6 +1,533 @@
-﻿@{
-    ViewBag.Title = "Home Page";
+﻿@model HomeViewModel
+@{ 
+    var l = Model.LanguageID;
+    var c = Model.CountryID;
+    var d = Model.ContentDate;
+    var cu = Model.DotNetCulture;
 }
-<div id="ko-wrapper">
-    
+@section TemplateScripts {
+    @Render.ScriptDefer("~/bundles/js/home")
+}
+@section TemplateStyles {
+    @Styles.Render("~/bundles/css/kendo")
+}<div class="page-blocker" style="display: none;" data-bind="fadeVisible: busy">
+    <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+    <h4>
+        Searching
+    </h4>
+</div>
+<nav>
+    <div class="nav nav-pills nav-justified" id="nav-tab" role="tablist">
+        <button class="btn nav-link active" id="nav-search-tab" data-bs-toggle="tab" data-bs-target="#nav-search" type="button" role="tab" aria-controls="nav-home" aria-selected="true">
+            @HtmlHelperExtra.Resource("TradeMenuProductSearch", l, c, d)
+        </button>
+        <button class="btn nav-link" id="nav-order-history-tab" data-bs-toggle="tab" data-bs-target="#nav-order-history" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">
+            @HtmlHelperExtra.Resource("OrderHistory", l, c, d)
+        </button>
+    </div>
+</nav>
+<div class="tab-content py-3 px-2 px-sm-4" id="nav-tab-content">
+    <div class="tab-pane fade show active" id="nav-search" role="tabpanel" aria-labelledby="nav-search-tab">
+        @Html.Partial("_ProductSearch")
+    </div>
+    <div class="tab-pane fade" id="nav-order-history" role="tabpanel" aria-labelledby="nav-order-history-tab">
+        @Html.Partial("_OrderHistory")
+    </div>
+</div>
+<div id="product-modal" class="modal fade">
+    <div class="modal-dialog modal-xl modal-fullscreen-lg-down">
+        <div class="modal-content">
+            <div class="modal-header align-items-start" data-bind="with: inspectingProduct">
+                <div>
+                    <h4 data-bind="text: name" class="modal-title"></h4>
+                    <h5 data-bind="text: code" class="mb-0"></h5>
+                </div>
+                <button type="button" class="btn-close m-1" aria-label="Close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="blocker" style="display: none;" data-bind="fadeVisible: busy">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+                <div class="grid">
+                    <div class="g-col-12 g-col-sm-4" data-bind="with: inspectingProduct">
+                        <img width="1024" height="1024" class="product-image" data-bind="attr: { src: `/image/1024/${imageId}` }" />
+                    </div>
+                    <div class="g-col-12 g-col-sm-8">
+                        <nav id="nav-product-content">
+                            <div class="nav nav-pills nav-justified" id="nav-tab" role="tablist">
+                                <button class="btn nav-link active" id="nav-tech-tab" data-bs-toggle="tab" data-bs-target="#nav-tech" type="button" role="tab" aria-controls="nav-tech" aria-selected="true">
+                                    @HtmlHelperExtra.Resource("TechnicalInformation", l, c, d)
+                                </button>
+                                <button class="btn nav-link" id="nav-stock-tab" data-bs-toggle="tab" data-bs-target="#nav-stock" type="button" role="tab" aria-controls="nav-stock" aria-selected="false">
+                                    @HtmlHelperExtra.Resource("Stock", l, c, d)
+                                </button>
+                            </div>
+                        </nav>
+                        <div class="tab-content py-4 px-2 px-sm-4">
+                            <div class="tab-pane fade show active" id="nav-tech" role="tabpanel" aria-labelledby="nav-tach-tab">
+                                <div data-bind="with: techInfoModel">
+                                    <dl class="dl-horizontal" data-bind="with: data">
+                                        <!-- ko if: typeof collections !== 'undefined' -->
+                                        <!-- ko if: collections.length -->
+                                        <dt>
+                                            @HtmlHelperExtra.Resource("Collections", l, c, d)
+                                        </dt>
+                                        <dd>
+                                            <!-- ko foreach: collections -->
+                                            @*<a class="display-inline-block" data-bind="attr: { href: `https://www.designersguild.com${url}` }, text: name"></a>*@
+                                            <span class="display-inline-block" data-bind="text: name"></span>
+                                            <!-- ko if: typeof brochureurl !== 'undefined' -->
+                                            <br/>
+                                            <a class="display-inline-block" data-bind="attr: { href: brochureurl, target: '_blank' }">
+                                                @HtmlHelperExtra.Resource("ViewBrochure", l, c, d)
+                                            </a>
+                                            <!-- /ko -->
+                                            <!-- /ko -->
+                                        </dd>
+                                        <!-- /ko -->
+                                        <!-- /ko -->
+                                        <!-- ko if: typeof composition !== 'undefined' -->
+                                        <dt>
+                                            @HtmlHelperExtra.Resource("Composition", l, c, d)
+                                        </dt>
+                                        <dd data-bind="text: composition"></dd>
+                                        <!-- /ko -->
+                                        <!-- ko if: typeof flamcode !== 'undefined' -->
+                                        <dt>
+                                            @HtmlHelperExtra.Resource("FlamCode", l, c, d)
+                                        </dt>
+                                        <dd data-bind="text: flamcode"></dd>
+                                        <!-- /ko -->
+                                        <!-- ko if: typeof width !== 'undefined' -->
+                                        <dt>
+                                            @HtmlHelperExtra.Resource("Width", l, c, d)
+                                        </dt>
+                                        <dd>
+                                            <span data-bind="text: width"></span>
+                                        </dd>
+                                        <!-- /ko -->
+                                        <!-- ko if: typeof weight !== 'undefined' -->
+                                        <dt>
+                                            @HtmlHelperExtra.Resource("Weight", l, c, d)
+                                        </dt>
+                                        <dd>
+                                            <span data-bind="text: weight"></span>
+                                        </dd>
+                                        <!-- /ko -->
+                                        <!-- ko if: typeof martindale !== 'undefined' -->
+                                        <dt>
+                                            @HtmlHelperExtra.Resource("Martindale", l, c, d)
+                                        </dt>
+                                        <dd>
+                                            <span data-bind="text: martindale"></span>
+                                        </dd>
+                                        <!-- /ko -->
+                                        <!-- ko if: typeof patternMatch !== 'undefined' -->
+                                        <dt>
+                                            @HtmlHelperExtra.Resource("PatternMatch", l, c, d)
+                                        </dt>
+                                        <dd>
+                                            <span data-bind="text: patternMatch"></span>
+                                        </dd>
+                                        <!-- /ko -->
+                                        <!-- ko if: typeof rollLength !== 'undefined' -->
+                                        <dt>
+                                            @HtmlHelperExtra.Resource("RollLength", l, c, d)
+                                        </dt>
+                                        <dd>
+                                            <span data-bind="text: rollLength"></span>
+                                        </dd>
+                                        <!-- /ko -->
+                                        <!-- ko if: typeof verticalPatternRepeat !== 'undefined' -->
+                                        <dt>
+                                            @HtmlHelperExtra.Resource("VerticalPatternRepeat", l, c, d)
+                                        </dt>
+                                        <dd>
+                                            <span data-bind="text: verticalPatternRepeat"></span>
+                                        </dd>
+                                        <!-- /ko -->
+                                        <!-- ko if: typeof horizontalPatternRepeat !== 'undefined' -->
+                                        <dt>
+                                            @HtmlHelperExtra.Resource("HorizontalPatternRepeat", l, c, d)
+                                        </dt>
+                                        <dd>
+                                            <span data-bind="text: horizontalPatternRepeat"></span>
+                                        </dd>
+                                        <!-- /ko -->
+                                        <!-- ko if: typeof maxFoldLength !== 'undefined' -->
+                                        <dt>
+                                            @HtmlHelperExtra.Resource("MaxFoldLength", l, c, d)
+                                        </dt>
+                                        <dd>
+                                            <span data-bind="text: maxFoldLength"></span>
+                                        </dd>
+                                        <!-- /ko -->
+                                        <!-- ko if: typeof wideWidthFabricDefaultPoleWidth !== 'undefined' -->
+                                        <dt>
+                                            @HtmlHelperExtra.Resource("WideWidthPoleWidth", l, c, d)
+                                        </dt>
+                                        <dd>
+                                            <!-- ko if: wideWidthFabricDefaultPoleWidth == 'W' -->
+                                            <span>
+                                                @HtmlHelperExtra.Resource("WideWidth", l, c, d)
+                                            </span>
+                                            <!-- /ko -->
+                                            <!-- ko if: wideWidthFabricDefaultPoleWidth == 'S' -->
+                                            <span>
+                                                @HtmlHelperExtra.Resource("StandardWidth", l, c, d)
+                                            </span>
+                                            <!-- /ko -->
+                                        </dd>
+                                        <!-- /ko -->
+                                        <!-- ko if: typeof tests !== 'undefined' -->
+                                        <dt>
+                                            @HtmlHelperExtra.Resource("TestsPassed", l, c, d)
+                                        </dt>
+                                        <dd>
+                                            <!-- ko foreach: tests -->
+                                            <span class="display-block" data-bind="text: test"></span>
+                                            <!-- /ko -->
+                                        </dd>
+                                        <!-- /ko -->
+                                        <!-- ko if: typeof usages !== 'undefined' -->
+                                        <dt>
+                                            @HtmlHelperExtra.Resource("ProductUsage", l, c, d)
+                                        </dt>
+                                        <dd>
+                                            <!-- ko foreach: usages -->
+                                            <div class="usage-container">
+                                                <img class="care-icon" width="32" height="32" data-bind="attr: { src: '/images/icons/techinfo/usage/' + usageId + '.gif', title: usage, alt: usage }"/>
+                                                <span data-bind="text: usage"></span>
+                                            </div>
+                                            <!-- /ko -->
+                                        </dd>
+                                        <!-- /ko -->
+                                        <!-- ko if: typeof aftercares !== 'undefined' -->
+                                        <dt>
+                                            @HtmlHelperExtra.Resource("ProductAfterCare", l, c, d)
+                                        </dt>
+                                        <dd>
+                                            <!-- ko foreach: aftercares -->
+                                            <div class="aftercare-container">
+                                                <img class="care-icon" width="32" height="32" data-bind="attr: { src: '/images/icons/techinfo/aftercare/' + aftercareId + '.gif', title: aftercare, alt: aftercare }"/>
+                                                <span data-bind="text: aftercare"></span>
+                                            </div>
+                                            <!-- /ko -->
+                                        </dd>
+                                        <!-- /ko -->
+                                        <!-- ko if: typeof additionalInfo !== 'undefined' -->
+                                        <dt>
+                                            @HtmlHelperExtra.Resource("AdditionalInfo", l, c, d)
+                                        </dt>
+                                        <dd>
+                                            <span class="display-block" data-bind="text: additionalInfo"></span>
+                                        </dd>
+                                        <!-- /ko -->
+                                    </dl>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="nav-stock" role="tabpanel" aria-labelledby="nav-stock-tab">
+                                <div data-bind="with: stockModel">
+                                    <div id="stock-tab-menu">
+                                        <nav>
+                                            <div class="nav nav-pills nav-justified" id="nav-tab" role="tablist">
+                                                <button class="btn nav-link active" id="nav-in-stock-tab" data-bs-toggle="tab" data-bs-target="#nav-in-stock" type="button" role="tab" aria-controls="nav-in-stock" aria-selected="true">
+                                                    <span>
+                                                        @HtmlHelperExtra.Resource("InStock", l, c, d)
+                                                        (<span data-bind="text: totalInStock"></span>)
+                                                    </span>
+                                                </button>
+                                                <button class="btn nav-link" id="nav-due-in-tab" data-bs-toggle="tab" data-bs-target="#nav-due-in" type="button" role="tab" aria-controls="nav-due-in" aria-selected="false">
+                                                    <span>
+                                                        @HtmlHelperExtra.Resource("DueIn", l, c, d)
+                                                        (<span data-bind="text: totalDueIn"></span>)
+                                                    </span>
+                                                </button>
+                                                <button class="btn nav-link" id="nav-supplier-tab" data-bs-toggle="tab" data-bs-target="#nav-supplier" type="button" role="tab" aria-controls="nav-supplier" aria-selected="false">
+                                                    <span>
+                                                    @HtmlHelperExtra.Resource("SupplierStock", l, c, d)
+                                                    (<span data-bind="text: totalSupplier"></span>)
+                                                    </span>
+                                                </button>
+                                            </div>
+                                        </nav>
+                                        <div class="tab-content py-4 px-2 px-sm-4" id="nav-stock-tabs-content">
+                                            <div class="tab-pane fade show active" id="nav-in-stock" role="tabpanel" aria-labelledby="nav-in-stock-tab">
+                                                <table class="stock-table stock-total-table table table-bordered">
+                                                    <colgroup>
+                                                        <col>
+                                                        <col style="width: 182px;">
+                                                    </colgroup>
+                                                    <thead>
+                                                        <tr>
+                                                            <th style="border-right: 0;">
+                                                                @HtmlHelperExtra.Resource("AvailableStock", l, c, d)
+                                                            </th>
+                                                            <th class="stock-total total-heading" style="border-left: 0;">
+                                                                <span class="text-bold" data-bind="text: totalInStock"></span>
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                </table>
+                                                <!-- ko with: inStockData -->
+                                                <table class="stock-table table table-bordered">
+                                                    <colgroup>
+                                                        <col style="width: 25%">
+                                                        <col>
+                                                        <col style="width: 182px">
+                                                    </colgroup>
+                                                    <tbody>
+                                                        <tr>
+                                                            <th>
+                                                                @HtmlHelperExtra.Resource("BatchNo", l, c, d)
+                                                            </th>
+                                                            <th class="text-right">
+                                                                @HtmlHelperExtra.Resource("Length", l, c, d)
+                                                            </th>
+                                                            <th class="total-heading text-right">
+                                                                @HtmlHelperExtra.Resource("Total", l, c, d)
+                                                            </th>
+                                                        </tr>
+                                                        <!-- ko foreach: $data -->
+                                                        <!-- ko if: Pieces != null --> 
+                                                        <!-- ko foreach: Pieces -->
+                                                            <!-- ko if: $index() == 0 -->
+                                                            <tr>
+                                                                <th class="batch-no" rowspan="7" data-bind="attr: { 'rowspan': $parent.Pieces.length + +1 }, text: $parent.BatchNumber"></th>
+                                                                <td class="text-right" data-bind="text: Number($data.Length).toFixed(2) + $parentContext.$parentContext.$parent.unit()"></td>
+                                                                <td class="text-right" data-bind="text: Number($data.Length).toFixed(2) + $parentContext.$parentContext.$parent.unit()"></td>
+                                                            </tr>
+                                                            <!-- /ko -->
+                                                            <!-- ko ifnot: $index() == 0 -->
+                                                            <tr>
+                                                                <td class="text-right" data-bind="text: Number($data.Length).toFixed(2) + $parentContext.$parentContext.$parent.unit()"></td>
+                                                                <td class="text-right" data-bind="text: Number($data.Length).toFixed(2) + $parentContext.$parentContext.$parent.unit()"></td>
+                                                            </tr>
+                                                            <!-- /ko -->
+                                                        <!-- /ko -->
+                                                        <tr>
+                                                            <th class="total text-right"></th>
+                                                            <th class="total text-right text-bold" data-bind="text: totalStock + $parentContext.$parent.unit()"></th>
+                                                        </tr>
+                                                        <!-- /ko -->
+                                                        <!-- /ko -->
+                                                    </tbody>
+                                                </table>
+                                                <!-- /ko -->
+                                            </div>
+                                            <div class="tab-pane fade" id="nav-due-in" role="tabpanel" aria-labelledby="nav-due-in-tab">
+                                                <table class="stock-table stock-total-table table table-bordered">
+                                                    <colgroup>
+                                                        <col>
+                                                        <col style="width: 182px;">
+                                                    </colgroup>
+                                                    <thead>
+                                                        <tr>
+                                                            <th style="border-right: 0;">
+                                                                @HtmlHelperExtra.Resource("IncomingStock", l, c, d)
+                                                            </th>
+                                                            <th class="stock-total total-heading" style="border-left: 0;">
+                                                                <span class="text-bold" data-bind="text: totalPurchaseOrderStock"></span><span class="text-bold" data-bind="text: unit"></span>
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                </table>
+                                                <table class="stock-table table table-bordered">
+                                                    <colgroup>
+                                                        <col style="width: 385px;">
+                                                        <col style="width: 182px;">
+                                                    </colgroup>
+                                                    <tbody>
+                                                        <tr>
+                                                            <th class="due-date-heading">
+                                                                @HtmlHelperExtra.Resource("DueDate", l, c, d)
+                                                            </th>
+                                                            <th class="length-heading text-right">
+                                                                @HtmlHelperExtra.Resource("Length", l, c, d)
+                                                            </th>
+                                                        </tr>
+                                                        <!-- ko foreach: dueInData -->
+                                                        <tr>
+                                                            <td class="due-date-heading" data-bind="text: (DueDate || '') + (POConfirmed == null ? '' : (POConfirmed ? ' (confirmed)' : ' (unconfirmed)'))"></td>
+                                                            <td class="text-right" data-bind="text: Number(Length).toFixed(2) + $parent.unit()"></td>
+                                                        </tr>
+                                                        <!-- /ko -->
+                                                        <tr>
+                                                            <th class="total">Total</th>
+                                                            <th class="total text-right" data-bind="text: totalDueIn()"></th>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <div class="tab-pane fade" id="nav-supplier" role="tabpanel" aria-labelledby="nav-supplier-tab">
+                                                <!-- ko if: supplierHasStock() -->
+                                                <div id="stock-tab-supplier">
+                                                    <table class="stock-table stock-total-table table table-bordered">
+                                                        <colgroup>
+                                                            <col>
+                                                            <col style="width: 182px;">
+                                                        </colgroup>
+                                                        <thead>
+                                                            <tr>
+                                                                <th style="border-right: 0;">
+                                                                    @HtmlHelperExtra.Resource("AvailableStock", l, c, d)
+                                                                </th>
+                                                                <th class="stock-total total-heading" style="border-left: 0;">
+                                                                    <span class="text-bold" data-bind="text: totalSupplier"></span>
+                                                                </th>
+                                                            </tr>
+                                                        </thead>
+                                                    </table>
+                                                    <!-- ko if: supplierStockAvailabilityMessage() -->
+                                                    <p class="margin-bottom-15" data-bind="text: supplierStockAvailabilityMessage"></p>
+                                                    <!-- /ko -->
+                                                    <!-- ko with: supplierData -->
+                                                    <table class="stock-table table table-bordered">
+                                                        <colgroup>
+                                                            <col style="width: 25%">
+                                                            <col>
+                                                            <col style="width: 182px">
+                                                        </colgroup>
+                                                        <tbody>
+                                                            <tr>
+                                                                <th>
+                                                                    @HtmlHelperExtra.Resource("BatchNo", l, c, d)
+                                                                </th>
+                                                                <th class="text-right">
+                                                                    @HtmlHelperExtra.Resource("Length", l, c, d)
+                                                                </th>
+                                                                <th class="total-heading text-right">
+                                                                    @HtmlHelperExtra.Resource("Total", l, c, d)
+                                                                </th>
+                                                            </tr>
+                                                            <!-- ko foreach: $data -->
+                                                            <!-- ko if: Pieces != null --> 
+                                                            <!-- ko foreach: Pieces -->
+                                                                <!-- ko if: $index() == 0 -->
+                                                                <tr>
+                                                                    <th class="batch-no" rowspan="7" data-bind="attr: { 'rowspan': $parent.Pieces.length + +1 }, text: $parent.BatchNumber"></th>
+                                                                    <td class="text-right" data-bind="text: Number($data.Length).toFixed(2) + $parentContext.$parentContext.$parent.unit()"></td>
+                                                                    <td class="text-right" data-bind="text: Number($data.Length).toFixed(2) + $parentContext.$parentContext.$parent.unit()"></td>
+                                                                </tr>
+                                                                <!-- /ko -->
+                                                                <!-- ko ifnot: $index() == 0 -->
+                                                                <tr>
+                                                                    <td class="text-right" data-bind="text: Number($data.Length).toFixed(2) + $parentContext.$parentContext.$parent.unit()"></td>
+                                                                    <td class="text-right" data-bind="text: Number($data.Length).toFixed(2) + $parentContext.$parentContext.$parent.unit()"></td>
+                                                                </tr>
+                                                                <!-- /ko -->
+                                                            <!-- /ko -->
+                                                            <!-- /ko -->
+                                                            <!-- /ko -->
+                                                        </tbody>
+                                                    </table>
+                                                    <!-- /ko -->
+                                                </div>
+                                                <!-- /ko -->
+                                                <!-- ko ifnot: supplierHasStock() -->
+                                                <p class="alert alert-secondary">
+                                                    @HtmlHelperExtra.Resource("NoSupplierStock", l, c, d)
+                                                </p>
+                                                <!-- /ko -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="tracking-modal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content" data-bind="with: orderStatusModel">
+            <div class="modal-header">
+                <h4 class="modal-title">
+                    @HtmlHelperExtra.Resource("Order", l, c, d):
+                    <span data-bind="text: trackingOrderNumber"></span>
+                    -
+                    @HtmlHelperExtra.Resource("TrackingInformation", l, c, d)
+                </h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <ul class="list-group margin-bottom-0">
+                    <!-- ko foreach: trackingResults -->
+                    <li class="list-group-item">
+                        <label class="display-block" data-bind="text: Parcel"></label>
+                        <span class="display-block" data-bind="text: ProductCodes"></span>
+                        <span class="display-block" data-bind="text: Descriptions"></span>
+                        <a class="display-block" data-bind="attr: { href: TrackingURL }, text: TrackingURL"></a>
+                    </li>
+                    <!-- /ko -->
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="order-detail-modal" class="modal fade">
+    <div class="modal-dialog modal-lg modal-xl">
+        <div class="modal-content" data-bind="with: orderStatusModel">
+            <div class="modal-header">
+                <h4 class="modal-title">
+                    @HtmlHelperExtra.Resource("OrderDetails", l, c, d):
+                    <span data-bind="text: orderDetailsOrderNumber"></span>
+                </h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <dl class="dl-horizontal">
+                    <dt>
+                        @HtmlHelperExtra.Resource("OrderDate", l, c, d)
+                    </dt>
+                    <dd data-bind="text: orderDetailsOrderDate"></dd>
+                    </dl>
+                <dl class="dl-horizontal" data-bind="with: orderDetailsDeliveryInfo">
+                    <dt>
+                        @HtmlHelperExtra.Resource("DeliveryName", l, c, d)
+                    </dt>
+                    <dd data-bind="text: DeliveryName || '&nbsp;'"></dd>
+                    <dt>
+                        @HtmlHelperExtra.Resource("FormsAddressLineOne", l, c, d)
+                    </dt>
+                    <dd data-bind="text: AddressLine1 || '&nbsp;'"></dd>
+                    <dt>
+                        @HtmlHelperExtra.Resource("FormsAddressLineTwo", l, c, d)
+                    </dt>
+                    <dd data-bind="text: AddressLine2 || '&nbsp;'"></dd>
+                    <dt>
+                        @HtmlHelperExtra.Resource("FormsTown", l, c, d)
+                    </dt>
+                    <dd data-bind="text: AddressLine3 || '&nbsp;'"></dd>
+                    <dt>
+                        @HtmlHelperExtra.Resource("FormsCounty", l, c, d)
+                    </dt>
+                    <dd data-bind="text: AddressLine4 || '&nbsp;'"></dd>
+                    <dt>
+                        @HtmlHelperExtra.Resource("FormsPostCode", l, c, d)
+                    </dt>
+                    <dd data-bind="text: PostalCode || '&nbsp;'"></dd>
+                    <dt>
+                        @HtmlHelperExtra.Resource("FormsPhoneNumber", l, c, d)
+                    </dt>
+                    <dd data-bind="text: PhoneNumber || '&nbsp;'"></dd>
+                    <dt>
+                        @HtmlHelperExtra.Resource("Haulier", l, c, d)
+                    </dt>
+                    <dd data-bind="text: HaulierDescription || '&nbsp;'"></dd>
+                </dl>
+                <div data-bind="with: orderDetailsDeliveryInfo">
+
+                </div>
+                <div data-bind="kendoGrid: ordersDetailsGrid"></div>
+            </div>
+        </div>
+    </div>
 </div>

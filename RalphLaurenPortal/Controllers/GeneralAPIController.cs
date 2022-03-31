@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNet.Identity;
+﻿using MertexerV2.Accounts;
+using MertexerV2.Models.Accounts;
+using Microsoft.AspNet.Identity;
 using Newtonsoft.Json.Linq;
 using RalphLaurenPortal.Models;
 using RalphLaurenPortal.Models.ProductSearch;
@@ -35,7 +37,10 @@ namespace RalphLaurenPortal.Controllers
         [HttpPost]
         public IHttpActionResult FetchResources([FromBody]PassResourceFetch objFetch)
         {
-            var resourceDefinition = new Resource().loadResourcesFromCms(
+            if (objFetch.useDate == DateTime.MinValue)
+                objFetch.useDate = DateTime.Now;
+
+            var resourceDefinition = new Resource().FetchResources(
                 objFetch.countryId,
                 objFetch.languageId,
                 objFetch.useDate);
@@ -68,11 +73,13 @@ namespace RalphLaurenPortal.Controllers
         [HttpPost]
         public IHttpActionResult FetchTechInfo([FromBody]PassTechInfoFetch objFetch)
         {
-            return Ok(PortalDbContext.FetchTechInfo(objFetch, RequestContext.Principal.Identity.GetUserId<int>()));
+            var result = PortalDbContext.FetchTechInfo(objFetch, RequestContext.Principal.Identity.GetUserId<int>());
+
+            return Ok(JArray.Parse(result));
         }
 
         [HttpPost]
-        public IHttpActionResult GetPieceLevelStockInfo([FromBody]PassStockInfoFetch objFetch)
+        public IHttpActionResult FetchStockInfo([FromBody]PassStockInfoFetch objFetch)
         {
             //  Has any future date been passed
             var useDate = DateTime.Now;
@@ -100,9 +107,40 @@ namespace RalphLaurenPortal.Controllers
             //        }
             //    }
             //}
+
             var user = UserManager.FindById<Member, int>(RequestContext.Principal.Identity.GetUserId<int>());
 
             return Ok(PortalDbContext.FetchStockInfo(objFetch, user.TradeAccountID, useDate));
+        }
+
+        [HttpPost]
+        public IHttpActionResult OutstandingOrderSearch([FromBody]PassOutstandingOrdersSearch objSearch)
+        {
+            var user = UserManager.FindById<Member, int>(RequestContext.Principal.Identity.GetUserId<int>());
+
+            var results = AccountFunctions.OutstandingOrders(user.TradeAccount.UniVerseDataSources, objSearch);
+
+            return Ok(results.Results);
+        }
+
+        [HttpPost]
+        public IHttpActionResult GetParcelCount([FromBody]PassParcelCount objParcel)
+        {
+            var user = UserManager.FindById<Member, int>(RequestContext.Principal.Identity.GetUserId<int>());
+
+            var results = AccountFunctions.CheckParcelCount(user.TradeAccount.UniVerseDataSources, objParcel);
+
+            return Ok(results);
+        }
+
+        [HttpPost]
+        public IHttpActionResult GetOrderDeliveryInfo([FromBody] PassOrderNumber objOrderNumber)
+        {
+            var user = UserManager.FindById<Member, int>(RequestContext.Principal.Identity.GetUserId<int>());
+
+            var results = AccountFunctions.OrderDeliveryInfo(user.TradeAccount.UniVerseDataSources, objOrderNumber);
+
+            return Ok(results);
         }
     }
 }

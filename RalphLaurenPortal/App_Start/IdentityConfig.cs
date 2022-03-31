@@ -268,6 +268,7 @@ using System.IO;
 using System.Collections.Generic;
 using RalphLaurenPortal.Utilities;
 using RalphLaurenPortal.Models;
+using System.Data.Entity.SqlServer.Utilities;
 
 namespace RalphLaurenPortal
 {
@@ -659,14 +660,14 @@ namespace RalphLaurenPortal
             return new ApplicationSignInManager(context.GetUserManager<ApplicationUserManager>(), context.Authentication);
         }
 
-        //public override async Task<SignInStatus> PasswordSignInAsync(string userEmail, string password, bool isPersistent, bool shouldLockout)
+        //public override async Task<SignInStatus> PasswordSignInAsync(string userName, string password, bool isPersistent, bool shouldLockout)
         //{
         //    SignInStatus signInStatus;
 
         //    if (this.UserManager != null)
         //    {
-        //        /// changed to use email address instead of username
-        //        var user = await this.UserManager.FindByEmailAsync(userEmail);
+        //        /// changed to username instead of email address
+        //        var user = await this.UserManager.FindByNameAsync(userName);
 
         //        if (user != null)
         //        {
@@ -678,9 +679,9 @@ namespace RalphLaurenPortal
 
         //                if (!lockedOutCurrently)
         //                {
-        //                    var flockPasswordCheck = await this.UserManager.CheckPasswordAsync(user, password);
+        //                    var passwordCheck = await this.UserManager.CheckPasswordAsync(user, password);
 
-        //                    if (!flockPasswordCheck)
+        //                    if (!passwordCheck)
         //                    {
         //                        if (shouldLockout)
         //                        {
@@ -707,7 +708,7 @@ namespace RalphLaurenPortal
         //                {
         //                    signInStatus = SignInStatus.LockedOut;
         //                }
-        //            } 
+        //            }
         //            else
         //            {
         //                var flockPasswordCheck = await this.UserManager.CheckPasswordAsync(user, password);
@@ -734,5 +735,62 @@ namespace RalphLaurenPortal
 
         //    return signInStatus;
         //}
+
+        public override async Task<SignInStatus> PasswordSignInAsync(string userName, string password, bool isPersistent, bool shouldLockout)
+        {
+            if (UserManager == null)
+            {
+                return SignInStatus.Failure;
+            }
+
+            var user = await UserManager.FindByNameAsync(userName).WithCurrentCulture();
+
+            if (user == null)
+            {
+                return SignInStatus.Failure;
+            }
+            if (await UserManager.IsLockedOutAsync(user.Id).WithCurrentCulture())
+            {
+                return SignInStatus.LockedOut;
+            }
+            if (await UserManager.CheckPasswordAsync(user, password).WithCurrentCulture())
+            {
+                if (!await IsTwoFactorEnabled(user))
+                {
+                    await UserManager.ResetAccessFailedCountAsync(user.Id).WithCurrentCulture();
+                }
+                return await SignInOrTwoFactor(user, isPersistent).WithCurrentCulture();
+            }
+            if (shouldLockout)
+            {
+                // If lockout is requested, increment access failed count which might lock out the user
+                await UserManager.AccessFailedAsync(user.Id).WithCurrentCulture();
+                if (await UserManager.IsLockedOutAsync(user.Id).WithCurrentCulture())
+                {
+                    return SignInStatus.LockedOut;
+                }
+            }
+            return SignInStatus.Failure;
+        }
+
+        private async Task<bool> IsTwoFactorEnabled(Member user)
+        {
+            return await UserManager.GetTwoFactorEnabledAsync(user.Id).WithCurrentCulture()
+                && (await UserManager.GetValidTwoFactorProvidersAsync(user.Id).WithCurrentCulture()).Count > 0;
+        }
+
+        private async Task<SignInStatus> SignInOrTwoFactor(Member user, bool isPersistent)
+        {
+            var id = Convert.ToString(user.Id);
+            if (await IsTwoFactorEnabled(user) && !await AuthenticationManager.TwoFactorBrowserRememberedAsync(id).WithCurrentCulture())
+            {
+                var identity = new ClaimsIdentity(DefaultAuthenticationTypes.TwoFactorCookie);
+                identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, id));
+                AuthenticationManager.SignIn(identity);
+                return SignInStatus.RequiresVerification;
+            }
+            await SignInAsync(user, isPersistent, false).WithCurrentCulture();
+            return SignInStatus.Success;
+        }
     }
 }

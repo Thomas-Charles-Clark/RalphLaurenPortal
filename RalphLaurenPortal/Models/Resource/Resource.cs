@@ -34,23 +34,25 @@ namespace RalphLaurenPortal.Models.Resource
 
     public class Resource
     {
-        public async Task<ResourceDefinition> loadResourcesFromCms(short countryId, byte languageId, DateTime useDate)
+        public async Task<ResourceDefinition> FetchResources(short countryId, byte languageId, DateTime useDate)
         {
             // Is page in cache?
             var resourceStore = new ResourceDefinition();
+
             var objResourceCache = new ResourceCacheProvider();
+
             resourceStore.Resources = objResourceCache.Get(countryId, languageId, useDate);
 
             if (resourceStore.Resources == null)
             {
-                resourceStore = await Task.FromResult<ResourceDefinition>(loadResourceFromCmsDatabase(countryId, languageId, useDate));
+                resourceStore = await Task.FromResult(loadResourcesFromDatabase(countryId, languageId, useDate));
                 objResourceCache.Set(countryId, languageId, useDate, resourceStore.Resources);
             }
 
             return resourceStore;
         }
 
-        private ResourceDefinition loadResourceFromCmsDatabase(short countryId, byte languageId, DateTime useDate)
+        private ResourceDefinition loadResourcesFromDatabase(short countryId, byte languageId, DateTime useDate)
         {
             return new ResourceDefinition
             {
