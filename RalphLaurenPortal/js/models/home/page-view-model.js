@@ -1,13 +1,32 @@
 ﻿const pageViewModel = ((resources) => {
     let self = {};
 
+    self.resources = resources;
+
+    self.resources.PleaseWait = self.resources.PleaseWait.replace(/\./, '');
+
+    self.haveSearchedOnce = ko.observable(false);
+
     self.busy = ko.observable(false);
+
+    self.busyMessage = ko.observable(self.resources.Searching);
 
     self.productTypeId = ko.observable();
 
     self.searchTerm = ko.observable();
 
     self.searchResults = ko.observableArray([]);
+
+    self.searchResultCountDisplay = ko.pureComputed(() => {
+        let count = self.searchResults().length;
+        if (count == 0 || count > 1) {
+            return `${count} ${self.resources.SearchResults}`;
+        } else {
+            return `${count} ${self.resources.SearchResult}`;
+        }
+    }, self);
+
+    self.anySearchResults = ko.pureComputed(() => self.searchResults().length > 0, self);
 
     self.orderStatusModel = orderStatusViewModel(resources, self);
 
@@ -40,7 +59,7 @@
         })
         .then(window.handleFetchResponse)
         .then((data) => {
-            console.trace(data);
+            self.haveSearchedOnce(true);
             self.searchResults(data);
             setTimeout(() => {
                 self.busy(false);
@@ -50,6 +69,47 @@
             });
         })
         .catch(window.catchFetchErrors)
+    }
+
+    self.s2ab = (s) => {
+        var buf = new ArrayBuffer(s.length);
+        var view = new Uint8Array(buf);
+        for (var i = 0; i != s.length; ++i)
+            view[i] = s.charCodeAt(i) & 0xFF;
+        return buf;
+    };
+
+    self.fetchProductFeed = () => {
+        self.busy(true);
+        self.busyMessage(self.resources.PleaseWait);
+        fetch('/api/generalapi/FetchProductDownload', {
+            method: 'POST',
+            headers: {
+                'Accept': 'text/plain',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                searchTerm: self.searchTerm(),
+                productTypeId: self.productTypeId()
+            })
+        })
+        .then(window.handleFetchResponse)
+        .then(data => {
+
+            let bin = atob(data.fileContents);
+            let ab = self.s2ab(bin); // from example above
+            let blob = new Blob([ab], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;' });
+
+            var url = window.URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = `RalphLauren-Products.xlsx`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            self.busy(false);
+            self.busyMessage(self.resources.Searching);
+        });
     }
 
     self.showProductModal = (product, tab) => {
@@ -122,7 +182,12 @@ getResource([
     'kendoPagerNextPage',
     'kendoPagerPreviousPage',
     'kendoPagerRefresh',
-    'kendoPagerMorePages'
+    'kendoPagerMorePages',
+    'StockistClickHere',
+    'Searching',
+    'PleaseWait',
+    'SearchResult',
+    'SearchResults'
 ]).then((arrayResult) => {
 
     let resources = {};

@@ -65,7 +65,7 @@
         }
     }, self);
 
-    self.dateRange = ko.observable(1);
+    self.dateRange = ko.observable(6);
 
     self.dateRangeType = ko.observable(1);
 
@@ -457,7 +457,7 @@
             success: function (data) {
                 console.log('GetOrderDeliveryInfo returned', data);
 
-                self.orderDetailsOrderDate(orderDate);
+                self.orderDetailsOrderDate(kendo.toString(kendo.parseDate(orderDate, 'yyyy-MM-ddTHH:mm:ss'), 'MM/dd/yyyy'));
                 self.orderDetailsOrderNumber(orderNumber);
                 self.orderDetailsDeliveryInfo(data.DeliveryInfo);
                 self.orderDetailsOrderLines(data.OrderLines);
@@ -711,17 +711,21 @@
         columns: [{
             field: 'OrderNumber',
             title: resources.OrderNo,
-            width: 100
+            width: 100,
+            template: '<span class="grid-msg" title="' + resources.StockistClickHere +'">#: OrderNumber #</span>'
         }, {
             field: 'OrderDate',
             title: resources.OrderDate,
             width: 110,
-            template: "#: OrderDate ? kendo.toString(kendo.parseDate(OrderDate, 'yyyy-MM-ddTHH:mm:ss'), 'dd/MM/yyyy') : '' #"
+            template: "#: OrderDate ? kendo.toString(kendo.parseDate(OrderDate, 'yyyy-MM-ddTHH:mm:ss'), 'MM/dd/yyyy') : '' #"
         }, {
             field: 'OrderQuantity',
             title: resources.Quantity,
             width: 100,
             attributes: {
+                'class': 'text-right'
+            },
+            headerAttributes: {
                 'class': 'text-right'
             }
         }, {
@@ -743,7 +747,8 @@
         }, {
             field: 'Status',
             title: resources.Status,
-            width: 100
+            width: 100,
+            template: '<span class="grid-msg" title="' + resources.StockistClickHere + '">#: Status #</span>'
         }, {
             field: 'Tracking',
             title: resources.Tracking,
@@ -802,17 +807,21 @@
         columns: [{
             field: 'OrderNumber',
             title: resources.OrderNo,
-            width: 100
+            width: 100,
+            template: '<span class="grid-msg" title="' + resources.StockistClickHere + '">#: OrderNumber #</span>'
         }, {
             field: 'OrderDate',
             title: resources.OrderDate,
             width: 110,
-            template: "#: OrderDate ? kendo.toString(kendo.parseDate(OrderDate, 'yyyy-MM-ddTHH:mm:ss'), 'dd/MM/yyyy') : '' #"
+            template: "#: OrderDate ? kendo.toString(kendo.parseDate(OrderDate, 'yyyy-MM-ddTHH:mm:ss'), 'MM/dd/yyyy') : '' #"
         }, {
             field: 'OrderQuantity',
             title: resources.Quantity,
             width: 100,
             attributes: {
+                'class': 'text-right'
+            },
+            headerAttributes: {
                 'class': 'text-right'
             }
         }, {
@@ -831,7 +840,7 @@
             field: 'DespatchStatusDate',
             title: resources.DueDate,
             width: 100,
-            template: "#: DespatchStatusDate ? kendo.toString(kendo.parseDate(DespatchStatusDate, 'yyyy-MM-ddTHH:mm:ss'), 'dd/MM/yyyy') : DespatchStatusDateMessage #"
+            template: "#: DespatchStatusDate ? kendo.toString(kendo.parseDate(DespatchStatusDate, 'yyyy-MM-ddTHH:mm:ss'), 'MM/dd/yyyy') : DespatchStatusDateMessage #"
         }],
         sortable: true,
         noRecords: {
@@ -874,17 +883,21 @@
         columns: [{
             field: 'OrderNumber',
             title: resources.OrderNo,
-            width: 100
+            width: 100,
+            template: '<span class="grid-msg" title="' + resources.StockistClickHere + '">#: OrderNumber #</span>'
         }, {
             field: 'OrderDate',
             title: resources.OrderDate,
             width: 110,
-            template: "#: OrderDate ? kendo.toString(kendo.parseDate(OrderDate, 'yyyy-MM-ddTHH:mm:ss'), 'dd/MM/yyyy') : '' #"
+            template: "#: OrderDate ? kendo.toString(kendo.parseDate(OrderDate, 'yyyy-MM-ddTHH:mm:ss'), 'MM/dd/yyyy') : '' #"
         }, {
             field: 'OrderQuantity',
             title: resources.Quantity,
             width: 100,
             attributes: {
+                'class': 'text-right'
+            },
+            headerAttributes: {
                 'class': 'text-right'
             }
         }, {
@@ -907,7 +920,7 @@
             field: 'ReservedUntil',
             title: resources.ExpiryDate,
             width: 100,
-            template: "#: ReservedUntil ? kendo.toString(kendo.parseDate(ReservedUntil, 'yyyy-MM-ddTHH:mm:ss'), 'dd/MM/yyyy') : ReservedUntil #",
+            template: "#: ReservedUntil ? kendo.toString(kendo.parseDate(ReservedUntil, 'yyyy-MM-ddTHH:mm:ss'), 'MM/dd/yyyy') : ReservedUntil #",
             attributes: {
                 'class': 'text-right'
             },
@@ -960,17 +973,21 @@
         columns: [{
             field: 'OrderNumber',
             title: resources.OrderNo,
-            width: 100
+            width: 100,
+            template: '<span class="grid-msg" title="' + resources.StockistClickHere + '">#: OrderNumber #</span>'
         }, {
             field: 'OrderDate',
             title: resources.OrderDate,
             width: 110,
-            template: "#: OrderDate ? kendo.toString(kendo.parseDate(OrderDate, 'yyyy-MM-ddTHH:mm:ss'), 'dd/MM/yyyy') : '' #"
+            template: "#: OrderDate ? kendo.toString(kendo.parseDate(OrderDate, 'yyyy-MM-ddTHH:mm:ss'), 'MM/dd/yyyy') : '' #"
         }, {
             field: 'OrderQuantity',
             title: resources.Quantity,
             width: 100,
             attributes: {
+                'class': 'text-right'
+            },
+            headerAttributes: {
                 'class': 'text-right'
             }
         }, {
@@ -1052,17 +1069,21 @@
         columns: [{
             field: 'OrderNumber',
             title: resources.OrderNo,
-            width: 100
+            width: 100,
+            template: '<span class="grid-msg" title="' + resources.StockistClickHere + '">#: OrderNumber #</span>'
         }, {
             field: 'OrderDate',
             title: resources.OrderDate,
             width: 110,
-            template: "#: OrderDate ? kendo.toString(kendo.parseDate(OrderDate, 'yyyy-MM-ddTHH:mm:ss'), 'dd/MM/yyyy') : '' #"
+            template: "#: OrderDate ? kendo.toString(kendo.parseDate(OrderDate, 'yyyy-MM-ddTHH:mm:ss'), 'MM/dd/yyyy') : '' #"
         }, {
             field: 'OrderQuantity',
             title: resources.Quantity,
             width: 100,
             attributes: {
+                'class': 'text-right'
+            },
+            headerAttributes: {
                 'class': 'text-right'
             }
         }, {
@@ -1088,7 +1109,8 @@
         }, {
             field: 'Status',
             title: resources.Status,
-            width: 100
+            width: 100,
+            template: '<span class="grid-msg" title="' + resources.StockistClickHere + '">#: Status #</span>'
         }],
         sortable: true,
         noRecords: {
@@ -1134,17 +1156,21 @@
         columns: [{
             field: 'OrderNumber',
             title: resources.OrderNo,
-            width: 100
+            width: 100,
+            template: '<span class="grid-msg" title="' + resources.StockistClickHere + '">#: OrderNumber #</span>'
         }, {
             field: 'OrderDate',
             title: resources.OrderDate,
             width: 110,
-            template: "#: OrderDate ? kendo.toString(kendo.parseDate(OrderDate, 'yyyy-MM-ddTHH:mm:ss'), 'dd/MM/yyyy') : '' #"
+            template: "#: OrderDate ? kendo.toString(kendo.parseDate(OrderDate, 'yyyy-MM-ddTHH:mm:ss'), 'MM/dd/yyyy') : '' #"
         }, {
             field: 'OrderQuantity',
             title: resources.Quantity,
             width: 100,
             attributes: {
+                'class': 'text-right'
+            },
+            headerAttributes: {
                 'class': 'text-right'
             }
         }, {
@@ -1226,6 +1252,9 @@
             width: 100,
             attributes: {
                 'class': 'text-right'
+            },
+            headerAttributes: {
+                'class': 'text-right'
             }
         }, {
             field: 'BatchNumber',
@@ -1242,13 +1271,19 @@
             //template: "#: DespatchStatusDate ? kendo.toString(kendo.parseDate(DespatchStatusDate, 'yyyy-MM-ddTHH:mm:ss'), 'dd/MM/yyyy') : DespatchStatusDateMessage #",
             attributes: {
                 'class': 'text-right'
+            },
+            headerAttributes: {
+                'class': 'text-right'
             }
         }, {
             field: 'DespatchStatus',
             title: resources.Despatch,
             width: 100,
-            //template: "#: DespatchStatusDate ? kendo.toString(kendo.parseDate(DespatchStatusDate, 'yyyy-MM-ddTHH:mm:ss'), 'dd/MM/yyyy') : DespatchStatusDateMessage #",
+            //template: "#: DespatchStatus ? kendo.toString(kendo.parseDate(DespatchStatus, 'yyyy-MM-ddTHH:mm:ss'), 'MM/dd/yyyy') : DespatchStatusDateMessage #",
             attributes: {
+                'class': 'text-right'
+            },
+            headerAttributes: {
                 'class': 'text-right'
             }
         }, {

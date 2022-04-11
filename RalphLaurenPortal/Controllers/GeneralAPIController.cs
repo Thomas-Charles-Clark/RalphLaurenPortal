@@ -13,6 +13,7 @@ using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Web.Http;
 
 namespace RalphLaurenPortal.Controllers
@@ -110,7 +111,7 @@ namespace RalphLaurenPortal.Controllers
 
             var user = UserManager.FindById<Member, int>(RequestContext.Principal.Identity.GetUserId<int>());
 
-            return Ok(PortalDbContext.FetchStockInfo(objFetch, user.TradeAccountID, useDate));
+            return Ok(PortalDbContext.FetchStockInfo(objFetch, user.TradeAccountID, user.DotNetCulture, useDate));
         }
 
         [HttpPost]
@@ -140,7 +141,36 @@ namespace RalphLaurenPortal.Controllers
 
             var results = AccountFunctions.OrderDeliveryInfo(user.TradeAccount.UniVerseDataSources, objOrderNumber);
 
+            results.OrderLines.ForEach(ol => {
+                if (DateTime.TryParse(ol.DespatchStatus, out DateTime despatchStatus))
+                {
+                    ol.DespatchStatus = despatchStatus.ToString("MM/dd/yyyy");
+                }
+            });
+
             return Ok(results);
+        }
+
+        [HttpPost]
+        public IHttpActionResult FetchProductDownload([FromBody]PassProductDownloadFetch objFetch)
+        {
+            var user = UserManager.FindById<Member, int>(RequestContext.Principal.Identity.GetUserId<int>());
+            var bytes = PortalDbContext.ProductFeedStream(objFetch, user.MemberID).ToArray();
+            HttpResponseMessage result = new HttpResponseMessage(HttpStatusCode.OK);
+            result.Content = new ByteArrayContent(bytes);
+            result.Content.Headers.ContentType =
+                new MediaTypeHeaderValue("application/octet-stream");
+
+            //var result = new HttpResponseMessage(HttpStatusCode.OK)
+            //{
+            //    Content = new StreamContent(PortalDbContext.ProductFeedStream(objFetch, user.MemberID))
+            //};
+
+#if DEBUG
+            System.IO.File.WriteAllBytes(System.Web.Hosting.HostingEnvironment.MapPath("~/App_Data/RL-Testing.xlsx"), bytes);
+#endif
+
+            return Ok(new { fileContents = Convert.ToBase64String(bytes) });
         }
     }
 }

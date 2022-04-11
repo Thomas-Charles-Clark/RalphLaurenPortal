@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
 using System.Data.Entity;
+using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Web;
 
@@ -136,12 +138,14 @@ namespace RalphLaurenPortal.Models
         }
 
 
-        public ProductStockInfoReturn FetchStockInfo(PassStockInfoFetch objFetch, int? tradeAccountId, DateTime? useDate)
+        internal ProductStockInfoReturn FetchStockInfo(PassStockInfoFetch objFetch, int? tradeAccountId, string dotNetCulture, DateTime? useDate)
         {
             var result = new ProductStockInfoReturn();
 
             var results = this.Database.Connection.QueryMultiple("[pub].[Stock_Select]", new {
                 TradeAccountID = tradeAccountId,
+                Culture = dotNetCulture,
+                EnquiryType = "R",
                 ProductID = objFetch.ProductID,
                 CountryID = objFetch.CountryID,
                 LanguageID = objFetch.LanguageID,
@@ -194,7 +198,7 @@ namespace RalphLaurenPortal.Models
             return result;
         }
 
-        public ProductTypeDropDown FetchProductTypes(short countryId, byte languageId, DateTime useDate)
+        internal ProductTypeDropDown FetchProductTypes(short countryId, byte languageId, DateTime useDate)
         {
             return new ProductTypeDropDown()
             {
@@ -211,6 +215,78 @@ namespace RalphLaurenPortal.Models
                     CommandType.StoredProcedure
                 )
             };
+        }
+
+        internal MemoryStream ProductFeedStream(PassProductDownloadFetch objFetch, int memberId)
+        {
+            var result = new MemoryStream();
+
+            var cmd = this.Database.Connection.CreateCommand();
+            cmd.CommandText = "[RalphLauren].[Product_Download]";
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            var parameters = new List<SqlParameter>()
+            {
+                new SqlParameter("@SearchTerm", objFetch.searchTerm ?? (object)DBNull.Value),
+                new SqlParameter("@ProductTypeID", objFetch.productTypeId ?? (object)DBNull.Value),
+                new SqlParameter("@MemberID", memberId)
+            };
+
+            cmd.Parameters.AddRange(parameters.ToArray());
+
+            this.Database.Connection.Open();
+
+            using (var reader = cmd.ExecuteReader())
+            {
+                while(reader.Read())
+                {
+                    result = (MemoryStream)reader.GetStream(0);
+                }
+            }
+
+            //// muchas gracias: https://stackoverflow.com/questions/52091550/how-to-read-large-file-from-sql-server#answer-52092252
+
+            //var bufferSize = 100;
+            //var outBytes = new byte[bufferSize];
+            //var retVal = 0L;
+            //var startIndex = 0L;
+
+            //using (var reader = cmd.ExecuteReader(CommandBehavior.SequentialAccess))
+            //{
+            //    while (reader.Read())
+            //    {
+            //        var writer = new BinaryWriter(result);
+
+            //        startIndex = 0;
+
+            //        // Reset the starting byte for the new BLOB.  
+            //        startIndex = 0;
+
+            //        // Read bytes into outBytes[] and retain the number of bytes returned.  
+            //        retVal = reader.GetBytes(0, startIndex, outBytes, 0, bufferSize);
+
+            //        // Continue while there are bytes beyond the size of the buffer.  
+            //        while (retVal == bufferSize)
+            //        {
+            //            writer.Write(outBytes);
+            //            writer.Flush();
+
+            //            // Reposition start index to end of last buffer and fill buffer.  
+            //            startIndex += bufferSize;
+            //            retVal = reader.GetBytes(0, startIndex, outBytes, 0, bufferSize);
+            //        }
+
+            //        // Write the remaining buffer.  
+            //        writer.Write(outBytes, 0, (int)retVal);
+            //        writer.Flush();
+            //    }
+            //}
+
+            //result.Position = 0;
+
+            this.Database.Connection.Close();
+
+            return result;
         }
     }
 }

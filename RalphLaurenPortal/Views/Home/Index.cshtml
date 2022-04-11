@@ -14,9 +14,7 @@
     <div class="spinner-border" role="status">
         <span class="visually-hidden">Loading...</span>
     </div>
-    <h4>
-        Searching
-    </h4>
+    <h4 data-bind="text: busyMessage"></h4>
 </div>
 <nav>
     <div class="nav nav-pills nav-justified" id="nav-tab" role="tablist">
@@ -483,12 +481,14 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
+                <!-- ko if: orderDetailsOrderDate -->
                 <dl class="dl-horizontal">
                     <dt>
                         @HtmlHelperExtra.Resource("OrderDate", l, c, d)
                     </dt>
                     <dd data-bind="text: orderDetailsOrderDate"></dd>
-                    </dl>
+                </dl>
+                <!-- /ko -->
                 <dl class="dl-horizontal" data-bind="with: orderDetailsDeliveryInfo">
                     <dt>
                         @HtmlHelperExtra.Resource("DeliveryName", l, c, d)

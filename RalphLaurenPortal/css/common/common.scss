@@ -12,6 +12,10 @@ body {
     height: calc(100vh - 200px);
 }
 
+.k-grid {
+    font-size: $small-font-size;
+}
+
 #main-navbar {
     border-bottom: 1px solid var(--bs-gray-300);
     padding: 0;
@@ -665,5 +669,58 @@ footer {
 }
 
 .text-right {
+    text-align: right;
+}
+
+.k-filter-row th.text-right,
+.k-grid-header th.k-header.text-right {
+    text-align: right;
+}
+
+.k-grid-content {
+    tr {
+        cursor: pointer;
+
+        td {
+            white-space: pre-wrap;
+            word-break: break-all;
+            overflow: unset;
+        }
+    }
+}
+
+.track-wait {
+    color: var(--bs-primary);
+}
+
+.grid-msg {
+    color: var(--bs-primary);
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+tr.k-state-selected {
+    .grid-msg {
+        color: #fff;    
+    }
+}
+
+.k-grid-header {
+    table {
+        thead {
+            th.k-header {
+                vertical-align: top;
+
+                a {
+                    white-space: pre-wrap;
+                    word-break: break-all;
+                    overflow: unset;
+                }
+            }
+        }
+    }
+}
+
+.due-date-heading {
     text-align: right;
 }
