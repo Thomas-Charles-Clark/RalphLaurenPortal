@@ -26,7 +26,7 @@
                 return x.Pieces
             }).Select(function (x) {
                 return +x.Length
-            }).Sum()) * 10) / 10).toFixed(2) + self.unit()
+            }).Sum()) * 1000) / 1000).toFixed(2) + self.unit()
         } else {
             return 0
         }
@@ -36,7 +36,7 @@
         if (self.dueInData()) {
             return Number(Math.round((Enumerable.From(self.dueInData()).Select(function (x) {
                 return +x.Length
-            }).Sum()) * 10) / 10).toFixed(2) + self.unit()
+            }).Sum()) * 1000) / 1000).toFixed(2) + self.unit()
         } else {
             return 0
         }
@@ -48,7 +48,7 @@
                 return x.Pieces
             }).Select(function (x) {
                 return +x.Length
-            }).Sum()) * 10) / 10).toFixed(2) + self.unit()
+            }).Sum()) * 1000) / 1000).toFixed(2) + self.unit()
         } else {
             return 0
         }
@@ -80,7 +80,7 @@
         .then(window.handleFetchResponse)
         .then((data) => {
 
-            console.trace(data);
+            //console.trace(data);
 
             if (data != null) {
 

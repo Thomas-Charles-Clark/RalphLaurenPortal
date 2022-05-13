@@ -133,6 +133,17 @@
         })
         .catch(window.catchFetchErrors);
     }
+    window.keepAliveTimer = 0;
+    window.keepAlive = () => {
+        clearTimeout(keepAliveTimer);
+        keepAliveTimer = setTimeout(function (event) {
+            fetch('/api/generalapi/KeepSessionAlive', {
+                method: 'POST',
+                headers: window.fetchHeaders,
+                body: null
+            });
+        }, 60000);
+    }
 </script>
 <script id="carousel-image-template" type="text/html">
     <div class="carousel-item ripple">

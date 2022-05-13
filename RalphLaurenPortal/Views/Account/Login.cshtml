@@ -8,6 +8,23 @@
 <div class="container d-flex align-items-center justify-content-center h-100">
     @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal login-form", role = "form" }))
     {
+        @*<div class="py-5">
+            <h3 class="pb-4">
+                Sorry
+            </h3>
+            <p>
+                05/22/2022
+            </p>
+            <p>
+                This site is temporarily down for upgrade work. Access has been restricted.
+            </p>
+            <p>
+                Please contact <a href="mailto:itsupport@designersguild.com">itsupport@designersguild.com</a> if you would like to get in touch.
+            </p>
+            <p>
+                Thank you for your patience.
+            </p>
+        </div>*@
         <h3>
             @HtmlHelperExtra.ResourceTitleCase("urlLoginKeyword", l, c, d)
         </h3>

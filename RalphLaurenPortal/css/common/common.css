@@ -70,6 +70,17 @@ body {
   width: 228px;
   height: auto;
 }
+#main-navbar #trade-account-dropdown-wrapper {
+  width: auto;
+  margin-left: auto;
+}
+#main-navbar #trade-account-dropdown-wrapper .nav-link {
+  display: block;
+  border-top: 0;
+}
+#main-navbar #trade-account-dropdown-wrapper .dropdown-menu {
+  position: absolute;
+}
 #main-navbar #navbar-basket {
   position: relative;
 }
@@ -188,8 +199,10 @@ body {
   #main-navbar .navbar-btn i.bi {
     font-size: 17px;
   }
-
-  #product-search-content #product-type-select {
+}
+@media (max-width: 991.98px) {
+  #product-search-content #product-type-select,
+#product-search-content #collection-select {
     flex: 1 1 100%;
     margin-bottom: var(--sm-gutter);
     padding-left: var(--m-gutter);
@@ -202,16 +215,27 @@ body {
     margin-left: 0;
   }
 }
-#product-type-select {
+#nav-tab .nav-link + .nav-link {
+  border-left: 1px solid #adb5bd;
+}
+
+.all-accounts {
+  display: none;
+}
+
+li.all-accounts {
+  padding: 0 var(--m-gutter);
+}
+
+#all-accounts-btn {
+  width: 100%;
+}
+
+#product-type-select,
+#collection-select {
   flex: 0 1 20%;
 }
 
-@media (max-width: 494.98px) {
-  #product-type-select {
-    flex: 0 1 30px;
-    padding-left: var(--vsm-gutter);
-  }
-}
 #product-search-content form {
   display: block;
 }
@@ -594,5 +618,20 @@ tr.k-state-selected .grid-msg {
 
 .due-date-heading {
   text-align: right;
+}
+
+.sales-history-grid td img {
+  width: 100%;
+  height: auto;
+}
+.sales-history-grid .k-grid-content tr td,
+.sales-history-grid .k-grid-header table thead th.k-header a {
+  word-break: break-word;
+}
+
+#sales-history-search-result-count {
+  padding: 0.6rem 0;
+  display: flex;
+  align-items: center;
 }
 /*# sourceMappingURL=common.css.map */

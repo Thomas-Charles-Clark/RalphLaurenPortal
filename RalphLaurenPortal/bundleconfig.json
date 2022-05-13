@@ -48,6 +48,18 @@
     ]
   },
   {
+    "outputFileName": "js/common/trade-account-selector.min.js",
+    "inputFiles": [
+      "js/common/trade-account-selector.js"
+    ]
+  },
+  {
+    "outputFileName": "js/models/home/sales-history-view-model.min.js",
+    "inputFiles": [
+      "js/models/home/sales-history-view-model.js"
+    ]
+  },
+  {
     "outputFileName": "js/lib/luxon/dist/luxon.min.js",
     "inputFiles": [
       "js/lib/luxon/dist/luxon.js"

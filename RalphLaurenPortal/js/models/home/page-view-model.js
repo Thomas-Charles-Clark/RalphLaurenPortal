@@ -1,9 +1,11 @@
 ﻿const pageViewModel = ((resources) => {
-    let self = {};
-
-    self.resources = resources;
+    let self = {
+        resources: resources
+    };
 
     self.resources.PleaseWait = self.resources.PleaseWait.replace(/\./, '');
+
+    //#region Properties
 
     self.haveSearchedOnce = ko.observable(false);
 
@@ -11,11 +13,55 @@
 
     self.busyMessage = ko.observable(self.resources.Searching);
 
-    self.productTypeId = ko.observable();
+    self.productTypeId = ko.observable('');
+
+    self.collection = ko.observable();
+
+    self.availableCollections = ko.observableArray(getCollections());
 
     self.searchTerm = ko.observable();
 
     self.searchResults = ko.observableArray([]);
+
+    self.inspectingProduct = ko.observable();
+
+    //#endregion
+
+
+    //#region Components
+
+    self.orderStatusModel = orderStatusViewModel(resources, self);
+
+    self.techInfoModel = techInfoViewModel(resources, self);
+
+    self.stockModel = stockViewModel(resources, self);
+
+    self.salesHistoryModel = salesHistoryViewModel(resources, self);
+
+    //#endregion
+
+
+    //#region Subscriptions
+
+    self.productTypeId.subscribe(nv => {
+        self.collection(undefined);
+        fetch('/api/generalapi/FetchCollections', {
+            method: 'POST',
+            headers: window.fetchHeaders,
+            body: JSON.stringify({
+                productTypeId: nv
+            })
+        }).then(window.handleFetchResponse)
+            .then(data => {
+                self.availableCollections(data.Collections);
+            })
+            .catch(window.catchFetchErrors);
+    });
+
+    //#endregion
+
+
+    //#region Computeds
 
     self.searchResultCountDisplay = ko.pureComputed(() => {
         let count = self.searchResults().length;
@@ -28,47 +74,49 @@
 
     self.anySearchResults = ko.pureComputed(() => self.searchResults().length > 0, self);
 
-    self.orderStatusModel = orderStatusViewModel(resources, self);
+    self.collectionName = ko.pureComputed(() => {
+        return self.collection()?.Name;
+    }, self);
 
-    self.inspectingProduct = ko.observable();
-
-    self.techInfoModel = techInfoViewModel(resources, self);
-
-    self.stockModel = stockViewModel(resources, self);
-
-    self.clearSearchTerm = () => {
-        self.searchTerm(undefined);
-        self.search();
-    }
-
-    self.productTypeId.subscribe((newValue) => {
-        if (self.searchTerm()) {
-            self.search();
-        }
-    })
-
-    self.search = () => {
+    self.search = ko.computed(() => {
         self.busy(true);
         fetch('/api/generalapi/ProductSearch', {
             method: 'POST',
             headers: window.fetchHeaders,
             body: JSON.stringify({
-                searchTerm: self.searchTerm(),
-                productTypeId: self.productTypeId()
+                searchTerm: self.searchTerm.peek(),
+                productTypeId: self.productTypeId.peek(),
+                collectionId: self.collection()?.CollectionID
             })
         })
-        .then(window.handleFetchResponse)
-        .then((data) => {
-            self.haveSearchedOnce(true);
-            self.searchResults(data);
-            setTimeout(() => {
-                self.busy(false);
-                document.querySelectorAll('.card-body .btn').forEach(function (element) {
-                    new bootstrap.Ripple(element)
+            .then(window.handleFetchResponse)
+            .then((data) => {
+                self.haveSearchedOnce(true);
+                self.searchResults(data);
+                setTimeout(() => {
+                    self.busy(false);
+                    document.querySelectorAll('.card-body .btn').forEach(function (element) {
+                        new bootstrap.Ripple(element)
+                    });
                 });
-            });
-        })
-        .catch(window.catchFetchErrors)
+            })
+            .catch(window.catchFetchErrors)
+    }, self).extend({
+        rateLimit: {
+            timeout: 100,
+            method: 'notifyWhenChangesStop'
+        }
+    });
+
+    //#endregion
+
+
+    //#region Methods
+
+    self.clearSearchTerm = () => {
+        self.searchTerm(undefined);
+        self.productTypeId('');
+        self.collection(undefined);
     }
 
     self.s2ab = (s) => {
@@ -77,7 +125,7 @@
         for (var i = 0; i != s.length; ++i)
             view[i] = s.charCodeAt(i) & 0xFF;
         return buf;
-    };
+    }
 
     self.fetchProductFeed = () => {
         self.busy(true);
@@ -90,26 +138,27 @@
             },
             body: JSON.stringify({
                 searchTerm: self.searchTerm(),
-                productTypeId: self.productTypeId()
+                productTypeId: self.productTypeId(),
+                collectionId: self.collection()?.CollectionID
             })
         })
-        .then(window.handleFetchResponse)
-        .then(data => {
+            .then(window.handleFetchResponse)
+            .then(data => {
 
-            let bin = atob(data.fileContents);
-            let ab = self.s2ab(bin); // from example above
-            let blob = new Blob([ab], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;' });
+                let bin = atob(data.fileContents);
+                let ab = self.s2ab(bin); // from example above
+                let blob = new Blob([ab], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;' });
 
-            var url = window.URL.createObjectURL(blob);
-            var a = document.createElement('a');
-            a.href = url;
-            a.download = `RalphLauren-Products.xlsx`;
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            self.busy(false);
-            self.busyMessage(self.resources.Searching);
-        });
+                var url = window.URL.createObjectURL(blob);
+                var a = document.createElement('a');
+                a.href = url;
+                a.download = `RalphLauren-Products.xlsx`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                self.busy(false);
+                self.busyMessage(self.resources.Searching);
+            });
     }
 
     self.showProductModal = (product, tab) => {
@@ -133,7 +182,7 @@
         });
     }
 
-    self.search();
+    //#endregion
 
     return self;
 });
@@ -187,7 +236,15 @@ getResource([
     'Searching',
     'PleaseWait',
     'SearchResult',
-    'SearchResults'
+    'SearchResults',
+    'AllCollections',
+    'MoodboardProductType',
+    'ppCollection',
+    'Stock',
+    'SoldQuantity',
+    'ReservedQuantity',
+    'WIPQuantity',
+    'TotalQuantity'
 ]).then((arrayResult) => {
 
     let resources = {};

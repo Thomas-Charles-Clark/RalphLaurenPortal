@@ -4,19 +4,44 @@
     var c = Model.CountryID;
     var d = Model.ContentDate;
     var cu = Model.DotNetCulture;
-}<div id="product-search-content" style="display: none" data-bind="visible: true">
+}
+<script type="text/javascript">
+    getCollections = () => {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.CollectionDropDown.Collections))
+    }
+</script>
+<div id="product-search-content" style="display: none" data-bind="visible: true">
     <div class="input-group">
         <select id="product-type-select"
                 name="ProductTypeID"
                 class="form-select"
                 data-bind="value: productTypeId">
             <option value="" selected>
-                @HtmlHelperExtra.Resource("All", l, c, d)
+                @HtmlHelperExtra.Resource("AllProductTypes", l, c, d)
             </option>
             @foreach(var pt in Model.ProductTypeDropDown.ProductTypes)
             {
                 <option value="@(pt.ProductTypeID)">
                     @(pt.Name)
+                </option>
+            }
+        </select>
+        <select id="collection-select"
+                name="CollectionID"
+                class="form-select"
+                data-bind="value: collection,
+                options: availableCollections,
+                optionsText: 'Name',
+                optionsValue: $data,
+                optionsCaption: resources.AllCollections,
+                attr: { title: collectionName }">
+            <option value="" selected>
+                @HtmlHelperExtra.Resource("AllCollections", l, c, d)
+            </option>
+            @foreach(var cl in Model.CollectionDropDown.Collections)
+            {
+                <option value="@(cl.CollectionID)">
+                    @(cl.Name)
                 </option>
             }
         </select>
@@ -40,7 +65,7 @@
         <button class="btn btn-light-gray"
                 type="button" 
                 aria-label="@HtmlHelperExtra.Resource("SubmitProperCase", l, c, d)"
-                data-bind="click: search">
+                data-bind="click: () => { collection.valueHasMutated() }">
             <span class="d-none d-sm-inline me-1">
                 @HtmlHelperExtra.Resource("EnterSearch", l, c, d)
             </span>
@@ -61,10 +86,10 @@
     <!-- /ko -->
     <div id="search-results" class="search-result-grid grid pt-3">
         <!-- ko foreach: searchResults  -->
-        <div class="result g-col-6 g-col-lg-4 g-col-xl-3" data-bind="with: product">
+        <div class="result g-col-6 g-col-lg-4 g-col-xl-3">
             <div class="pod-card" href="#" data-bind="attr: { href: `https://www.designersguild.com${url}` }" target="_blank">
                 <div class="card">
-                    <img width="488" height="488" class="ripple" data-bind="attr: { src: `/image/488/${imageId}` }, click: (data) => { $parentContext.$parent.showProductModal(data, '#nav-tech')}" loading="lazy" />
+                    <img width="488" height="488" class="ripple" data-bind="attr: { src: `/image/488/${imageId}` }, click: (data) => { $parent.showProductModal(data, '#nav-tech')}" loading="lazy" />
                     <div class="card-body">
                         <!-- ko if: $data.hasOwnProperty('new') && $data.new  --> 
                         <h6 class="card-new"></h6>
@@ -72,7 +97,7 @@
                         <h6 class="card-title text-uppercase fw-bold" data-bind="text: name"></h6>
                         <div class="d-flex justify-content-between align-items-start my-2">
                             <span class="product-code" data-bind="text: code"></span>
-                            <button class="btn btn-light-gray btn-sm" data-bind="click: (data) => { $parentContext.$parent.showProductModal(data, '#nav-tech') }">
+                            <button class="btn btn-light-gray btn-sm" data-bind="click: (data) => { $parent.showProductModal(data, '#nav-tech') }">
                                 @HtmlHelperExtra.Resource("TechnicalInfo", l, c, d)
                             </button>
                         </div>
@@ -98,7 +123,7 @@
                             </span>
                             <span data-bind="with: stockMessage.basketQuantityThresholds[0]">
                                 <span data-bind="with: stockMessages[0]">
-                                    <a href="javascript:;" data-bind="text: stockMessage, click: () => { $parentContext.$parentContext.$parentContext.$parent.showProductModal($parentContext.$parentContext.$data, '#nav-stock') }"></a>
+                                    <a href="javascript:;" data-bind="text: stockMessage, click: () => { $parentContext.$parentContext.$parent.showProductModal($parentContext.$parentContext.$data, '#nav-stock') }"></a>
                                 </span>
                             </span>
                         </div>

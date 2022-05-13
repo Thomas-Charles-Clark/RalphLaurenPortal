@@ -11,5 +11,6 @@ namespace RalphLaurenPortal.Models.ProductSearch
         public string name { get; set; }
         public string searchTerm { get; set; }
         public byte? productTypeId { get; set; }
+        public short? collectionId { get; set; }
     }
 }

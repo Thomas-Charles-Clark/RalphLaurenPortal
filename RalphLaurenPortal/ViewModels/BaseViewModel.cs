@@ -36,6 +36,8 @@ namespace RalphLaurenPortal.ViewModels
             } 
         }
 
+        public Models.TradeAccount.TradeAccount CurrentTradeAccount { get; set; }
+
         public BaseViewModel(
             Member user,
             string pageTitle,
@@ -44,6 +46,15 @@ namespace RalphLaurenPortal.ViewModels
             User = user;
             PageTitle = pageTitle;
             ContentDate = useDate ?? DateTime.Now;
+
+            var tradeAccountId = User?.TradeAccountID;
+
+            if (Int32.TryParse((string)HttpContext.Current.Session["TradeAccountID"]?.ToString(), out int tid))
+            {
+                tradeAccountId = tid;
+            }
+
+            CurrentTradeAccount = User?.AvailableTradeAccounts?.SingleOrDefault(p => p.TradeAccountID == tradeAccountId)?.TradeAccount;
         }
     }
 }

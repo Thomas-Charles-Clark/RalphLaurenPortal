@@ -66,7 +66,8 @@ namespace RalphLaurenPortal
                 "~/js/models/home/page-view-model.js",
                 "~/js/models/home/order-status-view-model.js",
                 "~/js/models/home/stock-view-model.js",
-                "~/js/models/home/tech-info-view-model.js"
+                "~/js/models/home/tech-info-view-model.js",
+                "~/js/models/home/sales-history-view-model.js"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/bootstrap").Include(
@@ -93,6 +94,10 @@ namespace RalphLaurenPortal
 
             bundles.Add(new ScriptBundle("~/bundles/js/error-modal").Include(
                 "~/js/common/error-modal.js"
+                ));
+
+            bundles.Add(new ScriptBundle("~/bundles/js/trade-account-selector").Include(
+                "~/js/common/trade-account-selector.js"
                 ));
 
             foreach (var b in BundleTable.Bundles)

@@ -1,0 +1,47 @@
+﻿@model HomeViewModel
+@{
+    var l = Model.LanguageID;
+    var c = Model.CountryID;
+    var d = Model.ContentDate;
+    var cu = Model.DotNetCulture;
+}
+<div data-bind="with: salesHistoryModel">
+    <div class="search-controls d-flex justify-content-start align-items-top w-100 py-3">
+        <div class="form-select-wrapper">
+            <select class="form-select" data-bind="value: dateRange, options: dateRanges, optionsValue: 'dateRangeId', optionsText: 'name'"></select>
+            <!-- ko if: dateRange() == -1 -->
+            <div class="custom-date-wrapper">
+                <label>
+                    @HtmlHelperExtra.Resource("FromProperCase", l, c, d)
+                </label>
+                <div class="d-flex align-items-center">
+                    <input id="custom-from-date" class="date-picker form-control" data-bind="kendoDatePicker: customFromDatePicker" />
+                    <label class="date-clear" data-bind="click: function () { customFromDatePicker.clear(); }">
+                        &times;
+                    </label>
+                </div>
+            </div>
+            <div class="custom-date-wrapper">
+                <label>
+                    @HtmlHelperExtra.Resource("ToProperCase", l, c, d)
+                </label>
+                <div class="d-flex align-items-center">
+                    <input id="custom-to-date" class="date-picker form-control" data-bind="kendoDatePicker: customToDatePicker" />
+                    <label class="date-clear" data-bind="click: function () { customToDatePicker.clear(); }">
+                        &times;
+                    </label>
+                </div>
+                <span class="validation-message text-danger" data-bind="validationMessage: customFromDate"></span>
+                <span class="validation-message text-danger" data-bind="validationMessage: customToDate"></span>
+                <span class="validation-message text-danger" data-bind="validationMessage: fromPreceedsTo"></span>
+            </div>
+            <!-- /ko -->
+        </div>
+        <!-- ko if: haveSearchedOnce -->
+        <h6 id="sales-history-search-result-count" class="m-0 ms-3">
+            <span data-bind="text: resultCountDisplay"></span>
+        </h6>
+        <!-- /ko -->
+    </div>
+    <div class="sales-history-grid mt-4" data-bind="kendoGrid: grid"></div>
+</div>

@@ -72,6 +72,20 @@ body {
         }
     }
 
+    #trade-account-dropdown-wrapper {
+        width: auto;
+        margin-left: auto;
+
+        .nav-link {
+            display: block;
+            border-top: 0;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+        }
+    }
+
     #navbar-basket {
         position: relative;
 
@@ -233,9 +247,12 @@ body {
             font-size: 17px;
         }
     }
+}
 
+@include media-breakpoint-down(lg) {
     #product-search-content {
-        #product-type-select {
+        #product-type-select,
+        #collection-select {
             flex: 1 1 100%;
             margin-bottom: var(--sm-gutter);
             padding-left: var(--m-gutter);
@@ -251,15 +268,27 @@ body {
     }
 }
 
-#product-type-select {
-    flex: 0 1 20%;
+#nav-tab {
+    .nav-link + .nav-link {
+    border-left: 1px solid $gray-500;    
+    }
 }
 
-@include media-breakpoint-down(navbar-2-btn, $bespoke-breakpoints) {
-    #product-type-select {
-        flex: 0 1 30px;
-        padding-left: var(--vsm-gutter);
-    }
+.all-accounts {
+    display: none;
+}
+
+li.all-accounts {
+    padding: 0 var(--m-gutter);
+}
+
+#all-accounts-btn {
+    width: 100%;
+}
+
+#product-type-select,
+#collection-select {
+    flex: 0 1 20%;
 }
 
 #product-search-content {
@@ -723,4 +752,24 @@ tr.k-state-selected {
 
 .due-date-heading {
     text-align: right;
+}
+
+.sales-history-grid {
+    td {
+        img {
+            width: 100%;
+            height: auto;
+        }
+    }
+
+    .k-grid-content tr td, 
+    .k-grid-header table thead th.k-header a {
+        word-break: break-word;
+    }
+}
+
+#sales-history-search-result-count {
+    padding: 0.6rem 0;
+    display: flex;
+    align-items: center;
 }

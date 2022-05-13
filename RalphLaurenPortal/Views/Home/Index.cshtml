@@ -17,22 +17,72 @@
     <h4 data-bind="text: busyMessage"></h4>
 </div>
 <nav>
-    <div class="nav nav-pills nav-justified" id="nav-tab" role="tablist">
-        <button class="btn nav-link active" id="nav-search-tab" data-bs-toggle="tab" data-bs-target="#nav-search" type="button" role="tab" aria-controls="nav-home" aria-selected="true">
+    <div id="nav-tab"
+         class="nav nav-pills nav-justified"
+         role="tablist">
+        <button id="nav-search-tab"
+                class="btn nav-link active"
+                data-bs-toggle="tab"
+                data-bs-target="#nav-search"
+                type="button"
+                role="tab"
+                aria-controls="nav-home"
+                aria-selected="true">
             @HtmlHelperExtra.Resource("TradeMenuProductSearch", l, c, d)
         </button>
-        <button class="btn nav-link" id="nav-order-history-tab" data-bs-toggle="tab" data-bs-target="#nav-order-history" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">
-            @HtmlHelperExtra.Resource("OrderHistory", l, c, d)
+       @if (Model.PermitOrderStatus)
+        {
+        <button id="nav-order-history-tab"
+                class="btn nav-link"
+                data-bs-toggle="tab"
+                data-bs-target="#nav-order-history"
+                type="button"
+                role="tab"
+                aria-controls="nav-profile"
+                aria-selected="false">
+            @HtmlHelperExtra.Resource("OrderStatus", l, c, d)
         </button>
+        }
+       @if (Model.PermitSalesHistory)
+        {
+        <button id="nav-sales-history-tab"
+                class="btn nav-link" 
+                data-bs-toggle="tab"
+                data-bs-target="#nav-sales-history"
+                type="button"
+                role="tab"
+                aria-controls="nav-profile"
+                aria-selected="false">
+            @HtmlHelperExtra.Resource("SalesHistory", l, c, d)
+        </button>
+        }
     </div>
 </nav>
+<script type="text/javascript" defer>
+    document.querySelectorAll('#nav-tab button[data-bs-toggle="tab"]').forEach(t => t.addEventListener('shown.bs.tab', (event) => {
+        if (event.target.dataset.bsTarget == '#nav-sales-history') {
+            document.querySelectorAll('.all-accounts').forEach(e => e.style.display = 'block');
+        } else {
+            document.querySelectorAll('.all-accounts').forEach(e => e.style.display = 'none');
+        }
+    }));
+</script>
 <div class="tab-content py-3 px-2 px-sm-4" id="nav-tab-content">
     <div class="tab-pane fade show active" id="nav-search" role="tabpanel" aria-labelledby="nav-search-tab">
         @Html.Partial("_ProductSearch")
     </div>
+       @if (Model.PermitOrderStatus)
+        {
     <div class="tab-pane fade" id="nav-order-history" role="tabpanel" aria-labelledby="nav-order-history-tab">
-        @Html.Partial("_OrderHistory")
+        @Html.Partial("_OrderStatus")
     </div>
+        }
+       @if (Model.PermitSalesHistory)
+        {
+    <div class="tab-pane fade" id="nav-sales-history" role="tabpanel" aria-labelledby="nav-sales-history-tab">
+        @Html.Partial("_SalesHistory")
+    </div>
+        }
 </div>
 <div id="product-modal" class="modal fade">
     <div class="modal-dialog modal-xl modal-fullscreen-lg-down">

@@ -72,6 +72,14 @@
 
     @RenderSection("TemplateScripts", required: false)
     @RenderSection("TemplateStyles", required: false)
+
+    @Render.ScriptDefer("~/bundles/js/trade-account-selector")
+    <script id="ko-trade-dropdown-template" type="text/html">
+        <li>
+            <a class="dropdown-item" href="#" data-bind="text: Label">
+            </a>
+        </li>
+    </script>
 </head>
 <body>
     <nav id="main-navbar" class="navbar navbar-light">
@@ -97,6 +105,46 @@
                         srcset="/img/logo/rl-logo-256-14.webp 1x, /img/logo/rl-logo-512-28.webp 3x, /img/logo/rl-logo-1024-56.webp 4x"
                         sizes="(max-width: 420px) 256px, (max-width: 992px) 512px, (max-width: 1200px) 1024px"/>
             </a>
+            <ul id="trade-account-dropdown-wrapper" class="navbar-nav">
+                <li class="d-none" data-bind="init: { convert: createInitialTradeAccount }, text: tradeAccount">
+                    @Html.Raw(JsonConvert.SerializeObject(Model.CurrentTradeAccount))
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        @HtmlHelperExtra.Resource("TradeAccount", l, c, d):
+                        <span data-bind="text: tradeAccountLabel">
+                            @Model.User?.TradeAccount?.Code - @Model.User?.TradeAccount?.Name 
+                        </span>
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <!-- ko foreachInit: { name: 'ko-trade-dropdown-template', data: availableTradeAccounts, createElement: createTradeAccount } -->
+                       @if (Model.User != null)
+                       {
+                           foreach (var ta in Model.User.AvailableTradeAccounts)
+                           {
+                            <li>
+                                <span class="d-none" data-bind="init: { convert: JSON.parse }, text: data, remove">
+                                    @Html.Raw(JsonConvert.SerializeObject(ta.TradeAccount))
+                                </span>
+                                <a class="dropdown-item" href="#" data-bind="text: label, click: () => { $parent.tradeAccount($data) }">
+                                    @ta.TradeAccount.Code - @ta.TradeAccount.Name
+                                </a>
+                            </li>
+                           }
+                       }
+                        <!-- /ko -->
+                        <li class="all-accounts">
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li class="all-accounts">
+                             <a id="all-accounts-btn"
+                                class="btn btn-link">
+                                 @HtmlHelperExtra.Resource("AllAccounts", l, c, d)
+                             </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
         </div>
         @if (Request.IsAuthenticated)
         {
@@ -126,6 +174,24 @@
             <p>&copy; @DateTime.Now.Year - Designers Guild</p>
         </footer>
     </div>
+    <div class="modal" tabindex="-1" id="error-modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        @HtmlHelperExtra.Resource("Error", l, c, d)
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        @Html.Raw(HtmlHelperExtra.Resource("RLPortalMajorError", l, c, d))
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    @Render.ScriptDefer("~/bundles/js/error-modal")
     @RenderSection("Scripts", required: false)
 </body>
 </html>

@@ -11,13 +11,13 @@ namespace RalphLaurenPortal.Models.ProductType
     {
         private ObjectCache Cache { get { return MemoryCache.Default; } }
 
-        public ProductTypeDropDown Get(short countryId, byte languageId, DateTime useDate)
+        public ProductTypeDropDown Get(int memberId, int tradeAccountId, DateTime useDate)
         {
-            var key = buildKey(countryId, languageId, useDate);
+            var key = buildKey(memberId, tradeAccountId, useDate);
             return (ProductTypeDropDown)Cache[key];
         }
 
-        public void Set(short countryId, byte languageId, DateTime useDate, ProductTypeDropDown data)
+        public void Set(int memberId, int tradeAccountId, DateTime useDate, ProductTypeDropDown data)
         {
             if (Boolean.TryParse(WebConfigurationManager.AppSettings["productTypeCacheEnabled"], out bool cacheEnabled))
             {
@@ -32,27 +32,27 @@ namespace RalphLaurenPortal.Models.ProductType
                     policy.AbsoluteExpiration = DateTime.Today.AddDays(1).Date;
                 }
 
-                var key = buildKey(countryId, languageId, useDate);
+                var key = buildKey(memberId, tradeAccountId, useDate);
 
                 Cache.Add(new CacheItem(key, data), policy);
             }
         }
 
-        public bool IsSet(short countryId, byte languageId, DateTime useDate)
+        public bool IsSet(int memberId, int tradeAccountId, DateTime useDate)
         {
-            String key = buildKey(countryId, languageId, useDate);
+            var key = buildKey(memberId, tradeAccountId, useDate);
             return (Cache[key] != null);
         }
 
-        public void Invalidate(short countryId, byte languageId, DateTime useDate)
+        public void Invalidate(int memberId, int tradeAccountId, DateTime useDate)
         {
-            String key = buildKey(countryId, languageId, useDate);
+            var key = buildKey(memberId, tradeAccountId, useDate);
             Cache.Remove(key);
         }
 
-        private string buildKey(short countryId, byte languageId, DateTime useDate)
+        private string buildKey(int memberId, int tradeAccountId, DateTime useDate)
         {
-            return String.Format($"PRODUCTTYPES~{countryId}~{languageId}");
+            return String.Format($"PRODUCTTYPES~{memberId}~{tradeAccountId}");
         }
     }
 }

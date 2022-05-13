@@ -215,6 +215,7 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\GeneralAPIController.cs" />
+    <Compile Include="Controllers\HoldingController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ImageController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
@@ -222,18 +223,25 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\Collection\Collection.cs" />
+    <Compile Include="Models\Collection\CollectionCacheProvider.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\PortalDbContext.cs" />
     <Compile Include="Models\ProductSearch\PassProductDownloadFetch.cs" />
     <Compile Include="Models\ProductSearch\PassProductSearch.cs" />
+    <Compile Include="Models\ProductSearch\ProductSearchResult.cs" />
+    <Compile Include="Models\ProductType\PassProductTypeID.cs" />
     <Compile Include="Models\ProductType\ProductType.cs" />
     <Compile Include="Models\ProductType\ProductTypeCacheProvider.cs" />
     <Compile Include="Models\Resource\Resource.cs" />
     <Compile Include="Models\Resource\ResourceCacheProvider.cs" />
+    <Compile Include="Models\SalesHistory\PassSalesHistorySelect.cs" />
+    <Compile Include="Models\SalesHistory\SalesHistorySelect.cs" />
     <Compile Include="Models\StockInfo\PassStockInfoFetch.cs" />
     <Compile Include="Models\StockInfo\Stock.cs" />
     <Compile Include="Models\TechInfo\PassTechInfoFetch.cs" />
+    <Compile Include="Models\TradeAccount\PassTradeAccountID.cs" />
     <Compile Include="Models\TradeAccount\TradeAccount.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
@@ -330,6 +338,13 @@
     <Content Include="js\common\error-modal.min.js.map">
       <DependentUpon>error-modal.min.js</DependentUpon>
     </Content>
+    <Content Include="js\common\trade-account-selector.js" />
+    <Content Include="js\common\trade-account-selector.min.js">
+      <DependentUpon>trade-account-selector.js</DependentUpon>
+    </Content>
+    <Content Include="js\common\trade-account-selector.min.js.map">
+      <DependentUpon>trade-account-selector.min.js</DependentUpon>
+    </Content>
     <Content Include="js\models\home\order-status-view-model.min.js">
       <DependentUpon>order-status-view-model.js</DependentUpon>
     </Content>
@@ -398,6 +413,13 @@
     </Content>
     <Content Include="js\models\home\page-view-model.min.js.map">
       <DependentUpon>page-view-model.min.js</DependentUpon>
+    </Content>
+    <Content Include="js\models\home\sales-history-view-model.js" />
+    <Content Include="js\models\home\sales-history-view-model.min.js">
+      <DependentUpon>sales-history-view-model.js</DependentUpon>
+    </Content>
+    <Content Include="js\models\home\sales-history-view-model.min.js.map">
+      <DependentUpon>sales-history-view-model.min.js</DependentUpon>
     </Content>
     <Content Include="js\models\home\stock-view-model.js" />
     <Content Include="js\models\home\stock-view-model.min.js">
@@ -569,9 +591,11 @@
     <None Include="packages.config" />
     <Content Include="Views\Shared\_Layout-JS.cshtml" />
     <Content Include="Views\Home\_ProductSearch.cshtml" />
-    <Content Include="Views\Home\_OrderHistory.cshtml" />
+    <Content Include="Views\Home\_OrderStatus.cshtml" />
     <None Include="Properties\PublishProfiles\Portal-Dev.pubxml" />
     <None Include="Properties\PublishProfiles\Production.pubxml" />
+    <Content Include="Views\Holding\Index.cshtml" />
+    <Content Include="Views\Home\_SalesHistory.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

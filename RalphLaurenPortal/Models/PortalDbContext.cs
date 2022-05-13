@@ -1,8 +1,10 @@
 ﻿using Dapper;
 using Microsoft.AspNet.Identity.EntityFramework;
+using RalphLaurenPortal.Models.Collection;
 using RalphLaurenPortal.Models.ProductSearch;
 using RalphLaurenPortal.Models.ProductType;
 using RalphLaurenPortal.Models.Resource;
+using RalphLaurenPortal.Models.SalesHistory;
 using RalphLaurenPortal.Models.StockInfo;
 using RalphLaurenPortal.Models.TechInfo;
 using System;
@@ -122,6 +124,7 @@ namespace RalphLaurenPortal.Models
             {
                 SearchTerm = objSearch.SearchTerm,
                 ProductTypeID = objSearch.ProductTypeID,
+                CollectionID = objSearch.CollectionID,
                 MemberID = memberId 
             }, null, 30, CommandType.StoredProcedure);
         }
@@ -198,16 +201,15 @@ namespace RalphLaurenPortal.Models
             return result;
         }
 
-        internal ProductTypeDropDown FetchProductTypes(short countryId, byte languageId, DateTime useDate)
+        internal ProductTypeDropDown FetchProductTypes(int memberId, int tradeAccountId)
         {
             return new ProductTypeDropDown()
             {
                 ProductTypes = this.Database.Connection.Query<ProductTypeSelect>(
-                    "[RalphLauren].[Product_Search_ProductTypes_Select]", 
+                    "[RalphLauren].[Product_Search_ProductType_Select]", 
                     new { 
-                       CountryID = countryId,
-                       LanguageID = languageId,
-                       Date = useDate
+                       MemberID = memberId,
+                       TradeAccountID = tradeAccountId
                     },
                     null,
                     true,
@@ -215,6 +217,66 @@ namespace RalphLaurenPortal.Models
                     CommandType.StoredProcedure
                 )
             };
+        }
+
+        internal CollectionDropDown FetchCollections(int memberId, int tradeAccountId, byte? productTypeId)
+        {
+            return new CollectionDropDown()
+            {
+                Collections = this.Database.Connection.Query<CollectionSelect>(
+                    "[RalphLauren].[Product_Search_Collection_Select]",
+                    new
+                    {
+                        MemberID = memberId,
+                        TradeAccountID = tradeAccountId,
+                        ProductTypeID = productTypeId
+                    },
+                    null,
+                    true,
+                    10,
+                    CommandType.StoredProcedure
+                )
+            };
+        }
+
+        internal IEnumerable<SalesHistorySelect> FetchSalesHistory(int memberId, 
+            int? tradeAccountId,
+            PassSalesHistorySelect objSelect)
+        {
+            DateTime fromDt = DateTime.Now;
+            DateTime toDt = DateTime.Now;
+
+            switch (objSelect.dateRange)
+            {
+                case 12:
+                    fromDt = DateTime.Now.AddYears(-1);
+                    break;
+                case 6:
+                    fromDt = DateTime.Now.AddMonths(-6);
+                    break;
+                case 1:
+                    fromDt = DateTime.Now.AddDays(-DateTime.Now.Day).AddDays(1.0);
+                    break;
+                case -1:
+                    fromDt = (objSelect.fromDate ?? DateTime.Now.AddMonths(-1));
+                    toDt = (objSelect.toDate ?? DateTime.Now);
+                    break;
+            }
+
+            return this.Database.Connection.Query<SalesHistorySelect>(
+                "[RalphLauren].[Sales_History]",
+                new
+                {
+                    MemberID = memberId,
+                    TradeAccountID = tradeAccountId,
+                    From = fromDt,
+                    To = toDt
+                },
+                null,
+                true,
+                10,
+                CommandType.StoredProcedure
+            );
         }
 
         internal MemoryStream ProductFeedStream(PassProductDownloadFetch objFetch, int memberId)
@@ -229,6 +291,7 @@ namespace RalphLaurenPortal.Models
             {
                 new SqlParameter("@SearchTerm", objFetch.searchTerm ?? (object)DBNull.Value),
                 new SqlParameter("@ProductTypeID", objFetch.productTypeId ?? (object)DBNull.Value),
+                new SqlParameter("@CollectionID", objFetch.collectionId ?? (object)DBNull.Value),
                 new SqlParameter("@MemberID", memberId)
             };
 
@@ -243,46 +306,6 @@ namespace RalphLaurenPortal.Models
                     result = (MemoryStream)reader.GetStream(0);
                 }
             }
-
-            //// muchas gracias: https://stackoverflow.com/questions/52091550/how-to-read-large-file-from-sql-server#answer-52092252
-
-            //var bufferSize = 100;
-            //var outBytes = new byte[bufferSize];
-            //var retVal = 0L;
-            //var startIndex = 0L;
-
-            //using (var reader = cmd.ExecuteReader(CommandBehavior.SequentialAccess))
-            //{
-            //    while (reader.Read())
-            //    {
-            //        var writer = new BinaryWriter(result);
-
-            //        startIndex = 0;
-
-            //        // Reset the starting byte for the new BLOB.  
-            //        startIndex = 0;
-
-            //        // Read bytes into outBytes[] and retain the number of bytes returned.  
-            //        retVal = reader.GetBytes(0, startIndex, outBytes, 0, bufferSize);
-
-            //        // Continue while there are bytes beyond the size of the buffer.  
-            //        while (retVal == bufferSize)
-            //        {
-            //            writer.Write(outBytes);
-            //            writer.Flush();
-
-            //            // Reposition start index to end of last buffer and fill buffer.  
-            //            startIndex += bufferSize;
-            //            retVal = reader.GetBytes(0, startIndex, outBytes, 0, bufferSize);
-            //        }
-
-            //        // Write the remaining buffer.  
-            //        writer.Write(outBytes, 0, (int)retVal);
-            //        writer.Flush();
-            //    }
-            //}
-
-            //result.Position = 0;
 
             this.Database.Connection.Close();
 

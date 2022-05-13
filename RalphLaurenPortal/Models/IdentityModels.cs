@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
 using System.Security.Claims;
@@ -41,8 +42,6 @@ namespace RalphLaurenPortal.Models
 
         public byte LanguageID { get; set; }
 
-        public bool DisplayTradePrice { get; set; }
-
         public short RRPPriceListID { get; set; }
 
         public short TradePriceListID { get; set; }
@@ -52,11 +51,19 @@ namespace RalphLaurenPortal.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public bool Deleted { get; set; }
 
+        public bool AllowOrderStatus { get; set; }
+
+        public bool AllowSalesHistory { get; set; }
+
         [JsonIgnore]
         public override ICollection<Member_Role> Roles { get; }
 
         [ForeignKey("TradeAccountID")]
         public virtual TradeAccount.TradeAccount TradeAccount { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("Member")]
+        public virtual ICollection<Member_AvailableTradeAccount> AvailableTradeAccounts { get; set; }
 
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(ApplicationUserManager manager)
         {
@@ -74,6 +81,29 @@ namespace RalphLaurenPortal.Models
             return userIdentity;
         }
     }
+
+    [Table("Member_TradeAccount", Schema = "RalphLauren")]
+    public class Member_AvailableTradeAccount // Users have access to multiple trade accounts
+    {
+        [Key]
+        [Column(Order = 1)]
+        public int MemberID { get; set; }
+
+        [Key]
+        [Column(Order = 2)]
+        public int TradeAccountID { get; set; }
+
+        public bool DisplayTradePrice { get; set; }
+
+        public bool DisplayRetailPrice { get; set; }
+
+        [ForeignKey("MemberID")]
+        public virtual Member Member { get; set; }
+
+        [ForeignKey("TradeAccountID")]
+        public virtual TradeAccount.TradeAccount TradeAccount { get; set; }
+    }
+
 
     // New derived classes
     [Table("Member_Role", Schema = "RalphLauren")]

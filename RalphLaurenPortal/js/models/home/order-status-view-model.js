@@ -1,22 +1,25 @@
 ﻿const orderStatusViewModel = ((resources, parent) => {
 
     let self = {
-        parent: parent
+        parent: parent,
+        resources: resources
     };
 
     let kendoGridPagerMessages = {
-        display: resources[''],
-        empty: resources[''],
-        page: resources[''],
-        of: resources[''],
-        itemsPerPage: resources[''],
-        first: resources[''],
-        last: resources[''],
-        next: resources[''],
-        previous: resources[''],
-        refresh: resources[''],
-        morePages: resources['']
+        display: self.resources[''],
+        empty: self.resources[''],
+        page: self.resources[''],
+        of: self.resources[''],
+        itemsPerPage: self.resources[''],
+        first: self.resources[''],
+        last: self.resources[''],
+        next: self.resources[''],
+        previous: self.resources[''],
+        refresh: self.resources[''],
+        morePages: self.resources['']
     };
+
+    //#region Properties
 
     self.ready = ko.observable(false);
 
@@ -54,134 +57,59 @@
 
     self.validateSearchNow = ko.observable(false);
 
-    self.showSampleControl = ko.pureComputed(function () {
-        switch (self.viewingStatus()) {
-            case 'backOrders':
-            case 'despatchedOrders':
-            case 'ordersInProgress':
-                return true;
-            default:
-                return false;
-        }
-    }, self);
-
     self.dateRange = ko.observable(6);
 
     self.dateRangeType = ko.observable(1);
 
-    self.dateRange.subscribe(function (newValue) {
-        if (newValue != -1) {
-            self.refresh(self.viewingStatus(), true);
-        }
-    });
-
-    self.dateRangeType.subscribe(function (newValue) {
-        if (self.dateRange() != -1) {
-            self.refresh(self.viewingStatus(), true);
-        }
-    });
-
     self.dateRanges = [{
         dateRangeId: 12,
-        name: resources.Last12Months
+        name: self.resources.Last12Months
     }, {
         dateRangeId: 6,
-        name: resources.Last6Months
+        name: self.resources.Last6Months
     }, {
         dateRangeId: 1,
-        name: resources.ThisMonth
+        name: self.resources.ThisMonth
     }, {
         dateRangeId: -1,
-        name: resources.Custom
+        name: self.resources.Custom
     }];
 
     self.allDateRangeTypes = [{
         dateRangeTypeId: 1,
-        name: resources.OrderDate
+        name: self.resources.OrderDate
     }, {
         dateRangeTypeId: 2,
-        name: resources.StatusDate
+        name: self.resources.StatusDate
     }, {
         dateRangeTypeId: 3,
-        name: resources.DueDate
+        name: self.resources.DueDate
     }];
 
     self.dateRangeTypes = ko.observableArray();
 
-    self.availableDateRangeTypes = ko.pureComputed(function () {
-        switch (self.viewingStatus()) {
-            case 'outstanding':
-                return [{
-                    dateRangeTypeId: 1,
-                    name: resources.OrderDate
-                }]
-                break;
-            case 'backOrders':
-                return [{
-                    dateRangeTypeId: 1,
-                    name: resources.OrderDate
-                }, {
-                    dateRangeTypeId: 5,
-                    name: resources.DueDate
-                }]
-                break;
-            case 'reserveOrders':
-                return [{
-                    dateRangeTypeId: 1,
-                    name: resources.OrderDate
-                }, {
-                    dateRangeTypeId: 4,
-                    name: resources.ExpiryDate
-                }]
-                break;
-            case 'despatchedOrders':
-                return [{
-                    dateRangeTypeId: 1,
-                    name: resources.OrderDate
-                }, {
-                    dateRangeTypeId: 3,
-                    name: resources.DespatchDate
-                }]
-                break;
-            case 'ordersInProgress':
-                return [{
-                    dateRangeTypeId: 1,
-                    name: resources.OrderDate
-                }, {
-                    dateRangeTypeId: 2,
-                    name: resources.StatusDate
-                }]
-            case 'held':
-                return [{
-                    dateRangeTypeId: 1,
-                    name: resources.OrderDate
-                }]
-                break;
-                break;
-        }
-    }, self);
-
     self.customFromDate = ko.observable();
+
     self.customToDate = ko.observable();
 
     self.customFromDate.extend({
         date: {
             params: true,
-            message: resources.FromMustBeDate
+            message: self.resources.FromMustBeDate
         },
         required: {
             params: true,
             onlyIf: function () {
                 return self.validateSearchNow() && self.dateRange() == -1 && self.customToDate() != null
             },
-            message: resources.PleaseProvideFromDate
+            message: self.resources.PleaseProvideFromDate
         }
     });
 
     self.customToDate.extend({
         date: {
             params: true,
-            message: resources.ToMustBeDate
+            message: self.resources.ToMustBeDate
         }
     });
 
@@ -213,6 +141,776 @@
         }
     };
 
+    self.trackingOrderNumber = ko.observable();
+
+    self.trackingResults = ko.observableArray([]);
+
+    self.schema = {
+        model: {
+            id: 'OrderNumber',
+            fields: {
+                OrderNumber: {},
+                LineNumber: {},
+                OrderDate: { type: 'date' },
+                OrderQuantity: {},
+                Product: {},
+                Batch: {},
+                Description: {},
+                CustomerOrderReference: {},
+                Status: {},
+                Tracking: {},
+                BaseProduct: {},
+                DespatchStatusDate: { type: 'date' },
+                DespatchStatusDateMessage: { type: 'date' },
+                ReservedUntil: {},
+                ReservedUntilMessage: {},
+                ReserveAction: {}
+            }
+        }
+    };
+
+    self.outstandingOrdersGrid = {
+        busy: self.outstandingOrdersBusy,
+        widget: ko.observable(),
+        data: self.outstandingOrders,
+        dataSource: new kendo.data.DataSource({
+            schema: self.schema,
+            serverFiltering: false,
+            serverSorting: false,
+            serverGrouping: false,
+            serverPaging: false,
+            pageSize: 20,
+            sort: [{
+                field: 'OrderDate',
+                dir: 'desc'
+            }, {
+                field: 'OrderNumber',
+                dir: 'desc'
+            }],
+        }),
+        pageable: {
+            pageSize: 20,
+            pageSizes: [20, 50, 100, 500],
+            messages: kendoGridPagerMessages
+        },
+        columns: [{
+            field: 'OrderNumber',
+            title: self.resources.OrderNo,
+            width: 100,
+            template: '<span class="grid-msg" title="' + self.resources.StockistClickHere + '">#: OrderNumber #</span>'
+        }, {
+            field: 'OrderDate',
+            title: self.resources.OrderDate,
+            width: 110,
+            template: "#: OrderDate ? kendo.toString(kendo.parseDate(OrderDate, 'yyyy-MM-ddTHH:mm:ss'), 'MM/dd/yyyy') : '' #"
+        }, {
+            field: 'OrderQuantity',
+            title: self.resources.Quantity,
+            width: 100,
+            attributes: {
+                'class': 'text-right'
+            },
+            headerAttributes: {
+                'class': 'text-right'
+            }
+        }, {
+            field: 'Product',
+            title: self.resources.Product,
+            width: 120
+        }, {
+            field: 'Description',
+            title: self.resources.Description,
+            width: 140
+        }, {
+            field: 'Batch',
+            title: self.resources.Batch,
+            width: 120
+        }, {
+            field: 'CustomerOrderReference',
+            title: self.resources.YourReference,
+            width: 200
+        }, {
+            field: 'Status',
+            title: self.resources.Status,
+            width: 100,
+            template: '<span class="grid-msg" title="' + self.resources.StockistClickHere + '">#: Status #</span>'
+        }, {
+            field: 'Tracking',
+            title: self.resources.Tracking,
+            width: 100,
+            template: function (dataItem) {
+                if (dataItem) {
+                    if (dataItem.Tracking) {
+                        if (dataItem.Tracking.indexOf('http') == 0)
+                            return '<a href="' + dataItem.Tracking + '" target="_blank">' + self.resources.Track + '</a>'
+                        else
+                            return '<a href="javascript:;" onclick="pageModel.orderStatusModel.checkParcel(\'' + dataItem.Tracking + '\')">' + self.resources.Track + '</a>'
+                    } else {
+                        return ''
+                    }
+                }
+            }
+        }],
+        sortable: true,
+        noRecords: {
+            template: self.resources.NoRecordsToDisplay
+        },
+        selectable: 'row',
+        change: function (e) {
+            var dataItem = this.dataItem(this.select());
+            if (dataItem)
+                self.fetchOrderDetails(dataItem.OrderNumber, dataItem.OrderDate);
+        },
+        dataBound: function (e) {
+            let grid = e.sender;
+            grid.autoFitColumn(grid.columns);
+        },
+        excelExport: self.exportToExcel
+    };
+
+    self.backOrdersGrid = {
+        busy: self.backOrdersBusy,
+        widget: ko.observable(),
+        data: self.backOrders,
+        dataSource: new kendo.data.DataSource({
+            schema: self.schema,
+            serverFiltering: false,
+            serverSorting: false,
+            serverGrouping: false,
+            serverPaging: false,
+            pageSize: 20,
+            sort: {
+                field: 'OrderDate',
+                dir: 'desc'
+            },
+        }),
+        pageable: {
+            pageSize: 20,
+            pageSizes: [20, 50, 100, 500],
+            messages: kendoGridPagerMessages
+        },
+        columns: [{
+            field: 'OrderNumber',
+            title: self.resources.OrderNo,
+            width: 100,
+            template: '<span class="grid-msg" title="' + self.resources.StockistClickHere + '">#: OrderNumber #</span>'
+        }, {
+            field: 'OrderDate',
+            title: self.resources.OrderDate,
+            width: 110,
+            template: "#: OrderDate ? kendo.toString(kendo.parseDate(OrderDate, 'yyyy-MM-ddTHH:mm:ss'), 'MM/dd/yyyy') : '' #"
+        }, {
+            field: 'OrderQuantity',
+            title: self.resources.Quantity,
+            width: 100,
+            attributes: {
+                'class': 'text-right'
+            },
+            headerAttributes: {
+                'class': 'text-right'
+            }
+        }, {
+            field: 'Product',
+            title: self.resources.Product,
+            width: 120
+        }, {
+            field: 'Description',
+            title: self.resources.Description,
+            width: 140
+        }, {
+            field: 'CustomerOrderReference',
+            title: self.resources.YourReference,
+            width: 200
+        }, {
+            field: 'DespatchStatusDate',
+            title: self.resources.DueDate,
+            width: 100,
+            template: "#: DespatchStatusDate ? kendo.toString(kendo.parseDate(DespatchStatusDate, 'yyyy-MM-ddTHH:mm:ss'), 'MM/dd/yyyy') : DespatchStatusDateMessage #"
+        }],
+        sortable: true,
+        noRecords: {
+            template: self.resources.NoRecordsToDisplay
+        },
+        selectable: 'row',
+        change: function (e) {
+            var dataItem = this.dataItem(this.select());
+            if (dataItem)
+                self.fetchOrderDetails(dataItem.OrderNumber, dataItem.OrderDate);
+        },
+        dataBound: function (e) {
+            let grid = e.sender;
+            grid.autoFitColumn(grid.columns);
+        },
+        excelExport: self.exportToExcel
+    };
+
+    self.reserveOrdersGrid = {
+        busy: self.reserveOrdersBusy,
+        widget: ko.observable(),
+        data: self.reserveOrders,
+        dataSource: new kendo.data.DataSource({
+            schema: self.schema,
+            serverFiltering: false,
+            serverSorting: false,
+            serverGrouping: false,
+            serverPaging: false,
+            pageSize: 20,
+            sort: {
+                field: 'OrderDate',
+                dir: 'desc'
+            },
+        }),
+        pageable: {
+            pageSize: 20,
+            pageSizes: [20, 50, 100, 500],
+            messages: kendoGridPagerMessages
+        },
+        columns: [{
+            field: 'OrderNumber',
+            title: self.resources.OrderNo,
+            width: 100,
+            template: '<span class="grid-msg" title="' + self.resources.StockistClickHere + '">#: OrderNumber #</span>'
+        }, {
+            field: 'OrderDate',
+            title: self.resources.OrderDate,
+            width: 110,
+            template: "#: OrderDate ? kendo.toString(kendo.parseDate(OrderDate, 'yyyy-MM-ddTHH:mm:ss'), 'MM/dd/yyyy') : '' #"
+        }, {
+            field: 'OrderQuantity',
+            title: self.resources.Quantity,
+            width: 100,
+            attributes: {
+                'class': 'text-right'
+            },
+            headerAttributes: {
+                'class': 'text-right'
+            }
+        }, {
+            field: 'Product',
+            title: self.resources.Product,
+            width: 120
+        }, {
+            field: 'Description',
+            title: self.resources.Description,
+            width: 140
+        }, {
+            field: 'Batch',
+            title: self.resources.Batch,
+            width: 120
+        }, {
+            field: 'CustomerOrderReference',
+            title: self.resources.YourReference,
+            width: 200
+        }, {
+            field: 'ReservedUntil',
+            title: self.resources.ExpiryDate,
+            width: 100,
+            template: "#: ReservedUntil ? kendo.toString(kendo.parseDate(ReservedUntil, 'yyyy-MM-ddTHH:mm:ss'), 'MM/dd/yyyy') : ReservedUntil #",
+            attributes: {
+                'class': 'text-right'
+            },
+            headerAttributes: {
+                'class': 'text-right'
+            }
+        }],
+        //, {
+        //    field: 'ReserveAction',
+        //    title: 'Action'
+        //}],
+        sortable: true,
+        noRecords: {
+            template: self.resources.NoRecordsToDisplay
+        },
+        selectable: 'row',
+        change: function (e) {
+            var dataItem = this.dataItem(this.select());
+            if (dataItem)
+                self.fetchOrderDetails(dataItem.OrderNumber, dataItem.OrderDate);
+        },
+        dataBound: function (e) {
+            let grid = e.sender;
+            grid.autoFitColumn(grid.columns);
+        },
+        excelExport: self.exportToExcel
+    };
+
+    self.despatchedOrdersGrid = {
+        busy: self.despatchedOrdersBusy,
+        widget: ko.observable(),
+        data: self.despatchedOrders,
+        dataSource: new kendo.data.DataSource({
+            schema: self.schema,
+            serverFiltering: false,
+            serverSorting: false,
+            serverGrouping: false,
+            serverPaging: false,
+            pageSize: 20,
+            sort: {
+                field: 'OrderDate',
+                dir: 'desc'
+            },
+        }),
+        pageable: {
+            pageSize: 20,
+            pageSizes: [20, 50, 100, 500],
+            messages: kendoGridPagerMessages
+        },
+        columns: [{
+            field: 'OrderNumber',
+            title: self.resources.OrderNo,
+            width: 100,
+            template: '<span class="grid-msg" title="' + self.resources.StockistClickHere + '">#: OrderNumber #</span>'
+        }, {
+            field: 'OrderDate',
+            title: self.resources.OrderDate,
+            width: 110,
+            template: "#: OrderDate ? kendo.toString(kendo.parseDate(OrderDate, 'yyyy-MM-ddTHH:mm:ss'), 'MM/dd/yyyy') : '' #"
+        }, {
+            field: 'OrderQuantity',
+            title: self.resources.Quantity,
+            width: 100,
+            attributes: {
+                'class': 'text-right'
+            },
+            headerAttributes: {
+                'class': 'text-right'
+            }
+        }, {
+            field: 'Product',
+            title: self.resources.Product,
+            width: 120
+        }, {
+            field: 'Description',
+            title: self.resources.Description,
+            width: 140
+        }, {
+            field: 'Batch',
+            title: self.resources.Batch,
+            width: 120
+        }, {
+            field: 'CustomerOrderReference',
+            title: self.resources.YourReference,
+            width: 200
+        }, {
+            field: 'DespatchStatusDateMessage',
+            title: self.resources.DespatchDate,
+            width: 115,
+            //template: "#: DespatchStatusDate ? kendo.toString(kendo.parseDate(DespatchStatusDate, 'yyyy-MM-ddTHH:mm:ss'), 'dd/MM/yyyy') : DespatchStatusDateMessage #"
+        }, {
+            field: 'Tracking',
+            title: self.resources.Tracking,
+            width: 100,
+            template: function (dataItem) {
+                if (dataItem) {
+                    if (dataItem.Tracking) {
+                        if (dataItem.Tracking.indexOf('http') == 0)
+                            return '<a href="' + dataItem.Tracking + '" target="_blank">' + self.resources.Track + '</a>'
+                        else
+                            return '<a href="javascript:;" onclick="pageModel.orderStatusModel.checkParcel(\'' + dataItem.Tracking + '\')">' + self.resources.Track + '</a>'
+                    } else {
+                        return ''
+                    }
+                }
+            }
+        }],
+        sortable: true,
+        noRecords: {
+            template: self.resources.NoRecordsToDisplay
+        },
+        selectable: 'row',
+        change: function (e) {
+            var dataItem = this.dataItem(this.select());
+            if (dataItem)
+                self.fetchOrderDetails(dataItem.OrderNumber, dataItem.OrderDate);
+        },
+        dataBound: function (e) {
+            let grid = e.sender;
+            grid.autoFitColumn(grid.columns);
+        },
+        excelExport: self.exportToExcel
+    };
+
+    self.ordersInProgressGrid = {
+        busy: self.ordersInProgressBusy,
+        widget: ko.observable(),
+        data: self.ordersInProgress,
+        dataSource: new kendo.data.DataSource({
+            schema: self.schema,
+            serverFiltering: false,
+            serverSorting: false,
+            serverGrouping: false,
+            serverPaging: false,
+            pageSize: 20,
+            sort: {
+                field: 'OrderDate',
+                dir: 'desc'
+            },
+        }),
+        pageable: {
+            pageSize: 20,
+            pageSizes: [20, 50, 100, 500],
+            messages: kendoGridPagerMessages
+        },
+        columns: [{
+            field: 'OrderNumber',
+            title: self.resources.OrderNo,
+            width: 100,
+            template: '<span class="grid-msg" title="' + self.resources.StockistClickHere + '">#: OrderNumber #</span>'
+        }, {
+            field: 'OrderDate',
+            title: self.resources.OrderDate,
+            width: 110,
+            template: "#: OrderDate ? kendo.toString(kendo.parseDate(OrderDate, 'yyyy-MM-ddTHH:mm:ss'), 'MM/dd/yyyy') : '' #"
+        }, {
+            field: 'OrderQuantity',
+            title: self.resources.Quantity,
+            width: 100,
+            attributes: {
+                'class': 'text-right'
+            },
+            headerAttributes: {
+                'class': 'text-right'
+            }
+        }, {
+            field: 'Product',
+            title: self.resources.Product,
+            width: 120
+        }, {
+            field: 'Description',
+            title: self.resources.Description
+        }, {
+            field: 'Batch',
+            title: self.resources.Batch,
+            width: 120
+        }, {
+            field: 'CustomerOrderReference',
+            title: self.resources.YourReference,
+            width: 200
+        }, {
+            field: 'DespatchStatusDateMessage',
+            title: self.resources.StatusDate,
+            width: 115,
+            //template: "#: DespatchStatusDate ? kendo.toString(kendo.parseDate(DespatchStatusDate, 'yyyy-MM-ddTHH:mm:ss'), 'dd/MM/yyyy') : DespatchStatusDateMessage #"
+        }, {
+            field: 'Status',
+            title: self.resources.Status,
+            width: 100,
+            template: '<span class="grid-msg" title="' + self.resources.StockistClickHere + '">#: Status #</span>'
+        }],
+        sortable: true,
+        noRecords: {
+            template: self.resources.NoRecordsToDisplay
+        },
+        selectable: 'row',
+        change: function (e) {
+            var dataItem = this.dataItem(this.select());
+            if (dataItem)
+                self.fetchOrderDetails(dataItem.OrderNumber, dataItem.OrderDate);
+        },
+        dataBound: function (e) {
+            let grid = e.sender;
+            grid.autoFitColumn(grid.columns);
+        },
+        excelExport: self.exportToExcel
+    };
+
+    self.heldOrdersGrid = {
+        busy: self.heldOrdersBusy,
+        widget: ko.observable(),
+        data: self.heldOrders,
+        dataSource: new kendo.data.DataSource({
+            schema: self.schema,
+            serverFiltering: false,
+            serverSorting: false,
+            serverGrouping: false,
+            serverPaging: false,
+            pageSize: 20,
+            sort: [{
+                field: 'OrderDate',
+                dir: 'desc'
+            }, {
+                field: 'OrderNumber',
+                dir: 'desc'
+            }],
+        }),
+        pageable: {
+            pageSize: 20,
+            pageSizes: [20, 50, 100, 500],
+            messages: kendoGridPagerMessages
+        },
+        columns: [{
+            field: 'OrderNumber',
+            title: self.resources.OrderNo,
+            width: 100,
+            template: '<span class="grid-msg" title="' + self.resources.StockistClickHere + '">#: OrderNumber #</span>'
+        }, {
+            field: 'OrderDate',
+            title: self.resources.OrderDate,
+            width: 110,
+            template: "#: OrderDate ? kendo.toString(kendo.parseDate(OrderDate, 'yyyy-MM-ddTHH:mm:ss'), 'MM/dd/yyyy') : '' #"
+        }, {
+            field: 'OrderQuantity',
+            title: self.resources.Quantity,
+            width: 100,
+            attributes: {
+                'class': 'text-right'
+            },
+            headerAttributes: {
+                'class': 'text-right'
+            }
+        }, {
+            field: 'Product',
+            title: self.resources.Product,
+            width: 120
+        }, {
+            field: 'Description',
+            title: self.resources.Description
+        }, {
+            field: 'Batch',
+            title: self.resources.Batch,
+            width: 120
+        }, {
+            field: 'CustomerOrderReference',
+            title: self.resources.YourReference,
+            width: 200
+        }, {
+            field: 'Status',
+            title: self.resources.Status,
+            width: 100
+        }],
+        sortable: true,
+        noRecords: {
+            template: self.resources.NoRecordsToDisplay
+        },
+        selectable: 'row',
+        change: function (e) {
+            var dataItem = this.dataItem(this.select());
+            if (dataItem)
+                self.fetchOrderDetails(dataItem.OrderNumber, dataItem.OrderDate);
+        },
+        dataBound: function (e) {
+            let grid = e.sender;
+            grid.autoFitColumn(grid.columns);
+        },
+        excelExport: self.exportToExcel
+    };
+
+    self.ordersDetailsGrid = {
+        widget: ko.observable(),
+        data: self.orderDetailsOrderLines,
+        dataSource: new kendo.data.DataSource({
+            schema: self.schema,
+            serverFiltering: false,
+            serverSorting: false,
+            serverGrouping: false,
+            serverPaging: false,
+            pageSize: 20,
+            sort: {
+                field: 'LineNumber',
+                dir: 'asc'
+            },
+        }),
+        pageable: {
+            pageSize: 20,
+            pageSizes: [20, 50, 100, 500],
+            messages: kendoGridPagerMessages
+        },
+        columns: [{
+            field: 'LineNumber',
+            title: self.resources.LineNo,
+            hidden: true
+        }, {
+            field: 'Product',
+            title: self.resources.Product,
+            width: 120
+        }, {
+            field: 'Description',
+            title: self.resources.Description,
+            width: 140
+        }, {
+            field: 'Batch',
+            title: self.resources.Batch,
+            width: 120
+        }, {
+            field: 'Quantity',
+            title: self.resources.Quantity,
+            width: 100,
+            attributes: {
+                'class': 'text-right'
+            },
+            headerAttributes: {
+                'class': 'text-right'
+            }
+        }, {
+            field: 'BatchNumber',
+            title: self.resources.BatchNo,
+            width: 100
+        }, {
+            field: 'CustomerOrderReference',
+            title: self.resources.YourReference,
+            width: 115
+        }, {
+            field: 'OrderStatus',
+            title: self.resources.Status,
+            width: 90,
+            //template: "#: DespatchStatusDate ? kendo.toString(kendo.parseDate(DespatchStatusDate, 'yyyy-MM-ddTHH:mm:ss'), 'dd/MM/yyyy') : DespatchStatusDateMessage #",
+            attributes: {
+                'class': 'text-right'
+            },
+            headerAttributes: {
+                'class': 'text-right'
+            }
+        }, {
+            field: 'DespatchStatus',
+            title: self.resources.Despatch,
+            width: 100,
+            //template: "#: DespatchStatus ? kendo.toString(kendo.parseDate(DespatchStatus, 'yyyy-MM-ddTHH:mm:ss'), 'MM/dd/yyyy') : DespatchStatusDateMessage #",
+            attributes: {
+                'class': 'text-right'
+            },
+            headerAttributes: {
+                'class': 'text-right'
+            }
+        }, {
+            field: 'Tracking',
+            title: self.resources.Track,
+            width: 100,
+            template: function (dataItem) {
+                if (dataItem) {
+                    if (dataItem.Tracking) {
+                        if (dataItem.Tracking.indexOf('http') == 0)
+                            return '<a href="' + dataItem.Tracking + '" target="_blank">' + self.resources.Track + '</a>'
+                        else
+                            return '<a href="javascript:;" onclick="pageModel.orderStatusModel.checkParcel(\'' + dataItem.Tracking + '\')">' + self.resources.Track + '</a>'
+                    } else {
+                        return ''
+                    }
+                }
+            }
+        }],
+        sortable: true,
+        noRecords: {
+            template: self.resources.NoRecordsToDisplay
+        },
+        selectable: 'row',
+        change: function (e) {
+            var dataItem = this.dataItem(this.select());
+            //window.open('/downloads/trade-document?docref=' + encodeURIComponent(dataItem.DocumentNumber) + '&c=' + getCountryID() + '&l=' + getLanguageID(), '_blank');
+        },
+        dataBound: function (e) {
+            let grid = e.sender;
+            grid.autoFitColumn(grid.columns);
+        },
+        excelExport: self.exportToExcel
+    };
+
+    //#endregion
+
+
+    //#region Components
+
+
+
+    //#endregion
+
+
+    //#region Subscriptions
+
+    self.dateRange.subscribe(function (newValue) {
+        if (newValue != -1) {
+            self.refresh(self.viewingStatus(), true);
+        } else {
+            var from = new Date();
+            from.setMonth(from.getMonth() - 1);
+            self.customFromDate(from);
+            self.refresh(self.viewingStatus(), true);
+        }
+    });
+
+    self.dateRangeType.subscribe(function (newValue) {
+        if (self.dateRange() != -1) {
+            self.refresh(self.viewingStatus(), true);
+        } else {
+            var from = new Date();
+            from.setMonth(from.getMonth() - 1);
+            self.customFromDate(from);
+            self.refresh(self.viewingStatus(), true);
+        }
+    });
+
+    self.sampleOrders.subscribe(function (newValue) {
+        self.search();
+    });
+
+    //#endregion
+
+
+    //#region Computeds
+
+    self.showSampleControl = ko.pureComputed(function () {
+        switch (self.viewingStatus()) {
+            case 'backOrders':
+            case 'despatchedOrders':
+            case 'ordersInProgress':
+                return true;
+            default:
+                return false;
+        }
+    }, self);
+
+    self.availableDateRangeTypes = ko.pureComputed(function () {
+        switch (self.viewingStatus()) {
+            case 'outstanding':
+                return [{
+                    dateRangeTypeId: 1,
+                    name: self.resources.OrderDate
+                }]
+                break;
+            case 'backOrders':
+                return [{
+                    dateRangeTypeId: 1,
+                    name: self.resources.OrderDate
+                }, {
+                    dateRangeTypeId: 5,
+                    name: self.resources.DueDate
+                }]
+                break;
+            case 'reserveOrders':
+                return [{
+                    dateRangeTypeId: 1,
+                    name: self.resources.OrderDate
+                }, {
+                    dateRangeTypeId: 4,
+                    name: self.resources.ExpiryDate
+                }]
+                break;
+            case 'despatchedOrders':
+                return [{
+                    dateRangeTypeId: 1,
+                    name: self.resources.OrderDate
+                }, {
+                    dateRangeTypeId: 3,
+                    name: self.resources.DespatchDate
+                }]
+                break;
+            case 'ordersInProgress':
+                return [{
+                    dateRangeTypeId: 1,
+                    name: self.resources.OrderDate
+                }, {
+                    dateRangeTypeId: 2,
+                    name: self.resources.StatusDate
+                }]
+            case 'held':
+                return [{
+                    dateRangeTypeId: 1,
+                    name: self.resources.OrderDate
+                }]
+                break;
+                break;
+        }
+    }, self);
+
     self.fromPreceedsTo = ko.pureComputed(function () {
         if (self.customFromDate() && self.customToDate()) {
             return self.customFromDate().getTime() <= self.customToDate().getTime();
@@ -223,13 +921,14 @@
             onlyIf: function () {
                 return self.customFromDate() && self.customToDate()
             },
-            message: resources.FromMustPreceedTo
+            message: self.resources.FromMustPreceedTo
         }
     });
 
-    self.sampleOrders.subscribe(function (newValue) {
-        self.search();
-    });
+    //#endregion
+
+
+    //#region Methods
 
     self.search = function () {
         self.refresh(self.viewingStatus(), true);
@@ -332,7 +1031,7 @@
                             });
                         },
                         error: function (xhr, s, a) {
-                            alert(getDGECResource('majorError'));
+                            showError();
                             affectingBusy(false);
                         },
                         timeout: 120000
@@ -341,9 +1040,6 @@
             }
         }, 0);
     }
-
-    self.trackingOrderNumber = ko.observable();
-    self.trackingResults = ko.observableArray([]);
 
     self.checkParcel = function (text) {
 
@@ -471,30 +1167,6 @@
             }
         });
     }
-
-    self.schema = {
-        model: {
-            id: 'OrderNumber',
-            fields: {
-                OrderNumber: {},
-                LineNumber: {},
-                OrderDate: { type: 'date' },
-                OrderQuantity: {},
-                Product: {},
-                Batch: {},
-                Description: {},
-                CustomerOrderReference: {},
-                Status: {},
-                Tracking: {},
-                BaseProduct: {},
-                DespatchStatusDate: { type: 'date' },
-                DespatchStatusDateMessage: { type: 'date' },
-                ReservedUntil: {},
-                ReservedUntilMessage: {},
-                ReserveAction: {}
-            }
-        }
-    };
 
     self.saveAsExcel = function (grid) {
         self.fetchAllTracking(grid);
@@ -652,7 +1324,7 @@
                                             }
 
                                             // we create a formula hyperlink
-                                            sheet.rows[j].cells[i + ctr].formula = '=HYPERLINK("' + url + '","' + resources.Track + '")';
+                                            sheet.rows[j].cells[i + ctr].formula = '=HYPERLINK("' + url + '","' + self.resources.Track + '")';
 
                                             // We set the color property as blue, underlined and right aligned to make it look like a link
                                             sheet.rows[j].cells[i + ctr - hiddenColsShift].format = '[Blue]';
@@ -661,7 +1333,7 @@
                                         }
                                     } else {
                                         // we create a formula hyperlink
-                                        sheet.rows[j].cells[i].formula = '=HYPERLINK("' + url + '","' + resources.Track + '")';
+                                        sheet.rows[j].cells[i].formula = '=HYPERLINK("' + url + '","' + self.resources.Track + '")';
 
                                         // We set the color property as blue, underlined and right aligned to make it look like a link
                                         sheet.rows[j].cells[i - hiddenColsShift].format = '[Blue]';
@@ -684,640 +1356,7 @@
         }
     }
 
-    self.outstandingOrdersGrid = {
-        busy: self.outstandingOrdersBusy,
-        widget: ko.observable(),
-        data: self.outstandingOrders,
-        dataSource: new kendo.data.DataSource({
-            schema: self.schema,
-            serverFiltering: false,
-            serverSorting: false,
-            serverGrouping: false,
-            serverPaging: false,
-            pageSize: 20,
-            sort: [{
-                field: 'OrderDate',
-                dir: 'desc'
-            }, {
-                field: 'OrderNumber',
-                dir: 'desc'
-            }],
-        }),
-        pageable: {
-            pageSize: 20,
-            pageSizes: [20, 50, 100, 500],
-            messages: kendoGridPagerMessages
-        },
-        columns: [{
-            field: 'OrderNumber',
-            title: resources.OrderNo,
-            width: 100,
-            template: '<span class="grid-msg" title="' + resources.StockistClickHere +'">#: OrderNumber #</span>'
-        }, {
-            field: 'OrderDate',
-            title: resources.OrderDate,
-            width: 110,
-            template: "#: OrderDate ? kendo.toString(kendo.parseDate(OrderDate, 'yyyy-MM-ddTHH:mm:ss'), 'MM/dd/yyyy') : '' #"
-        }, {
-            field: 'OrderQuantity',
-            title: resources.Quantity,
-            width: 100,
-            attributes: {
-                'class': 'text-right'
-            },
-            headerAttributes: {
-                'class': 'text-right'
-            }
-        }, {
-            field: 'Product',
-            title: resources.Product,
-            width: 120
-        }, {
-            field: 'Description',
-            title: resources.Description,
-            width: 140
-        }, {
-            field: 'Batch',
-            title: resources.Batch,
-            width: 120
-        }, {
-            field: 'CustomerOrderReference',
-            title: resources.YourReference,
-            width: 200
-        }, {
-            field: 'Status',
-            title: resources.Status,
-            width: 100,
-            template: '<span class="grid-msg" title="' + resources.StockistClickHere + '">#: Status #</span>'
-        }, {
-            field: 'Tracking',
-            title: resources.Tracking,
-            width: 100,
-            template: function (dataItem) {
-                if (dataItem) {
-                    if (dataItem.Tracking) {
-                        if (dataItem.Tracking.indexOf('http') == 0)
-                            return '<a href="' + dataItem.Tracking + '" target="_blank">' + resources.Track + '</a>'
-                        else
-                            return '<a href="javascript:;" onclick="pageModel.orderStatusModel.checkParcel(\'' + dataItem.Tracking + '\')">' + resources.Track + '</a>'
-                    } else {
-                        return ''
-                    }
-                }
-            }
-        }],
-        sortable: true,
-        noRecords: {
-            template: resources.NoRecordsToDisplay
-        },
-        selectable: 'row',
-        change: function (e) {
-            var dataItem = this.dataItem(this.select());
-            if (dataItem)
-                self.fetchOrderDetails(dataItem.OrderNumber, dataItem.OrderDate);
-        },
-        dataBound: function (e) {
-            let grid = e.sender;
-            grid.autoFitColumn(grid.columns);
-        },
-        excelExport: self.exportToExcel
-    };
-
-    self.backOrdersGrid = {
-        busy: self.backOrdersBusy,
-        widget: ko.observable(),
-        data: self.backOrders,
-        dataSource: new kendo.data.DataSource({
-            schema: self.schema,
-            serverFiltering: false,
-            serverSorting: false,
-            serverGrouping: false,
-            serverPaging: false,
-            pageSize: 20,
-            sort: {
-                field: 'OrderDate',
-                dir: 'desc'
-            },
-        }),
-        pageable: {
-            pageSize: 20,
-            pageSizes: [20, 50, 100, 500],
-            messages: kendoGridPagerMessages
-        },
-        columns: [{
-            field: 'OrderNumber',
-            title: resources.OrderNo,
-            width: 100,
-            template: '<span class="grid-msg" title="' + resources.StockistClickHere + '">#: OrderNumber #</span>'
-        }, {
-            field: 'OrderDate',
-            title: resources.OrderDate,
-            width: 110,
-            template: "#: OrderDate ? kendo.toString(kendo.parseDate(OrderDate, 'yyyy-MM-ddTHH:mm:ss'), 'MM/dd/yyyy') : '' #"
-        }, {
-            field: 'OrderQuantity',
-            title: resources.Quantity,
-            width: 100,
-            attributes: {
-                'class': 'text-right'
-            },
-            headerAttributes: {
-                'class': 'text-right'
-            }
-        }, {
-            field: 'Product',
-            title: resources.Product,
-            width: 120
-        }, {
-            field: 'Description',
-            title: resources.Description,
-            width: 140
-        }, {
-            field: 'CustomerOrderReference',
-            title: resources.YourReference,
-            width: 200
-        }, {
-            field: 'DespatchStatusDate',
-            title: resources.DueDate,
-            width: 100,
-            template: "#: DespatchStatusDate ? kendo.toString(kendo.parseDate(DespatchStatusDate, 'yyyy-MM-ddTHH:mm:ss'), 'MM/dd/yyyy') : DespatchStatusDateMessage #"
-        }],
-        sortable: true,
-        noRecords: {
-            template: resources.NoRecordsToDisplay
-        },
-        selectable: 'row',
-        change: function (e) {
-            var dataItem = this.dataItem(this.select());
-            if (dataItem)
-                self.fetchOrderDetails(dataItem.OrderNumber, dataItem.OrderDate);
-        },
-        dataBound: function (e) {
-            let grid = e.sender;
-            grid.autoFitColumn(grid.columns);
-        },
-        excelExport: self.exportToExcel
-    };
-
-    self.reserveOrdersGrid = {
-        busy: self.reserveOrdersBusy,
-        widget: ko.observable(),
-        data: self.reserveOrders,
-        dataSource: new kendo.data.DataSource({
-            schema: self.schema,
-            serverFiltering: false,
-            serverSorting: false,
-            serverGrouping: false,
-            serverPaging: false,
-            pageSize: 20,
-            sort: {
-                field: 'OrderDate',
-                dir: 'desc'
-            },
-        }),
-        pageable: {
-            pageSize: 20,
-            pageSizes: [20, 50, 100, 500],
-            messages: kendoGridPagerMessages
-        },
-        columns: [{
-            field: 'OrderNumber',
-            title: resources.OrderNo,
-            width: 100,
-            template: '<span class="grid-msg" title="' + resources.StockistClickHere + '">#: OrderNumber #</span>'
-        }, {
-            field: 'OrderDate',
-            title: resources.OrderDate,
-            width: 110,
-            template: "#: OrderDate ? kendo.toString(kendo.parseDate(OrderDate, 'yyyy-MM-ddTHH:mm:ss'), 'MM/dd/yyyy') : '' #"
-        }, {
-            field: 'OrderQuantity',
-            title: resources.Quantity,
-            width: 100,
-            attributes: {
-                'class': 'text-right'
-            },
-            headerAttributes: {
-                'class': 'text-right'
-            }
-        }, {
-            field: 'Product',
-            title: resources.Product,
-            width: 120
-        }, {
-            field: 'Description',
-            title: resources.Description,
-            width: 140
-        }, {
-            field: 'Batch',
-            title: resources.Batch,
-            width: 120
-        }, {
-            field: 'CustomerOrderReference',
-            title: resources.YourReference,
-            width: 200
-        }, {
-            field: 'ReservedUntil',
-            title: resources.ExpiryDate,
-            width: 100,
-            template: "#: ReservedUntil ? kendo.toString(kendo.parseDate(ReservedUntil, 'yyyy-MM-ddTHH:mm:ss'), 'MM/dd/yyyy') : ReservedUntil #",
-            attributes: {
-                'class': 'text-right'
-            },
-            headerAttributes: {
-                'class': 'text-right'
-            }
-        }],
-        //, {
-        //    field: 'ReserveAction',
-        //    title: 'Action'
-        //}],
-        sortable: true,
-        noRecords: {
-            template: resources.NoRecordsToDisplay
-        },
-        selectable: 'row',
-        change: function (e) {
-            var dataItem = this.dataItem(this.select());
-            if (dataItem)
-                self.fetchOrderDetails(dataItem.OrderNumber, dataItem.OrderDate);
-        },
-        dataBound: function (e) {
-            let grid = e.sender;
-            grid.autoFitColumn(grid.columns);
-        },
-        excelExport: self.exportToExcel
-    };
-
-    self.despatchedOrdersGrid = {
-        busy: self.despatchedOrdersBusy,
-        widget: ko.observable(),
-        data: self.despatchedOrders,
-        dataSource: new kendo.data.DataSource({
-            schema: self.schema,
-            serverFiltering: false,
-            serverSorting: false,
-            serverGrouping: false,
-            serverPaging: false,
-            pageSize: 20,
-            sort: {
-                field: 'OrderDate',
-                dir: 'desc'
-            },
-        }),
-        pageable: {
-            pageSize: 20,
-            pageSizes: [20, 50, 100, 500],
-            messages: kendoGridPagerMessages
-        },
-        columns: [{
-            field: 'OrderNumber',
-            title: resources.OrderNo,
-            width: 100,
-            template: '<span class="grid-msg" title="' + resources.StockistClickHere + '">#: OrderNumber #</span>'
-        }, {
-            field: 'OrderDate',
-            title: resources.OrderDate,
-            width: 110,
-            template: "#: OrderDate ? kendo.toString(kendo.parseDate(OrderDate, 'yyyy-MM-ddTHH:mm:ss'), 'MM/dd/yyyy') : '' #"
-        }, {
-            field: 'OrderQuantity',
-            title: resources.Quantity,
-            width: 100,
-            attributes: {
-                'class': 'text-right'
-            },
-            headerAttributes: {
-                'class': 'text-right'
-            }
-        }, {
-            field: 'Product',
-            title: resources.Product,
-            width: 120
-        }, {
-            field: 'Description',
-            title: resources.Description,
-            width: 140
-        }, {
-            field: 'Batch',
-            title: resources.Batch,
-            width: 120
-        }, {
-            field: 'CustomerOrderReference',
-            title: resources.YourReference,
-            width: 200
-        }, {
-            field: 'DespatchStatusDateMessage',
-            title: resources.DespatchDate,
-            width: 115,
-            //template: "#: DespatchStatusDate ? kendo.toString(kendo.parseDate(DespatchStatusDate, 'yyyy-MM-ddTHH:mm:ss'), 'dd/MM/yyyy') : DespatchStatusDateMessage #"
-        }, {
-            field: 'Tracking',
-            title: resources.Tracking,
-            width: 100,
-            template: function (dataItem) {
-                if (dataItem) {
-                    if (dataItem.Tracking) {
-                        if (dataItem.Tracking.indexOf('http') == 0)
-                            return '<a href="' + dataItem.Tracking + '" target="_blank">' + resources.Track + '</a>'
-                        else
-                            return '<a href="javascript:;" onclick="pageModel.orderStatusModel.checkParcel(\'' + dataItem.Tracking + '\')">' + resources.Track + '</a>'
-                    } else {
-                        return ''
-                    }
-                }
-            }
-        }],
-        sortable: true,
-        noRecords: {
-            template: resources.NoRecordsToDisplay
-        },
-        selectable: 'row',
-        change: function (e) {
-            var dataItem = this.dataItem(this.select());
-            if (dataItem)
-                self.fetchOrderDetails(dataItem.OrderNumber, dataItem.OrderDate);
-        },
-        dataBound: function (e) {
-            let grid = e.sender;
-            grid.autoFitColumn(grid.columns);
-        },
-        excelExport: self.exportToExcel
-    };
-
-    self.ordersInProgressGrid = {
-        busy: self.ordersInProgressBusy,
-        widget: ko.observable(),
-        data: self.ordersInProgress,
-        dataSource: new kendo.data.DataSource({
-            schema: self.schema,
-            serverFiltering: false,
-            serverSorting: false,
-            serverGrouping: false,
-            serverPaging: false,
-            pageSize: 20,
-            sort: {
-                field: 'OrderDate',
-                dir: 'desc'
-            },
-        }),
-        pageable: {
-            pageSize: 20,
-            pageSizes: [20, 50, 100, 500],
-            messages: kendoGridPagerMessages
-        },
-        columns: [{
-            field: 'OrderNumber',
-            title: resources.OrderNo,
-            width: 100,
-            template: '<span class="grid-msg" title="' + resources.StockistClickHere + '">#: OrderNumber #</span>'
-        }, {
-            field: 'OrderDate',
-            title: resources.OrderDate,
-            width: 110,
-            template: "#: OrderDate ? kendo.toString(kendo.parseDate(OrderDate, 'yyyy-MM-ddTHH:mm:ss'), 'MM/dd/yyyy') : '' #"
-        }, {
-            field: 'OrderQuantity',
-            title: resources.Quantity,
-            width: 100,
-            attributes: {
-                'class': 'text-right'
-            },
-            headerAttributes: {
-                'class': 'text-right'
-            }
-        }, {
-            field: 'Product',
-            title: resources.Product,
-            width: 120
-        }, {
-            field: 'Description',
-            title: resources.Description
-        }, {
-            field: 'Batch',
-            title: resources.Batch,
-            width: 120
-        }, {
-            field: 'CustomerOrderReference',
-            title: resources.YourReference,
-            width: 200
-        }, {
-            field: 'DespatchStatusDateMessage',
-            title: resources.StatusDate,
-            width: 115,
-            //template: "#: DespatchStatusDate ? kendo.toString(kendo.parseDate(DespatchStatusDate, 'yyyy-MM-ddTHH:mm:ss'), 'dd/MM/yyyy') : DespatchStatusDateMessage #"
-        }, {
-            field: 'Status',
-            title: resources.Status,
-            width: 100,
-            template: '<span class="grid-msg" title="' + resources.StockistClickHere + '">#: Status #</span>'
-        }],
-        sortable: true,
-        noRecords: {
-            template: resources.NoRecordsToDisplay
-        },
-        selectable: 'row',
-        change: function (e) {
-            var dataItem = this.dataItem(this.select());
-            if (dataItem)
-                self.fetchOrderDetails(dataItem.OrderNumber, dataItem.OrderDate);
-        },
-        dataBound: function (e) {
-            let grid = e.sender;
-            grid.autoFitColumn(grid.columns);
-        },
-        excelExport: self.exportToExcel
-    };
-
-    self.heldOrdersGrid = {
-        busy: self.heldOrdersBusy,
-        widget: ko.observable(),
-        data: self.heldOrders,
-        dataSource: new kendo.data.DataSource({
-            schema: self.schema,
-            serverFiltering: false,
-            serverSorting: false,
-            serverGrouping: false,
-            serverPaging: false,
-            pageSize: 20,
-            sort: [{
-                field: 'OrderDate',
-                dir: 'desc'
-            }, {
-                field: 'OrderNumber',
-                dir: 'desc'
-            }],
-        }),
-        pageable: {
-            pageSize: 20,
-            pageSizes: [20, 50, 100, 500],
-            messages: kendoGridPagerMessages
-        },
-        columns: [{
-            field: 'OrderNumber',
-            title: resources.OrderNo,
-            width: 100,
-            template: '<span class="grid-msg" title="' + resources.StockistClickHere + '">#: OrderNumber #</span>'
-        }, {
-            field: 'OrderDate',
-            title: resources.OrderDate,
-            width: 110,
-            template: "#: OrderDate ? kendo.toString(kendo.parseDate(OrderDate, 'yyyy-MM-ddTHH:mm:ss'), 'MM/dd/yyyy') : '' #"
-        }, {
-            field: 'OrderQuantity',
-            title: resources.Quantity,
-            width: 100,
-            attributes: {
-                'class': 'text-right'
-            },
-            headerAttributes: {
-                'class': 'text-right'
-            }
-        }, {
-            field: 'Product',
-            title: resources.Product,
-            width: 120
-        }, {
-            field: 'Description',
-            title: resources.Description
-        }, {
-            field: 'Batch',
-            title: resources.Batch,
-            width: 120
-        }, {
-            field: 'CustomerOrderReference',
-            title: resources.YourReference,
-            width: 200
-        }, {
-            field: 'Status',
-            title: resources.Status,
-            width: 100
-        }],
-        sortable: true,
-        noRecords: {
-            template: resources.NoRecordsToDisplay
-        },
-        selectable: 'row',
-        change: function (e) {
-            var dataItem = this.dataItem(this.select());
-            if (dataItem)
-                self.fetchOrderDetails(dataItem.OrderNumber, dataItem.OrderDate);
-        },
-        dataBound: function (e) {
-            let grid = e.sender;
-            grid.autoFitColumn(grid.columns);
-        },
-        excelExport: self.exportToExcel
-    };
-
-    self.ordersDetailsGrid = {
-        widget: ko.observable(),
-        data: self.orderDetailsOrderLines,
-        dataSource: new kendo.data.DataSource({
-            schema: self.schema,
-            serverFiltering: false,
-            serverSorting: false,
-            serverGrouping: false,
-            serverPaging: false,
-            pageSize: 20,
-            sort: {
-                field: 'LineNumber',
-                dir: 'asc'
-            },
-        }),
-        pageable: {
-            pageSize: 20,
-            pageSizes: [20, 50, 100, 500],
-            messages: kendoGridPagerMessages
-        },
-        columns: [{
-            field: 'LineNumber',
-            title: resources.LineNo,
-            hidden: true
-        }, {
-            field: 'Product',
-            title: resources.Product,
-            width: 120
-        }, {
-            field: 'Description',
-            title: resources.Description,
-            width: 140
-        }, {
-            field: 'Batch',
-            title: resources.Batch,
-            width: 120
-        }, {
-            field: 'Quantity',
-            title: resources.Quantity,
-            width: 100,
-            attributes: {
-                'class': 'text-right'
-            },
-            headerAttributes: {
-                'class': 'text-right'
-            }
-        }, {
-            field: 'BatchNumber',
-            title: resources.BatchNo,
-            width: 100
-        }, {
-            field: 'CustomerOrderReference',
-            title: resources.YourReference,
-            width: 115
-        }, {
-            field: 'OrderStatus',
-            title: resources.Status,
-            width: 90,
-            //template: "#: DespatchStatusDate ? kendo.toString(kendo.parseDate(DespatchStatusDate, 'yyyy-MM-ddTHH:mm:ss'), 'dd/MM/yyyy') : DespatchStatusDateMessage #",
-            attributes: {
-                'class': 'text-right'
-            },
-            headerAttributes: {
-                'class': 'text-right'
-            }
-        }, {
-            field: 'DespatchStatus',
-            title: resources.Despatch,
-            width: 100,
-            //template: "#: DespatchStatus ? kendo.toString(kendo.parseDate(DespatchStatus, 'yyyy-MM-ddTHH:mm:ss'), 'MM/dd/yyyy') : DespatchStatusDateMessage #",
-            attributes: {
-                'class': 'text-right'
-            },
-            headerAttributes: {
-                'class': 'text-right'
-            }
-        }, {
-            field: 'Tracking',
-            title: resources.Track,
-            width: 100,
-            template: function (dataItem) {
-                if (dataItem) {
-                    if (dataItem.Tracking) {
-                        if (dataItem.Tracking.indexOf('http') == 0)
-                            return '<a href="' + dataItem.Tracking + '" target="_blank">' + resources.Track + '</a>'
-                        else
-                            return '<a href="javascript:;" onclick="pageModel.orderStatusModel.checkParcel(\'' + dataItem.Tracking + '\')">' + resources.Track + '</a>'
-                    } else {
-                        return ''
-                    }
-                }
-            }
-        }],
-        sortable: true,
-        noRecords: {
-            template: resources.NoRecordsToDisplay
-        },
-        selectable: 'row',
-        change: function (e) {
-            var dataItem = this.dataItem(this.select());
-            //window.open('/downloads/trade-document?docref=' + encodeURIComponent(dataItem.DocumentNumber) + '&c=' + getCountryID() + '&l=' + getLanguageID(), '_blank');
-        },
-        dataBound: function (e) {
-            let grid = e.sender;
-            grid.autoFitColumn(grid.columns);
-        },
-        excelExport: self.exportToExcel
-    };
+    //#endregion
 
     return self;
 });

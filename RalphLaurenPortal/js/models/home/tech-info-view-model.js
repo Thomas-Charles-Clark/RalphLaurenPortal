@@ -16,7 +16,7 @@
         })
         .then(window.handleFetchResponse)
         .then((data) => {
-            console.trace(data);
+            //console.trace(data);
             if (data != null && Array.isArray(data) && data.length > 0)
                 self.data(data[0]);
         });

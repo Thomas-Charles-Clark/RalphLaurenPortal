@@ -141,5 +141,18 @@ namespace RalphLaurenPortal.Models.TradeAccount
         [JsonIgnore]
         [InverseProperty("TradeAccount")]
         public virtual ICollection<Member> RalphLaurenMembers { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("TradeAccount")]
+        public virtual ICollection<Member_AvailableTradeAccount> MembersWithPermission { get; set; }
+
+        [NotMapped]
+        public string Label 
+        {
+            get 
+            {
+                return $"{Code} - {Name}";    
+            }
+        }
     }
 }

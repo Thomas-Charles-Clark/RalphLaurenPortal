@@ -4,9 +4,12 @@ using Microsoft.AspNet.Identity;
 using Newtonsoft.Json.Linq;
 using RalphLaurenPortal.Models;
 using RalphLaurenPortal.Models.ProductSearch;
+using RalphLaurenPortal.Models.ProductType;
 using RalphLaurenPortal.Models.Resource;
+using RalphLaurenPortal.Models.SalesHistory;
 using RalphLaurenPortal.Models.StockInfo;
 using RalphLaurenPortal.Models.TechInfo;
+using RalphLaurenPortal.Models.TradeAccount;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -14,6 +17,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Web;
 using System.Web.Http;
 
 namespace RalphLaurenPortal.Controllers
@@ -33,6 +37,32 @@ namespace RalphLaurenPortal.Controllers
         public GeneralAPIController()
         {
 
+        }
+
+        [HttpPost]
+        public IHttpActionResult KeepSessionAlive()
+        {
+            HttpContext.Current.Session["KeepSessionAlive"] = DateTime.Now.ToString();
+
+            return Ok();
+        }
+
+        [HttpPost]
+        public IHttpActionResult UpdateTradeAccountID([FromBody]PassTradeAccountID objTradeAccountId)
+        {
+            var user = UserManager.FindById<Member, int>(RequestContext.Principal.Identity.GetUserId<int>());
+
+            var tradeAccount = user.AvailableTradeAccounts.SingleOrDefault(a => a.TradeAccountID == objTradeAccountId.tradeAccountId);
+
+            if (tradeAccount != null)
+            {
+                HttpContext.Current.Session["TradeAccountID"] = objTradeAccountId.tradeAccountId;
+                HttpContext.Current.Session["DisplayTradePrice"] = tradeAccount.DisplayTradePrice;
+                HttpContext.Current.Session["DisplayRetailPrice"] = tradeAccount.DisplayRetailPrice;
+                return Ok(new { success = true });
+            }
+
+            return Ok(new { success = false });
         }
 
         [HttpPost]
@@ -64,11 +94,46 @@ namespace RalphLaurenPortal.Controllers
         }
 
         [HttpPost]
+        public IHttpActionResult FetchCollections([FromBody]PassProductTypeID objProductTypeId)
+        {
+            var user = UserManager.FindById<Member, int>(RequestContext.Principal.Identity.GetUserId<int>());
+            
+            var results = PortalDbContext.FetchCollections(
+                user.MemberID,
+                user.TradeAccountID,
+                objProductTypeId.productTypeId);
+
+            return Ok(results);
+        }
+
+        [HttpPost]
         public IHttpActionResult ProductSearch([FromBody]PassProductSearch objSearch)
         {
             var searchResults = PortalDbContext.ProductSearch(objSearch, RequestContext.Principal.Identity.GetUserId<int>());
 
-            return Ok(JObject.Parse(searchResults ?? "{ products: [] }").SelectToken("products").Children());
+            var deserialized = JObject.Parse(searchResults ?? "{ products: [] }")
+                .SelectToken("products")
+                .Children()
+                .Select(p => p.SelectToken("product").ToObject<ProductSearchResult>())
+                .ToList();
+
+            if(Convert.ToBoolean(HttpContext.Current.Session["DisplayTradePrice"]) == false)
+            {
+                deserialized.ForEach(sr =>
+                {
+                    sr.rLTradePrice = null;
+                });
+            }
+
+            if (Convert.ToBoolean(HttpContext.Current.Session["DisplayRetailPrice"]) == false)
+            {
+                deserialized.ForEach(sr =>
+                {
+                    sr.rLRRP = null;
+                });
+            }
+
+            return Ok(deserialized);
         }
 
         [HttpPost]
@@ -119,7 +184,16 @@ namespace RalphLaurenPortal.Controllers
         {
             var user = UserManager.FindById<Member, int>(RequestContext.Principal.Identity.GetUserId<int>());
 
-            var results = AccountFunctions.OutstandingOrders(user.TradeAccount.UniVerseDataSources, objSearch);
+            var tradeAccountId = user.TradeAccountID;
+
+            if (Int32.TryParse((string)HttpContext.Current.Session["TradeAccountID"]?.ToString(), out int tid))
+            {
+                tradeAccountId = tid;
+            }
+
+            var uniVerseDataSources = user.AvailableTradeAccounts.Single(p => p.TradeAccountID == tradeAccountId).TradeAccount.UniVerseDataSources;
+
+            var results = AccountFunctions.OutstandingOrders(uniVerseDataSources, objSearch);
 
             return Ok(results.Results);
         }
@@ -129,7 +203,16 @@ namespace RalphLaurenPortal.Controllers
         {
             var user = UserManager.FindById<Member, int>(RequestContext.Principal.Identity.GetUserId<int>());
 
-            var results = AccountFunctions.CheckParcelCount(user.TradeAccount.UniVerseDataSources, objParcel);
+            var tradeAccountId = user.TradeAccountID;
+
+            if (Int32.TryParse((string)HttpContext.Current.Session["TradeAccountID"]?.ToString(), out int tid))
+            {
+                tradeAccountId = tid;
+            }
+
+            var uniVerseDataSources = user.AvailableTradeAccounts.Single(p => p.TradeAccountID == tradeAccountId).TradeAccount.UniVerseDataSources;
+
+            var results = AccountFunctions.CheckParcelCount(uniVerseDataSources, objParcel);
 
             return Ok(results);
         }
@@ -139,7 +222,16 @@ namespace RalphLaurenPortal.Controllers
         {
             var user = UserManager.FindById<Member, int>(RequestContext.Principal.Identity.GetUserId<int>());
 
-            var results = AccountFunctions.OrderDeliveryInfo(user.TradeAccount.UniVerseDataSources, objOrderNumber);
+            var tradeAccountId = user.TradeAccountID;
+
+            if (Int32.TryParse((string)HttpContext.Current.Session["TradeAccountID"]?.ToString(), out int tid))
+            {
+                tradeAccountId = tid;
+            }
+
+            var uniVerseDataSources = user.AvailableTradeAccounts.Single(p => p.TradeAccountID == tradeAccountId).TradeAccount.UniVerseDataSources;
+
+            var results = AccountFunctions.OrderDeliveryInfo(uniVerseDataSources, objOrderNumber);
 
             results.OrderLines.ForEach(ol => {
                 if (DateTime.TryParse(ol.DespatchStatus, out DateTime despatchStatus))
@@ -156,7 +248,7 @@ namespace RalphLaurenPortal.Controllers
         {
             var user = UserManager.FindById<Member, int>(RequestContext.Principal.Identity.GetUserId<int>());
             var bytes = PortalDbContext.ProductFeedStream(objFetch, user.MemberID).ToArray();
-            HttpResponseMessage result = new HttpResponseMessage(HttpStatusCode.OK);
+            var result = new HttpResponseMessage(HttpStatusCode.OK);
             result.Content = new ByteArrayContent(bytes);
             result.Content.Headers.ContentType =
                 new MediaTypeHeaderValue("application/octet-stream");
@@ -171,6 +263,28 @@ namespace RalphLaurenPortal.Controllers
 #endif
 
             return Ok(new { fileContents = Convert.ToBase64String(bytes) });
+        }
+
+        [HttpPost]
+        public IHttpActionResult SalesHistorySearch([FromBody]PassSalesHistorySelect objSelect)
+        {
+            var user = UserManager.FindById<Member, int>(RequestContext.Principal.Identity.GetUserId<int>());
+
+            var tradeAccountId = (int?)user.TradeAccountID;
+
+            if (Int32.TryParse((string)HttpContext.Current.Session["TradeAccountID"]?.ToString(), out int tid))
+            {
+                tradeAccountId = tid;
+            }
+
+            if (objSelect.allTradeAccounts)
+            {
+                tradeAccountId = null;
+            }
+
+            var results = PortalDbContext.FetchSalesHistory(user.MemberID, tradeAccountId, objSelect);
+
+            return Ok(results);
         }
     }
 }

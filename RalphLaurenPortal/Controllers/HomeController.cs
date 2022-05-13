@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNet.Identity;
 using RalphLaurenPortal.Models;
+using RalphLaurenPortal.Models.TradeAccount;
 using RalphLaurenPortal.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -20,7 +21,22 @@ namespace RalphLaurenPortal.Controllers
 
         public async Task<ActionResult> Index()
         {
-            var model = await HomeViewModel.CreateAsync(UserManager.FindById(User.Identity.GetUserId<int>()), "Home", DateTime.Now);
+            var user = UserManager.FindById(User.Identity.GetUserId<int>());
+
+            if (Session["TradeAccountID"] == null)
+            {
+                Session["TradeAccountID"] = user.TradeAccountID;
+
+                var ta = user.AvailableTradeAccounts.SingleOrDefault(p => p.TradeAccountID == user.TradeAccountID);
+
+                if (ta != null)
+                {
+                    Session["DisplayTradePrice"] = ta.DisplayTradePrice;
+                    Session["DisplayRetailPrice"] = ta.DisplayRetailPrice;
+                }
+            }
+
+            var model = await HomeViewModel.CreateAsync(user, "Home", DateTime.Now);
 
             return View(model);
         }

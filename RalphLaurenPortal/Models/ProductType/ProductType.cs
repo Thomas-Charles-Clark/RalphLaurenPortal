@@ -19,27 +19,27 @@ namespace RalphLaurenPortal.Models.ProductType
 
     public class ProductType
     {
-        public async Task<ProductTypeDropDown> FetchProductTypes(short countryId, byte languageId, DateTime useDate)
+        public async Task<ProductTypeDropDown> FetchProductTypes(int memberId, int tradeAccountId, DateTime useDate)
         {
             // Is page in cache?
             var definition = new ProductTypeDropDown();
 
             var objProductTypeCache = new ProductTypeCacheProvider();
 
-            definition = objProductTypeCache.Get(countryId, languageId, useDate);
+            definition = objProductTypeCache.Get(memberId, tradeAccountId, useDate);
 
             if (definition == null)
             {
-                definition = await Task.FromResult(loadProductTypesFromDatabase(countryId, languageId, useDate));
-                objProductTypeCache.Set(countryId, languageId, useDate, definition);
+                definition = await Task.FromResult(loadProductTypesFromDatabase(memberId, tradeAccountId, useDate));
+                objProductTypeCache.Set(memberId, tradeAccountId, useDate, definition);
             }
 
             return definition;
         }
 
-        private ProductTypeDropDown loadProductTypesFromDatabase(short countryId, byte languageId, DateTime useDate)
+        private ProductTypeDropDown loadProductTypesFromDatabase(int memberId, int tradeAccountId, DateTime useDate)
         {
-            return new PortalDbContext().FetchProductTypes(countryId, languageId, useDate);
+            return new PortalDbContext().FetchProductTypes(memberId, tradeAccountId);
         }
     }
 }
