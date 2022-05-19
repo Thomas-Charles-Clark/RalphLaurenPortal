@@ -109,7 +109,16 @@ namespace RalphLaurenPortal.Controllers
         [HttpPost]
         public IHttpActionResult ProductSearch([FromBody]PassProductSearch objSearch)
         {
-            var searchResults = PortalDbContext.ProductSearch(objSearch, RequestContext.Principal.Identity.GetUserId<int>());
+            var user = UserManager.FindById<Member, int>(RequestContext.Principal.Identity.GetUserId<int>());
+
+            var tradeAccountId = user.TradeAccountID;
+
+            if (Int32.TryParse((string)HttpContext.Current.Session["TradeAccountID"]?.ToString(), out int tid))
+            {
+                tradeAccountId = tid;
+            }
+
+            var searchResults = PortalDbContext.ProductSearch(objSearch, user.MemberID, tradeAccountId);
 
             var deserialized = JObject.Parse(searchResults ?? "{ products: [] }")
                 .SelectToken("products")
@@ -247,7 +256,16 @@ namespace RalphLaurenPortal.Controllers
         public IHttpActionResult FetchProductDownload([FromBody]PassProductDownloadFetch objFetch)
         {
             var user = UserManager.FindById<Member, int>(RequestContext.Principal.Identity.GetUserId<int>());
-            var bytes = PortalDbContext.ProductFeedStream(objFetch, user.MemberID).ToArray();
+
+            var tradeAccountId = user.TradeAccountID;
+
+            if (Int32.TryParse((string)HttpContext.Current.Session["TradeAccountID"]?.ToString(), out int tid))
+            {
+                tradeAccountId = tid;
+            }
+
+            var bytes = PortalDbContext.ProductFeedStream(objFetch, user.MemberID, tradeAccountId).ToArray();
+
             var result = new HttpResponseMessage(HttpStatusCode.OK);
             result.Content = new ByteArrayContent(bytes);
             result.Content.Headers.ContentType =

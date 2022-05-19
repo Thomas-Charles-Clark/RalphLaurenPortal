@@ -6,7 +6,9 @@
 
     //#region Properties
 
-    self.busy = parent.busy || ko.observable(false);
+    self.busy = ko.observable(false);
+
+    self.busyMessage = ko.observable(resources.Searching);
 
     self.searchResults = ko.observableArray([]);
 

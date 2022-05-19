@@ -118,14 +118,15 @@ namespace RalphLaurenPortal.Models
             }, null, true, 30, CommandType.StoredProcedure);
         }
 
-        internal string ProductSearch(PassProductSearch objSearch, int memberId)
+        internal string ProductSearch(PassProductSearch objSearch, int memberId, int? tradeAccountId)
         {
             return this.Database.Connection.ExecuteScalar<string>("[RalphLauren].[Product_Search]", new
             {
                 SearchTerm = objSearch.SearchTerm,
                 ProductTypeID = objSearch.ProductTypeID,
                 CollectionID = objSearch.CollectionID,
-                MemberID = memberId 
+                MemberID = memberId,
+                TradeAccountID = tradeAccountId
             }, null, 30, CommandType.StoredProcedure);
         }
 
@@ -279,7 +280,7 @@ namespace RalphLaurenPortal.Models
             );
         }
 
-        internal MemoryStream ProductFeedStream(PassProductDownloadFetch objFetch, int memberId)
+        internal MemoryStream ProductFeedStream(PassProductDownloadFetch objFetch, int memberId, int? tradeAccountId)
         {
             var result = new MemoryStream();
 
@@ -292,7 +293,8 @@ namespace RalphLaurenPortal.Models
                 new SqlParameter("@SearchTerm", objFetch.searchTerm ?? (object)DBNull.Value),
                 new SqlParameter("@ProductTypeID", objFetch.productTypeId ?? (object)DBNull.Value),
                 new SqlParameter("@CollectionID", objFetch.collectionId ?? (object)DBNull.Value),
-                new SqlParameter("@MemberID", memberId)
+                new SqlParameter("@MemberID", memberId),
+                new SqlParameter("@TradeAccountID", tradeAccountId),
             };
 
             cmd.Parameters.AddRange(parameters.ToArray());
