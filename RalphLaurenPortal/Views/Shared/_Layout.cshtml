@@ -120,7 +120,7 @@
                         <!-- ko foreachInit: { name: 'ko-trade-dropdown-template', data: availableTradeAccounts, createElement: createTradeAccount } -->
                        @if (Model.User != null)
                        {
-                           foreach (var ta in Model.User.AvailableTradeAccounts)
+                           foreach (var ta in Model.User.AvailableTradeAccounts.OrderBy(ta => ta.TradeAccount.Name))
                            {
                             <li>
                                 <span class="d-none" data-bind="init: { convert: JSON.parse }, text: data, remove">
