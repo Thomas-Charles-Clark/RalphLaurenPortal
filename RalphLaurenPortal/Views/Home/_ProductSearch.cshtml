@@ -11,6 +11,12 @@
     }
 </script>
 <div id="product-search-content" style="display: none" data-bind="visible: true">
+    <div class="page-blocker" style="display: none;" data-bind="fadeVisible: busy">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <h4 data-bind="text: busyMessage"></h4>
+    </div>
     <div class="input-group">
         <select id="product-type-select"
                 name="ProductTypeID"

@@ -23,6 +23,35 @@
         if (self.tradeAccount.skipSubscription) {
             self.tradeAccount.skipSubscription = false;
         } else {
+            window.pageModel.busy(true);
+
+            var affectingBusy = null;
+
+            switch (window.pageModel.orderStatusModel.viewingStatus()) {
+                case 'outstanding':
+                    affectingBusy = window.pageModel.orderStatusModel.outstandingOrdersBusy;
+                    break;
+                case 'backOrders':
+                    affectingBusy = window.pageModel.orderStatusModel.backOrdersBusy;
+                    break;
+                case 'reserveOrders':
+                    affectingBusy = window.pageModel.orderStatusModel.reserveOrdersBusy;
+                    break;
+                case 'despatchedOrders':
+                    affectingBusy = window.pageModel.orderStatusModel.despatchedOrdersBusy;
+                    break;
+                case 'ordersInProgress':
+                    affectingBusy = window.pageModel.orderStatusModel.ordersInProgressBusy;
+                    break;
+                case 'held':
+                    affectingBusy = window.pageModel.orderStatusModel.heldOrdersBusy;
+                    break;
+            }
+
+            affectingBusy(true);
+
+            window.pageModel.salesHistoryModel.busy(true);
+
             fetch('/api/generalapi/UpdateTradeAccountID', {
                 method: 'POST',
                 headers: window.fetchHeaders,
@@ -33,12 +62,9 @@
                 .then(window.handleFetchResponse)
                 .then(data => {
                     if (data.success) {
-                        if (window.hasOwnProperty('pageModel')) {
-                            window.pageModel.collection.valueHasMutated();
-                            if (window.pageModel.hasOwnProperty('orderStatusModel')) {
-                                window.pageModel.orderStatusModel.search();
-                            }
-                        }
+                        window.pageModel.collection.valueHasMutated();
+                        window.pageModel.orderStatusModel.search();
+                        window.pageModel.salesHistoryModel.dateRange.valueHasMutated();
                     } else {
                         showError()
                     }

@@ -80,7 +80,11 @@ namespace RalphLaurenPortal.Controllers
             switch (result)
             {
                 case SignInStatus.Success:
-                    return RedirectToLocal(returnUrl);
+                    {
+                        var user = await UserManager.FindByNameAsync(model.Username);
+                        Session["TradeAccountID"] = user.TradeAccountID;
+                        return RedirectToLocal(returnUrl);
+                    }
                 case SignInStatus.LockedOut:
                     return View("Lockout", new LoginViewModel(null, "Locked Out", DateTime.Now));
                 case SignInStatus.RequiresVerification:
@@ -393,6 +397,7 @@ namespace RalphLaurenPortal.Controllers
         public ActionResult LogOff()
         {
             AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+            Session["TradeAccountID"] = null;
             return RedirectToAction("Index", "Home");
         }
 

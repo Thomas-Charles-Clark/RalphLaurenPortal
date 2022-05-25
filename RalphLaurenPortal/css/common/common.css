@@ -236,6 +236,12 @@ li.all-accounts {
   flex: 0 1 20%;
 }
 
+.tab-content {
+  position: relative;
+  margin-top: var(--l-gutter);
+  min-height: 300px;
+}
+
 #product-search-content form {
   display: block;
 }
@@ -321,12 +327,14 @@ footer {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  position: fixed;
-  left: 0;
+  position: absolute;
   top: 0;
-  width: 100vw;
-  height: 100vh;
+  right: 0;
+  bottom: 0;
+  left: 0;
   z-index: 100;
+  min-height: 250px;
+  border-radius: 0.25rem;
   background-color: rgba(var(--bs-dark-rgb), 0.75) !important;
 }
 .page-blocker .spinner-border {

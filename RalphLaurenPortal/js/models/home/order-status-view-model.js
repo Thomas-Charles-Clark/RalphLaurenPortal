@@ -224,7 +224,11 @@
         }, {
             field: 'Batch',
             title: self.resources.Batch,
-            width: 120
+            width: 120,
+            template: (dataItem) => {
+                let batches = new Set(dataItem.Batch.split('|'));
+                return ('\n', [...batches]).join('\n');
+            }
         }, {
             field: 'CustomerOrderReference',
             title: self.resources.YourReference,
@@ -233,7 +237,7 @@
             field: 'Status',
             title: self.resources.Status,
             width: 100,
-            template: '<span class="grid-msg" title="' + self.resources.StockistClickHere + '">#: Status #</span>'
+            template: '<span class="grid-msg" title="' + self.resources.StockistClickHere + '">#: Status.replace(" - Credit Reason", " for Sales") #</span>'
         }, {
             field: 'Tracking',
             title: self.resources.Tracking,
@@ -595,7 +599,7 @@
             field: 'Status',
             title: self.resources.Status,
             width: 100,
-            template: '<span class="grid-msg" title="' + self.resources.StockistClickHere + '">#: Status #</span>'
+            template: '<span class="grid-msg" title="' + self.resources.StockistClickHere + '">#: Status.replace(" - Credit Reason", " for Sales") #</span>'
         }],
         sortable: true,
         noRecords: {
@@ -759,7 +763,8 @@
             },
             headerAttributes: {
                 'class': 'text-right'
-            }
+            },
+            template: '#: OrderStatus.replace(" - Credit Reason", " for Sales") #'
         }, {
             field: 'DespatchStatus',
             title: self.resources.Despatch,
@@ -1255,8 +1260,10 @@
             var rowCells = [];
             for (var j = 0; j < gridColumns.length; j++) {
                 var cellValue = data[i][gridColumns[j].field];
-                if (typeof cellValue === 'string')
+                if (typeof cellValue === 'string') {
                     cellValue = cellValue.replace(/T00:00:00/g, '');
+                    cellValue = cellValue.replace(" - Credit Reason", " for Sales")
+                }
 
                 rowCells.push({ value: cellValue });
             }
