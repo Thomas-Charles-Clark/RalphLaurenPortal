@@ -153,6 +153,9 @@
                 @using (Html.BeginForm("LogOff", "Account", new { Area = "" }, FormMethod.Post, new { id = "logout-form", @class = "bg-light" }))
                 {
                     @Html.AntiForgeryToken()
+                    
+                    @Html.ActionLink(HtmlHelperExtra.Resource("Home", l, c, d).ToString(), 
+                                    "Index", "Home", routeValues: new { Area = "" }, htmlAttributes: new { @class = "nav-link", title = "Home" })
                     @Html.ActionLink(HtmlHelperExtra.Resource("Hello", l, c, d).ToString() + " " + Extensions.GetFullName(User.Identity), 
                                     "Index", "manage", routeValues: new { Area = "" }, htmlAttributes: new { @class = "nav-link", title = "Manage" })
                     <a class="nav-link" href="javascript:document.getElementById('logout-form').submit()">

@@ -66,9 +66,9 @@ namespace RalphLaurenPortal.Models.ProductSearch
         public decimal? pieceBreakdownMinimum { get; set; }
         public byte? productTypeID { get; set; }
         public int? productTypeQuantityMaximum { get; set; }
-        public decimal quantityIncrement { get; set; }
-        public int quantityMaximum { get; set; }
-        public int quantityMinimum { get; set; }
+        public decimal? quantityIncrement { get; set; }
+        public decimal? quantityMaximum { get; set; }
+        public decimal? quantityMinimum { get; set; }
         public int? reserveQuantityMaximum { get; set; }
         public decimal? totalPOFreeStock { get; set; }
         public string unit { get; set; }
