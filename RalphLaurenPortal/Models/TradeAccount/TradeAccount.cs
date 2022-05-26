@@ -151,8 +151,11 @@ namespace RalphLaurenPortal.Models.TradeAccount
         {
             get 
             {
-                return $"{Code} - {Name}";    
+                return $"{Code} - {Name}";
             }
         }
+
+        [ForeignKey("Code")]
+        public virtual RalphLaurenTradeAccount RalphLaurenTradeAccount { get; set; }
     }
 }

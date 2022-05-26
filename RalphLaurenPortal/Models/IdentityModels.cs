@@ -82,6 +82,19 @@ namespace RalphLaurenPortal.Models
         }
     }
 
+    [Table("TradeAccount", Schema = "RalphLauren")]
+    public class RalphLaurenTradeAccount
+    {
+        [Key]
+        public string Code { get; set; }
+
+        public string Culture { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("RalphLaurenTradeAccount")]
+        public virtual ICollection<TradeAccount.TradeAccount> TradeAccounts { get; set; }
+    }
+
     [Table("Member_TradeAccount", Schema = "RalphLauren")]
     public class Member_AvailableTradeAccount // Users have access to multiple trade accounts
     {

@@ -227,6 +227,7 @@
     <Compile Include="Models\Collection\CollectionCacheProvider.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\Orders\OrderSearchResult.cs" />
     <Compile Include="Models\PortalDbContext.cs" />
     <Compile Include="Models\ProductSearch\PassProductDownloadFetch.cs" />
     <Compile Include="Models\ProductSearch\PassProductSearch.cs" />

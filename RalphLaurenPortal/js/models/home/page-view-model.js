@@ -270,7 +270,7 @@ getResource([
             let orderStatus = targetPane.dataset.refresh;
             window.pageModel.orderStatusModel.searchTerm(undefined);
             window.pageModel.orderStatusModel.viewingStatus(orderStatus);
-            window.pageModel.orderStatusModel.refresh(orderStatus, false)
+            window.pageModel.orderStatusModel.refresh(orderStatus, true)
 
             tabTrigger.show()
         })

@@ -49,7 +49,7 @@
     self.orderDetailsDeliveryInfo = ko.observable();
     self.orderDetailsOrderLines = ko.observableArray([]);
 
-    self.viewingStatus = ko.observable('outstanding');
+    self.viewingStatus = ko.observable('backOrders');
 
     self.searchTerm = ko.observable();
 
@@ -152,6 +152,7 @@
                 OrderNumber: {},
                 LineNumber: {},
                 OrderDate: { type: 'date' },
+                OrderDateDisplay: {},
                 OrderQuantity: {},
                 Product: {},
                 Batch: {},
@@ -161,8 +162,10 @@
                 Tracking: {},
                 BaseProduct: {},
                 DespatchStatusDate: { type: 'date' },
+                DespatchStatusDateDisplay: {},
                 DespatchStatusDateMessage: { type: 'date' },
                 ReservedUntil: {},
+                ReservedUntilDisplay: {},
                 ReservedUntilMessage: {},
                 ReserveAction: {}
             }
@@ -202,7 +205,7 @@
             field: 'OrderDate',
             title: self.resources.OrderDate,
             width: 110,
-            template: "#: OrderDate ? kendo.toString(kendo.parseDate(OrderDate, 'yyyy-MM-ddTHH:mm:ss'), 'MM/dd/yyyy') : '' #"
+            template: "#: OrderDate ? OrderDateDisplay : '' #"
         }, {
             field: 'OrderQuantity',
             title: self.resources.Quantity,
@@ -302,7 +305,7 @@
             field: 'OrderDate',
             title: self.resources.OrderDate,
             width: 110,
-            template: "#: OrderDate ? kendo.toString(kendo.parseDate(OrderDate, 'yyyy-MM-ddTHH:mm:ss'), 'MM/dd/yyyy') : '' #"
+            template: "#: OrderDate ? OrderDateDisplay : '' #"
         }, {
             field: 'OrderQuantity',
             title: self.resources.Quantity,
@@ -329,7 +332,7 @@
             field: 'DespatchStatusDate',
             title: self.resources.DueDate,
             width: 100,
-            template: "#: DespatchStatusDate ? kendo.toString(kendo.parseDate(DespatchStatusDate, 'yyyy-MM-ddTHH:mm:ss'), 'MM/dd/yyyy') : DespatchStatusDateMessage #"
+            template: "#: DespatchStatusDateDisplay ? DespatchStatusDateDisplay : DespatchStatusDateMessage #"
         }],
         sortable: true,
         noRecords: {
@@ -378,7 +381,7 @@
             field: 'OrderDate',
             title: self.resources.OrderDate,
             width: 110,
-            template: "#: OrderDate ? kendo.toString(kendo.parseDate(OrderDate, 'yyyy-MM-ddTHH:mm:ss'), 'MM/dd/yyyy') : '' #"
+            template: "#: OrderDate ? OrderDateDisplay : '' #"
         }, {
             field: 'OrderQuantity',
             title: self.resources.Quantity,
@@ -409,7 +412,7 @@
             field: 'ReservedUntil',
             title: self.resources.ExpiryDate,
             width: 100,
-            template: "#: ReservedUntil ? kendo.toString(kendo.parseDate(ReservedUntil, 'yyyy-MM-ddTHH:mm:ss'), 'MM/dd/yyyy') : ReservedUntil #",
+            template: "#: ReservedUntil ? ReservedUntilDisplay : ReservedUntil #",
             attributes: {
                 'class': 'text-right'
             },
@@ -468,7 +471,7 @@
             field: 'OrderDate',
             title: self.resources.OrderDate,
             width: 110,
-            template: "#: OrderDate ? kendo.toString(kendo.parseDate(OrderDate, 'yyyy-MM-ddTHH:mm:ss'), 'MM/dd/yyyy') : '' #"
+            template: "#: OrderDate ? OrderDateDisplay : '' #"
         }, {
             field: 'OrderQuantity',
             title: self.resources.Quantity,
@@ -499,7 +502,7 @@
             field: 'DespatchStatusDateMessage',
             title: self.resources.DespatchDate,
             width: 115,
-            //template: "#: DespatchStatusDate ? kendo.toString(kendo.parseDate(DespatchStatusDate, 'yyyy-MM-ddTHH:mm:ss'), 'dd/MM/yyyy') : DespatchStatusDateMessage #"
+            template: "#: DespatchStatusDateDisplay ? DespatchStatusDateDisplay : DespatchStatusDateMessage #"
         }, {
             field: 'Tracking',
             title: self.resources.Tracking,
@@ -564,7 +567,7 @@
             field: 'OrderDate',
             title: self.resources.OrderDate,
             width: 110,
-            template: "#: OrderDate ? kendo.toString(kendo.parseDate(OrderDate, 'yyyy-MM-ddTHH:mm:ss'), 'MM/dd/yyyy') : '' #"
+            template: "#: OrderDate ? OrderDateDisplay : '' #"
         }, {
             field: 'OrderQuantity',
             title: self.resources.Quantity,
@@ -594,7 +597,7 @@
             field: 'DespatchStatusDateMessage',
             title: self.resources.StatusDate,
             width: 115,
-            //template: "#: DespatchStatusDate ? kendo.toString(kendo.parseDate(DespatchStatusDate, 'yyyy-MM-ddTHH:mm:ss'), 'dd/MM/yyyy') : DespatchStatusDateMessage #"
+            template: "#: DespatchStatusDateDisplay ? DespatchStatusDateDisplay : DespatchStatusDateMessage #"
         }, {
             field: 'Status',
             title: self.resources.Status,
@@ -651,7 +654,7 @@
             field: 'OrderDate',
             title: self.resources.OrderDate,
             width: 110,
-            template: "#: OrderDate ? kendo.toString(kendo.parseDate(OrderDate, 'yyyy-MM-ddTHH:mm:ss'), 'MM/dd/yyyy') : '' #"
+            template: "#: OrderDate ? OrderDateDisplay : '' #"
         }, {
             field: 'OrderQuantity',
             title: self.resources.Quantity,
@@ -748,7 +751,11 @@
         }, {
             field: 'BatchNumber',
             title: self.resources.BatchNo,
-            width: 100
+            width: 100,
+            template: (dataItem) => {
+                let batches = new Set(dataItem.BatchNumber.split('|'));
+                return ('\n', [...batches]).join('\n');
+            }
         }, {
             field: 'CustomerOrderReference',
             title: self.resources.YourReference,
@@ -757,7 +764,6 @@
             field: 'OrderStatus',
             title: self.resources.Status,
             width: 90,
-            //template: "#: DespatchStatusDate ? kendo.toString(kendo.parseDate(DespatchStatusDate, 'yyyy-MM-ddTHH:mm:ss'), 'dd/MM/yyyy') : DespatchStatusDateMessage #",
             attributes: {
                 'class': 'text-right'
             },
@@ -769,7 +775,6 @@
             field: 'DespatchStatus',
             title: self.resources.Despatch,
             width: 100,
-            //template: "#: DespatchStatus ? kendo.toString(kendo.parseDate(DespatchStatus, 'yyyy-MM-ddTHH:mm:ss'), 'MM/dd/yyyy') : DespatchStatusDateMessage #",
             attributes: {
                 'class': 'text-right'
             },

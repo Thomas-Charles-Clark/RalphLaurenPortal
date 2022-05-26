@@ -362,6 +362,7 @@ footer {
   bottom: 0;
   left: 0;
   z-index: 100;
+  border-radius: 0.25rem;
   background-color: rgba(var(--bs-dark-rgb), 0.75) !important;
 }
 .blocker .spinner-border {
@@ -583,6 +584,10 @@ footer {
   font-weight: bold;
 }
 
+.tab-pane {
+  padding: var(--l-gutter);
+}
+
 .text-right {
   text-align: right;
 }
@@ -597,7 +602,7 @@ footer {
 }
 .k-grid-content tr td {
   white-space: pre-wrap;
-  word-break: break-all;
+  word-break: normal;
   overflow: unset;
 }
 
@@ -620,7 +625,7 @@ tr.k-state-selected .grid-msg {
 }
 .k-grid-header table thead th.k-header a {
   white-space: pre-wrap;
-  word-break: break-all;
+  word-break: normal;
   overflow: unset;
 }
 

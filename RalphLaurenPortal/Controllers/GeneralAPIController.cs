@@ -1,8 +1,10 @@
 ﻿using MertexerV2.Accounts;
 using MertexerV2.Models.Accounts;
 using Microsoft.AspNet.Identity;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RalphLaurenPortal.Models;
+using RalphLaurenPortal.Models.Orders;
 using RalphLaurenPortal.Models.ProductSearch;
 using RalphLaurenPortal.Models.ProductType;
 using RalphLaurenPortal.Models.Resource;
@@ -10,6 +12,7 @@ using RalphLaurenPortal.Models.SalesHistory;
 using RalphLaurenPortal.Models.StockInfo;
 using RalphLaurenPortal.Models.TechInfo;
 using RalphLaurenPortal.Models.TradeAccount;
+using RalphLaurenPortal.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -59,10 +62,13 @@ namespace RalphLaurenPortal.Controllers
                 HttpContext.Current.Session["TradeAccountID"] = objTradeAccountId.tradeAccountId;
                 HttpContext.Current.Session["DisplayTradePrice"] = tradeAccount.DisplayTradePrice;
                 HttpContext.Current.Session["DisplayRetailPrice"] = tradeAccount.DisplayRetailPrice;
-                return Ok(new { success = true });
+            }
+            else
+            {
+                HttpContext.Current.Session["TradeAccountID"] = null;
             }
 
-            return Ok(new { success = false });
+            return Ok(new { success = true });
         }
 
         [HttpPost]
@@ -200,11 +206,24 @@ namespace RalphLaurenPortal.Controllers
                 tradeAccountId = tid;
             }
 
-            var uniVerseDataSources = user.AvailableTradeAccounts.Single(p => p.TradeAccountID == tradeAccountId).TradeAccount.UniVerseDataSources;
+            var ta = user.AvailableTradeAccounts.Single(p => p.TradeAccountID == tradeAccountId).TradeAccount;
 
-            var results = AccountFunctions.OutstandingOrders(uniVerseDataSources, objSearch);
+            var uniVerseDataSources = ta.UniVerseDataSources;
 
-            return Ok(results.Results);
+            var preresults = AccountFunctions.OutstandingOrders(uniVerseDataSources, objSearch);
+
+            var results = new List<OrderSearchResult>();
+
+            preresults.Results.ForEach(r =>
+            {
+                var result = JsonConvert.DeserializeObject<OrderSearchResult>(JsonConvert.SerializeObject(r));
+
+                result.ApplyCulture(ta.RalphLaurenTradeAccount.Culture);
+
+                results.Add(result);
+            });
+
+            return Ok(results);
         }
 
         [HttpPost]
@@ -238,14 +257,18 @@ namespace RalphLaurenPortal.Controllers
                 tradeAccountId = tid;
             }
 
-            var uniVerseDataSources = user.AvailableTradeAccounts.Single(p => p.TradeAccountID == tradeAccountId).TradeAccount.UniVerseDataSources;
+            var ta = user.AvailableTradeAccounts.Single(p => p.TradeAccountID == tradeAccountId).TradeAccount;
+
+            var uniVerseDataSources = ta.UniVerseDataSources;
 
             var results = AccountFunctions.OrderDeliveryInfo(uniVerseDataSources, objOrderNumber);
+
+            var ci = new System.Globalization.CultureInfo(ta.RalphLaurenTradeAccount.Culture);
 
             results.OrderLines.ForEach(ol => {
                 if (DateTime.TryParse(ol.DespatchStatus, out DateTime despatchStatus))
                 {
-                    ol.DespatchStatus = despatchStatus.ToString("MM/dd/yyyy");
+                    ol.DespatchStatus = Framework.GetShortDateString(ci, despatchStatus);
                 }
             });
 

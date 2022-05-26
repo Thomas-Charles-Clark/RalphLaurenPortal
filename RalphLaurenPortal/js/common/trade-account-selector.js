@@ -1,5 +1,7 @@
-﻿const tradeAccountSelectorViewModel = (() => {
-    let self = {};
+﻿const tradeAccountSelectorViewModel = ((resources) => {
+    let self = {
+        resources: resources
+    };
 
     self.tradeAccount = ko.observable();
 
@@ -12,7 +14,7 @@
     self.createInitialTradeAccount = (innerText) => tradeAccountViewModel(self, JSON.parse(innerText));
 
     self.tradeAccountLabel = ko.pureComputed(() => {
-        return self.tradeAccount()?.Label;
+        return self.tradeAccount()?.Label ?? self.resources.All;
     }, self)
 
     self.tradeAccountId = ko.pureComputed(() => {
@@ -100,5 +102,15 @@ const tradeAccountViewModel = ((parent, data) => {
     return self;
 });
 
-window.tradeAccountSelector = tradeAccountSelectorViewModel();
-ko.applyBindings(window.tradeAccountSelector, document.querySelector('#trade-account-dropdown-wrapper'))
+getResource(['All'])
+.then((arrayResult) => {
+
+    let resources = {};
+
+    Object.keys(arrayResult).forEach((r) => {
+        resources[arrayResult[r].Name.replace(/\.$/, '')] = arrayResult[r].Value;
+    })
+
+    window.tradeAccountSelector = tradeAccountSelectorViewModel(resources);
+    ko.applyBindings(window.tradeAccountSelector, document.querySelector('#trade-account-dropdown-wrapper'))
+});

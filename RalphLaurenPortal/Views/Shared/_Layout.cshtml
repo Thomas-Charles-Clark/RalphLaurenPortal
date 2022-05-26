@@ -112,9 +112,18 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         @HtmlHelperExtra.Resource("TradeAccount", l, c, d):
-                        <span data-bind="text: tradeAccountLabel">
-                            @Model.User?.TradeAccount?.Code - @Model.User?.TradeAccount?.Name 
-                        </span>
+                       @if (Model.User.TradeAccount != null)
+                        {
+                            <span data-bind="text: tradeAccountLabel">
+                                @Model.User.TradeAccount.Code - @Model.User.TradeAccount.Name 
+                            </span>
+                        }
+                        else 
+                        { 
+                            <span>
+                                @HtmlHelperExtra.Resource("All", l, c, d)
+                            </span>
+                        }
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                         <!-- ko foreachInit: { name: 'ko-trade-dropdown-template', data: availableTradeAccounts, createElement: createTradeAccount } -->
@@ -138,7 +147,8 @@
                         </li>
                         <li class="all-accounts">
                              <a id="all-accounts-btn"
-                                class="btn btn-link">
+                                class="btn btn-link"
+                                 data-bind="click: () => { tradeAccount(null) }">
                                  @HtmlHelperExtra.Resource("AllAccounts", l, c, d)
                              </a>
                         </li>

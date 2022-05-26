@@ -7,6 +7,22 @@ namespace RalphLaurenPortal.Utilities
 {
     public static class Framework
     {
+        // cheers https://stackoverflow.com/questions/24398051/culture-sensitive-datetime-tostring-with-dd-and-mm#answer-24398491
+
+        public static string GetShortDateString(System.Globalization.CultureInfo ci, DateTime date)
+        {
+            string format = ci.DateTimeFormat.ShortDatePattern;
+
+            if (!format.Contains("dd"))
+                format = format.Replace("d", "dd");
+
+            if (!format.Contains("MM"))
+                format = format.Replace("M", "MM");
+
+            return date.ToString(format);
+        }
+
+
         #region Email CSS
 
         public static readonly string EmailCSS = @"
@@ -2103,5 +2119,7 @@ html,
 ";
 
         #endregion
+
+
     }
 }
