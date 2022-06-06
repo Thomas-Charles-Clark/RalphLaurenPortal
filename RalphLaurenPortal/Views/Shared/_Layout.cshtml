@@ -112,7 +112,7 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         @HtmlHelperExtra.Resource("TradeAccount", l, c, d):
-                       @if (Model.User.TradeAccount != null)
+                       @if (Model.User?.TradeAccount != null)
                         {
                             <span data-bind="text: tradeAccountLabel">
                                 @Model.User.TradeAccount.Code - @Model.User.TradeAccount.Name 

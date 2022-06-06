@@ -25,7 +25,6 @@ using System.Web.Http;
 
 namespace RalphLaurenPortal.Controllers
 {
-    [Authorize]
     public class GeneralAPIController : ApiController
     {
         private ApplicationUserManager UserManager { get; set; }
@@ -51,6 +50,7 @@ namespace RalphLaurenPortal.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public IHttpActionResult UpdateTradeAccountID([FromBody]PassTradeAccountID objTradeAccountId)
         {
             var user = UserManager.FindById<Member, int>(RequestContext.Principal.Identity.GetUserId<int>());
@@ -100,6 +100,7 @@ namespace RalphLaurenPortal.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public IHttpActionResult FetchCollections([FromBody]PassProductTypeID objProductTypeId)
         {
             var user = UserManager.FindById<Member, int>(RequestContext.Principal.Identity.GetUserId<int>());
@@ -113,6 +114,7 @@ namespace RalphLaurenPortal.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public IHttpActionResult ProductSearch([FromBody]PassProductSearch objSearch)
         {
             var user = UserManager.FindById<Member, int>(RequestContext.Principal.Identity.GetUserId<int>());
@@ -152,6 +154,7 @@ namespace RalphLaurenPortal.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public IHttpActionResult FetchTechInfo([FromBody]PassTechInfoFetch objFetch)
         {
             var result = PortalDbContext.FetchTechInfo(objFetch, RequestContext.Principal.Identity.GetUserId<int>());
@@ -160,6 +163,7 @@ namespace RalphLaurenPortal.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public IHttpActionResult FetchStockInfo([FromBody]PassStockInfoFetch objFetch)
         {
             //  Has any future date been passed
@@ -195,6 +199,7 @@ namespace RalphLaurenPortal.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public IHttpActionResult OutstandingOrderSearch([FromBody]PassOutstandingOrdersSearch objSearch)
         {
             var user = UserManager.FindById<Member, int>(RequestContext.Principal.Identity.GetUserId<int>());
@@ -227,6 +232,7 @@ namespace RalphLaurenPortal.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public IHttpActionResult GetParcelCount([FromBody]PassParcelCount objParcel)
         {
             var user = UserManager.FindById<Member, int>(RequestContext.Principal.Identity.GetUserId<int>());
@@ -246,6 +252,7 @@ namespace RalphLaurenPortal.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public IHttpActionResult GetOrderDeliveryInfo([FromBody] PassOrderNumber objOrderNumber)
         {
             var user = UserManager.FindById<Member, int>(RequestContext.Principal.Identity.GetUserId<int>());
@@ -276,6 +283,7 @@ namespace RalphLaurenPortal.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public IHttpActionResult FetchProductDownload([FromBody]PassProductDownloadFetch objFetch)
         {
             var user = UserManager.FindById<Member, int>(RequestContext.Principal.Identity.GetUserId<int>());
@@ -307,6 +315,7 @@ namespace RalphLaurenPortal.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public IHttpActionResult SalesHistorySearch([FromBody]PassSalesHistorySelect objSelect)
         {
             var user = UserManager.FindById<Member, int>(RequestContext.Principal.Identity.GetUserId<int>());

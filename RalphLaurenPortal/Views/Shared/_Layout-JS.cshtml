@@ -54,13 +54,13 @@
         }
     }
     window.logClientSideError = function (message) {
-        fetch('/api/generalapi/LogClientError', {
-            method: 'POST',
-            headers: window.fetchHeaders,
-            body: message
-        }).catch((e) => {
-            console.error(e);
-        })
+        //fetch('/api/generalapi/LogClientError', {
+        //    method: 'POST',
+        //    headers: window.fetchHeaders,
+        //    body: message
+        //}).catch((e) => {
+        //    console.error(e);
+        //})
     }
     if (window.navigator.userAgent.match(/MSIE|Trident/) !== null) {
         alert('@HtmlHelperExtra.EscapeForJS(HtmlHelperExtra.Resource("IE11Warning", l, c, d))');
