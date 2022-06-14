@@ -62,8 +62,7 @@
                 class="form-control"
                 placeholder="@HtmlHelperExtra.Resource("RalphLaurenProductSearch", l, c, d)"
                 aria-label="@HtmlHelperExtra.Resource("RalphLaurenProductSearch", l, c, d)"
-                data-bind="forceNullOnEmpty: searchTerm, 
-                            enterKey: search,
+                data-bind="forceNullOnEmpty: searchTerm, enterKey: () => { collection.valueHasMutated() },
                             textInput: searchTerm" />
         <button class="btn btn-outline-secondary" data-bind="click: clearSearchTerm">
             <i class="bi bi-x-lg"></i>

@@ -22,11 +22,11 @@
 
     self.totalInStock = ko.pureComputed(function () {
         if (self.inStockData()) {
-            return Number(Math.round((Enumerable.From(self.inStockData()).SelectMany(function (x) {
+            return formatNumber(Number(Math.round((Enumerable.From(self.inStockData()).SelectMany(function (x) {
                 return x.Pieces
             }).Select(function (x) {
-                return +x.Length
-            }).Sum()) * 1000) / 1000).toFixed(2) + self.unit()
+                return +x.Length.replace(/,/g, '');
+            }).Sum()) * 1000) / 1000).toFixed(2), 2, getCulture()) + self.unit()
         } else {
             return 0
         }
@@ -34,9 +34,9 @@
 
     self.totalDueIn = ko.pureComputed(function () {
         if (self.dueInData()) {
-            return Number(Math.round((Enumerable.From(self.dueInData()).Select(function (x) {
-                return +x.Length
-            }).Sum()) * 1000) / 1000).toFixed(2) + self.unit()
+            return formatNumber(Number(Math.round((Enumerable.From(self.dueInData()).Select(function (x) {
+                return +x.Length.replace(/,/g, '');
+            }).Sum()) * 1000) / 1000).toFixed(2), 2, getCulture()) + self.unit()
         } else {
             return 0
         }
@@ -44,11 +44,11 @@
 
     self.totalSupplier = ko.pureComputed(function () {
         if (self.supplierData()) {
-            return Number(Math.round((Enumerable.From(self.supplierData()).SelectMany(function (x) {
+            return formatNumber(Number(Math.round((Enumerable.From(self.supplierData()).SelectMany(function (x) {
                 return x.Pieces
             }).Select(function (x) {
-                return +x.Length
-            }).Sum()) * 1000) / 1000).toFixed(2) + self.unit()
+                return +x.Length.replace(/,/g, '');
+            }).Sum()) * 1000) / 1000).toFixed(2), 2, getCulture()) + self.unit()
         } else {
             return 0
         }

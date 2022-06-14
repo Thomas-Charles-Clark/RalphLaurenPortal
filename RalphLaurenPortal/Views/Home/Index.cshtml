@@ -396,7 +396,7 @@
                                                         <!-- ko foreach: dueInData -->
                                                         <tr>
                                                             <td class="due-date-heading" data-bind="text: (DueDate || '') + (POConfirmed == null ? '' : (POConfirmed ? ' (confirmed)' : ' (unconfirmed)'))"></td>
-                                                            <td class="text-right" data-bind="text: Number(Length).toFixed(2) + $parent.unit()"></td>
+                                                            <td class="text-right" data-bind="text: Length + $parent.unit()"></td>
                                                         </tr>
                                                         <!-- /ko -->
                                                         <tr>
