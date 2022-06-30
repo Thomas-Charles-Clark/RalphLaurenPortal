@@ -49,7 +49,7 @@
     self.orderDetailsDeliveryInfo = ko.observable();
     self.orderDetailsOrderLines = ko.observableArray([]);
 
-    self.viewingStatus = ko.observable('backOrders');
+    self.viewingStatus = ko.observable('outstanding');
 
     self.searchTerm = ko.observable();
 
@@ -157,6 +157,8 @@
                 Product: {},
                 Batch: {},
                 Description: {},
+                CustomerOrderNumber: {},
+                CustomerOrderNumberDisplay: {},
                 CustomerOrderReference: {},
                 Status: {},
                 Tracking: {},
@@ -233,9 +235,13 @@
                 return ('\n', [...batches]).join('\n');
             }
         }, {
+            field: 'CustomerOrderNumberDisplay',
+            title: self.resources.YourOrderReference,
+            width: 140
+        }, {
             field: 'CustomerOrderReference',
-            title: self.resources.YourReference,
-            width: 200
+            title: self.resources.YourLineReference,
+            width: 140
         }, {
             field: 'Status',
             title: self.resources.Status,
@@ -325,8 +331,12 @@
             title: self.resources.Description,
             width: 140
         }, {
+            field: 'CustomerOrderNumberDisplay',
+            title: self.resources.YourOrderReference,
+            width: 140
+        }, {
             field: 'CustomerOrderReference',
-            title: self.resources.YourReference,
+            title: self.resources.YourLineReference,
             width: 200
         }, {
             field: 'DespatchStatusDate',
@@ -405,8 +415,12 @@
             title: self.resources.Batch,
             width: 120
         }, {
+            field: 'CustomerOrderNumberDisplay',
+            title: self.resources.YourOrderReference,
+            width: 140
+        }, {
             field: 'CustomerOrderReference',
-            title: self.resources.YourReference,
+            title: self.resources.YourLineReference,
             width: 200
         }, {
             field: 'ReservedUntil',
@@ -495,8 +509,12 @@
             title: self.resources.Batch,
             width: 120
         }, {
+            field: 'CustomerOrderNumberDisplay',
+            title: self.resources.YourOrderReference,
+            width: 140
+        }, {
             field: 'CustomerOrderReference',
-            title: self.resources.YourReference,
+            title: self.resources.YourLineReference,
             width: 200
         }, {
             field: 'DespatchStatusDateMessage',
@@ -590,8 +608,12 @@
             title: self.resources.Batch,
             width: 120
         }, {
+            field: 'CustomerOrderNumberDisplay',
+            title: self.resources.YourOrderReference,
+            width: 140
+        }, {
             field: 'CustomerOrderReference',
-            title: self.resources.YourReference,
+            title: self.resources.YourLineReference,
             width: 200
         }, {
             field: 'DespatchStatusDateMessage',
@@ -677,8 +699,12 @@
             title: self.resources.Batch,
             width: 120
         }, {
+            field: 'CustomerOrderNumberDisplay',
+            title: self.resources.YourOrderReference,
+            width: 140
+        }, {
             field: 'CustomerOrderReference',
-            title: self.resources.YourReference,
+            title: self.resources.YourLineReference,
             width: 200
         }, {
             field: 'Status',
@@ -757,8 +783,12 @@
                 return ('\n', [...batches]).join('\n');
             }
         }, {
+            field: 'CustomerOrderNumberDisplay',
+            title: self.resources.YourOrderReference,
+            width: 140
+        }, {
             field: 'CustomerOrderReference',
-            title: self.resources.YourReference,
+            title: self.resources.YourLineReference,
             width: 115
         }, {
             field: 'OrderStatus',
@@ -1037,7 +1067,8 @@
                             self.validateSearchNow(false);
                             affectingGrid().dataSource.query({
                                 page: 1,
-                                pageSize: affectingGrid().dataSource.pageSize()
+                                pageSize: affectingGrid().dataSource.pageSize(),
+                                sort: affectingGrid().dataSource.sort()
                             });
                         },
                         error: function (xhr, s, a) {

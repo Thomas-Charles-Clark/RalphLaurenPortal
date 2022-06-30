@@ -15,6 +15,8 @@ namespace RalphLaurenPortal.Models.Orders
 
         public string ReservedUntilDisplay { get; set; }
 
+        public string CustomerOrderNumberDisplay { get; set; }
+
         public OrderSearchResult() : base("MERTEX")
         {
 
@@ -42,6 +44,11 @@ namespace RalphLaurenPortal.Models.Orders
             if (ReservedUntil.HasValue)
             {
                 ReservedUntilDisplay = Framework.GetShortDateString(ci, OrderDate.Value);
+            }
+
+            if (!String.IsNullOrEmpty(CustomerOrderNumber))
+            {
+                CustomerOrderNumberDisplay = String.Join(System.Environment.NewLine, CustomerOrderNumber.Split(new char[] { (char)253 }));
             }
         }
     }

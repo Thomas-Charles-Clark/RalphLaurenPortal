@@ -27,22 +27,22 @@
         'Accept': 'application/json',
         'Content-type': 'application/json'
     }
-    window.onerror = function (message, source, lineno, colno, error) {
-        try {
-            console.error(error);
-            showError();
-            window.logClientSideError(JSON.stringify({
-                message: message + '\n' + (error.stack || ''),
-                source: source,
-                lineno: lineno,
-                colno: colno,
-                error: error,
-                url: window.location.href
-            }));
-        } catch (e) {
-            console.error(e)
-        }
-    }
+    //window.onerror = function (message, source, lineno, colno, error) {
+    //    try {
+    //        console.error(error);
+    //        showError();
+    //        window.logClientSideError(JSON.stringify({
+    //            message: message + '\n' + (error.stack || ''),
+    //            source: source,
+    //            lineno: lineno,
+    //            colno: colno,
+    //            error: error,
+    //            url: window.location.href
+    //        }));
+    //    } catch (e) {
+    //        console.error(e)
+    //    }
+    //}
     window.onunhandledrejection = function (errorEvent) {
         showError();
         try {

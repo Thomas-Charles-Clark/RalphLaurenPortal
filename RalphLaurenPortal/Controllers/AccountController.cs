@@ -82,7 +82,18 @@ namespace RalphLaurenPortal.Controllers
                 case SignInStatus.Success:
                     {
                         var user = await UserManager.FindByNameAsync(model.Username);
+
                         Session["TradeAccountID"] = user.TradeAccountID;
+
+                        var tradeAccount = user.AvailableTradeAccounts.FirstOrDefault(a => a.TradeAccountID == user.TradeAccountID);
+
+                        if (tradeAccount != null)
+                        {
+                            Session["TradeAccountID"] = tradeAccount.TradeAccountID;
+                            Session["DisplayTradePrice"] = tradeAccount.DisplayTradePrice;
+                            Session["DisplayRetailPrice"] = tradeAccount.DisplayRetailPrice;
+                        }
+
                         return RedirectToLocal(returnUrl);
                     }
                 case SignInStatus.LockedOut:

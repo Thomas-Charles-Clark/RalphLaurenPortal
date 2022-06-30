@@ -215,7 +215,7 @@ getResource([
     'Product',
     'Batch',
     'Description',
-    'YourReference',
+    'YourLineReference',
     'Tracking',
     'LineNo.',
     'BatchNo.',
