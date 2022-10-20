@@ -142,7 +142,7 @@ namespace RalphLaurenPortal.Models
         }
 
 
-        internal ProductStockInfoReturn FetchStockInfo(PassStockInfoFetch objFetch, int? tradeAccountId, string dotNetCulture, DateTime? useDate)
+        internal ProductStockInfoReturn FetchStockInfo(PassStockInfoFetch objFetch, int? tradeAccountId, string dotNetCulture, DateTime? useDate, string userCulture)
         {
             var result = new ProductStockInfoReturn();
 
@@ -190,10 +190,14 @@ namespace RalphLaurenPortal.Models
                     Pieces = p.Select(q => new BatchPiece() { Length = q.AvailableNowQuantity?.ToString("N2"), Quantity = "1" }).ToList()
                 }).ToList();
 
+                var ci = new System.Globalization.CultureInfo(userCulture);
+
+                var ti = ci.TextInfo;
+
                 result.PurchaseOrders = preresult.Where(p => p.DueInQuantity > 0).OrderBy(p => p.DueInDate).Select(p => new PurchaseOrder()
                 {
                     PurchaseOrderNumber = null,
-                    DueDate = p.DueInDate?.ToString("dd/MM/yyyy"),
+                    DueDate = p.DueInDate?.ToString("d", ci),
                     Length = p.DueInQuantity.ToString("N2"),
                     POConfirmed = p.POConfirmed
                 }).ToList();

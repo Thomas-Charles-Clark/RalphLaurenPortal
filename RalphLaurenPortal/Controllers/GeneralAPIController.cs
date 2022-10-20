@@ -195,7 +195,7 @@ namespace RalphLaurenPortal.Controllers
 
             var user = UserManager.FindById<Member, int>(RequestContext.Principal.Identity.GetUserId<int>());
 
-            return Ok(PortalDbContext.FetchStockInfo(objFetch, user.TradeAccountID, user.DotNetCulture, useDate));
+            return Ok(PortalDbContext.FetchStockInfo(objFetch, user.TradeAccountID, user.DotNetCulture, useDate, user.DotNetCulture));
         }
 
         [HttpPost]

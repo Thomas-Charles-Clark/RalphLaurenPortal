@@ -13,7 +13,7 @@ namespace RalphLaurenPortal.Models.ProductSearch
         public decimal? displayPrice { get; set; }
         public decimal? displaySalePrice { get; set; }
         public long imageId { get; set; }
-        public Sample largeSample { get; set; }
+        //public Sample largeSample { get; set; }
         public string name { get; set; }
         public string orderButtonText { get; set; }
         public string priceMessage { get; set; }
@@ -23,7 +23,7 @@ namespace RalphLaurenPortal.Models.ProductSearch
         public string rRPMessage { get; set; }
         public string reserveButtonText { get; set; }
         public string reserveWithBatchSampleButtonText { get; set; }
-        public Sample sample { get; set; }
+        //public Sample sample { get; set; }
         public string size { get; set; }
         public string statusMessage { get; set; }
         public StockMessage stockMessage { get; set; }
