@@ -1,10 +1,13 @@
 /*$secondary:     $gray-600 !default;*/
 /*$nav-pills-link-active-color:       $component-active-color !default;*/
 :root {
+  --xs-gutter: 0.1rem;
   --vsm-gutter: 0.25rem;
   --sm-gutter: 0.5rem;
   --m-gutter: 0.75rem;
   --l-gutter: 1.0rem;
+  --mxl-gutter: 1.5rem;
+  --xl-gutter: 2.0rem;
   --disco-color: #e51f7c;
 }
 
@@ -258,6 +261,10 @@ li.all-accounts {
   border-color: #86b7fe;
   outline: 0;
   box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+#page-size-select {
+  width: auto;
 }
 
 ul.dropdown-menu li.dropdown-item {
@@ -697,5 +704,16 @@ tr.k-state-selected .grid-msg {
   100% {
     background-position: 100% 100%;
   }
+}
+.long-search {
+  text-align: center;
+}
+
+.modal-dialog .blocker {
+  border-radius: 0;
+}
+
+#stock-tab-menu .nav .btn > span > span {
+  display: block;
 }
 /*# sourceMappingURL=common.css.map */

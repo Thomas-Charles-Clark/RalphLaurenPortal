@@ -50,7 +50,7 @@
 <script id="search-controls-template" type="text/html">
     <div class="search-controls d-flex justify-content-between py-3">
         <!-- ko if: showSampleControl -->
-        <select class="form-select" data-bind="value: sampleOrders, options: [{ 
+        <select id="sample-control" class="form-select" data-bind="value: sampleOrders, options: [{ 
                 name: '@HtmlHelperExtra.EscapeForJS(HtmlHelperExtra.Resource("ProductOrders", l, c, d))', 
                 value: false 
             }, { 
@@ -130,12 +130,15 @@
                     <span class="cover" data-bind="style: { 'width': 100 - exportingProgress() + '%' }"></span>
                     <span class="progress" data-bind="text: Math.round(((exportingProgress())*100)/100) + ' %'"></span>
                 </div>
-                <h3 data-bind="visible: showLongSearch">
+                <h3 class="long-search" data-bind="visible: showLongSearch">
                     @HtmlHelperExtra.Resource("TradeOutstandingOrdersPleaseWait", l, c, d)
                 </h3>
             </div>
             <div class="flex-container" data-bind="template: { name: 'search-controls-template' }"></div>
-            <h6 class="d-flex justify-content-between align-items-center my-2 my-sm-3">
+            <span class="mobile-hint d-md-block d-lg-none">
+                @HtmlHelperExtra.Resource("TouchGridNavigation", l, c, d)
+            </span>
+            <h6 class="grid-leading d-flex justify-content-between align-items-center my-2 my-sm-3">
                 <span>
                     @HtmlHelperExtra.Resource("AllOutstandingOrders", l, c, d)
                 </span>
@@ -161,12 +164,15 @@
                     <span class="cover" data-bind="style: { 'width': 100 - exportingProgress() + '%' }"></span>
                     <span class="progress" data-bind="text: Math.round(((exportingProgress())*100)/100) + ' %'"></span>
                 </div>
-                <h3 data-bind="visible: showLongSearch">
+                <h3 class="long-search" data-bind="visible: showLongSearch">
                     @HtmlHelperExtra.Resource("TradeOutstandingOrdersPleaseWait", l, c, d)
                 </h3>
             </div>
             <div class="flex-container" data-bind="template: { name: 'search-controls-template' }"></div>
-            <h6 class="d-flex justify-content-between align-items-center my-2 my-sm-3">
+            <span class="mobile-hint d-md-block d-lg-none">
+                @HtmlHelperExtra.Resource("TouchGridNavigation", l, c, d)
+            </span>
+            <h6 class="grid-leading d-flex justify-content-between align-items-center my-2 my-sm-3">
                 <span>
                     @HtmlHelperExtra.Resource("BackOrders", l, c, d)
                 </span>
@@ -189,12 +195,15 @@
                     <span class="cover" data-bind="style: { 'width': 100 - exportingProgress() + '%' }"></span>
                     <span class="progress" data-bind="text: Math.round(((exportingProgress())*100)/100) + ' %'"></span>
                 </div>
-                <h3 data-bind="visible: showLongSearch">
+                <h3 class="long-search" data-bind="visible: showLongSearch">
                     @HtmlHelperExtra.Resource("TradeOutstandingOrdersPleaseWait", l, c, d)
                 </h3>
             </div>
             <div class="flex-container" data-bind="template: { name: 'search-controls-template' }"></div>
-            <h6 class="d-flex justify-content-between align-items-center my-2 my-sm-3">
+            <span class="mobile-hint d-md-block d-lg-none">
+                @HtmlHelperExtra.Resource("TouchGridNavigation", l, c, d)
+            </span>
+            <h6 class="grid-leading d-flex justify-content-between align-items-center my-2 my-sm-3">
                 <span>
                     @HtmlHelperExtra.Resource("ReservedStock", l, c, d)
                 </span>
@@ -217,12 +226,15 @@
                     <span class="cover" data-bind="style: { 'width': 100 - exportingProgress() + '%' }"></span>
                     <span class="progress" data-bind="text: Math.round(((exportingProgress())*100)/100) + ' %'"></span>
                 </div>
-                <h3 data-bind="visible: showLongSearch">
+                <h3 class="long-search" data-bind="visible: showLongSearch">
                     @HtmlHelperExtra.Resource("TradeOutstandingOrdersPleaseWait", l, c, d)
                 </h3>
             </div>
             <div class="flex-container" data-bind="template: { name: 'search-controls-template' }"></div>
-            <h6 class="d-flex justify-content-between align-items-center my-2 my-sm-3">
+            <span class="mobile-hint d-md-block d-lg-none">
+                @HtmlHelperExtra.Resource("TouchGridNavigation", l, c, d)
+            </span>
+            <h6 class="grid-leading d-flex justify-content-between align-items-center my-2 my-sm-3">
                 <span>
                     @HtmlHelperExtra.Resource("DespatchedOrders", l, c, d)
                 </span>
@@ -248,12 +260,15 @@
                     <span class="cover" data-bind="style: { 'width': 100 - exportingProgress() + '%' }"></span>
                     <span class="progress" data-bind="text: Math.round(((exportingProgress())*100)/100) + ' %'"></span>
                 </div>
-                <h3 data-bind="visible: showLongSearch">
+                <h3 class="long-search" data-bind="visible: showLongSearch">
                     @HtmlHelperExtra.Resource("TradeOutstandingOrdersPleaseWait", l, c, d)
                 </h3>
             </div>
             <div class="flex-container" data-bind="template: { name: 'search-controls-template' }"></div>
-            <h6 class="d-flex justify-content-between align-items-center my-2 my-sm-3">
+            <span class="mobile-hint d-md-block d-lg-none">
+                @HtmlHelperExtra.Resource("TouchGridNavigation", l, c, d)
+            </span>
+            <h6 class="grid-leading d-flex justify-content-between align-items-center my-2 my-sm-3">
                 <span>
                     @HtmlHelperExtra.Resource("OrdersInProgress", l, c, d)
                 </span>
@@ -276,12 +291,15 @@
                     <span class="cover" data-bind="style: { 'width': 100 - exportingProgress() + '%' }"></span>
                     <span class="progress" data-bind="text: Math.round(((exportingProgress())*100)/100) + ' %'"></span>
                 </div>
-                <h3 data-bind="visible: showLongSearch">
+                <h3 class="long-search" data-bind="visible: showLongSearch">
                     @HtmlHelperExtra.Resource("TradeOutstandingOrdersPleaseWait", l, c, d)
                 </h3>
             </div>
             <div class="flex-container" data-bind="template: { name: 'search-controls-template' }"></div>
-            <h6 class="d-flex justify-content-between align-items-center my-2 my-sm-3">
+            <span class="mobile-hint d-md-block d-lg-none">
+                @HtmlHelperExtra.Resource("TouchGridNavigation", l, c, d)
+            </span>
+            <h6 class="grid-leading d-flex justify-content-between align-items-center my-2 my-sm-3">
                 <span>
                     @HtmlHelperExtra.Resource("HeldOrders", l, c, d)
                 </span>

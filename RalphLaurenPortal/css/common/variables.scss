@@ -1,8 +1,19 @@
-﻿:root {
+﻿$xs-gutter: 0.1rem;
+$vsm-gutter: 0.25rem;
+$sm-gutter: 0.5rem;
+$m-gutter: 0.75rem;
+$l-gutter: 1.0rem;
+$mxl-gutter: 1.5rem;
+$xl-gutter: 2.0rem;
+
+:root {
+    --xs-gutter: 0.1rem;
     --vsm-gutter: 0.25rem;
     --sm-gutter: 0.5rem;
     --m-gutter: 0.75rem;
     --l-gutter: 1.0rem;
+    --mxl-gutter: 1.5rem;
+    --xl-gutter: 2.0rem;
     --disco-color: #e51f7c;
 }
 

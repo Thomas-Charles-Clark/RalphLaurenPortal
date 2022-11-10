@@ -1,2 +1,182 @@
-﻿body {
+﻿@import "../lib/bootstrap/scss/mixins/breakpoints";
+@import "../lib/bootstrap/scss/functions";
+@import "../lib/bootstrap/scss/variables";
+@import "variables";
+
+body {
+}
+
+#main-navbar {
+    .navbar-container {
+        #navbar-rl-logo-anchor {
+            flex: 1;
+            flex-grow: 1;
+            margin-inline-end: 30px;
+
+
+            img {
+                width: 100%;
+                height: auto;
+                max-width: 658px;
+                max-height: 36px;
+            }
+        }
+
+        #trade-account-dropdown-wrapper {
+            .nav-link {
+                white-space: normal;
+            }
+        }
+    }
+}
+
+#product-search-content {
+    #search-paging {
+        flex-wrap: wrap;
+        gap: $sm-gutter $vsm-gutter;
+
+        #page-count-wrapper {
+            flex-grow: 1;
+            width: 100%;
+            justify-content: center !important;
+        }
+    }
+}
+
+#nav-tab-content {
+    .tab-pane {
+        padding: 0;
+    }
+}
+
+#search-results {
+    .result {
+        .card-body {
+            .d-flex.justify-content-between {
+                flex-wrap: wrap-reverse;
+                gap: $m-gutter;
+            }
+            .btn {
+                width: 100%;
+            }
+            .price-message,
+            .stock-message {
+                flex-wrap: nowrap !important;
+                span:first-of-type {
+                    white-space: normal;
+                }
+                span:last-of-type {
+
+                }
+            }
+        }
+    }
+}
+
+#order-status-tabs {
+    .btn {
+        flex: 1;
+        flex-basis: 100%;
+    }
+}
+
+#ko-wrapper {
+    > .container-md {
+        > .tab-content {
+            padding-left: 0;
+            padding-right: 0;
+        }
+    }
+}
+
+#trade-wrapper {
+    .search-controls {
+        flex-wrap: wrap;
+
+        #sample-control {
+            flex: 0 1 100%;
+            border-top-right-radius: $border-radius;
+            border-bottom-right-radius: $border-radius;
+            margin-bottom: $l-gutter;
+        }
+
+        .form-select,
+        .form-select-wrapper {
+            flex: 0 1 50%;
+            margin-inline-end: 0;
+        }
+
+        .form-select {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        .form-select-wrapper {
+            .form-select {
+                border-top-left-radius: 0;
+                border-bottom-left-radius: 0;
+            }
+        }
+
+        .input-group {
+            margin-top: $l-gutter;
+        }
+    }
+
+    .grid-leading {
+        flex-wrap: wrap;
+
+        span:first-of-type {
+            order: 1
+        }
+
+        .track-wait {
+            order: 0;
+            flex: 1 1 100%;
+            width: 100%;
+            display: block;
+            margin-bottom: $l-gutter;
+        }
+
+        a {
+            order: 2;
+        }
+    }
+}
+
+.mobile-hint {
+    color: forestgreen;
+}
+
+.modal-body {
+    .mobile-hint {
+        display: block;
+        margin-bottom: $m-gutter;
+    }
+
+    .tab-content {
+        padding: $m-gutter 0 !important;
+
+        .tab-pane {
+            padding: 0;
+
+            .dl-horizontal {
+                dd {
+                    .aftercare-container,
+                    .usage-container {
+                        margin-top: $sm-gutter;
+                    }
+                }
+            }
+        }
+    }
+}
+
+#nav-sales-history {
+    .search-controls {
+        width: 100%;
+        .form-select-wrapper {
+            flex: 0 1 auto;
+        }
+    }
 }

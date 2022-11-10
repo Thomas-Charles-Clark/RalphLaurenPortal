@@ -7,6 +7,17 @@ namespace RalphLaurenPortal.Utilities
 {
     public static class Framework
     {
+        public static bool IsMobileDevice
+        {
+            get
+            {
+                var deviceType = (HttpContext.Current.Request.Headers["CF-Device-Type-Override"] ??
+                                  HttpContext.Current.Request.Headers["CF-Device-Type"] ??
+                                  "desktop")?.ToLowerInvariant();
+                return deviceType != "desktop";
+            }
+        }
+
         // cheers https://stackoverflow.com/questions/24398051/culture-sensitive-datetime-tostring-with-dd-and-mm#answer-24398491
 
         public static string GetShortDateString(System.Globalization.CultureInfo ci, DateTime date)

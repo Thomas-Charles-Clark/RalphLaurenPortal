@@ -281,13 +281,17 @@
                                                 <button class="btn nav-link active" id="nav-in-stock-tab" data-bs-toggle="tab" data-bs-target="#nav-in-stock" type="button" role="tab" aria-controls="nav-in-stock" aria-selected="true">
                                                     <span>
                                                         @HtmlHelperExtra.Resource("InStock", l, c, d)
-                                                        (<span data-bind="text: totalInStock"></span>)
+                                                        <span>
+                                                            (<span data-bind="text: totalInStock"></span>)
+                                                        </span>
                                                     </span>
                                                 </button>
                                                 <button class="btn nav-link" id="nav-due-in-tab" data-bs-toggle="tab" data-bs-target="#nav-due-in" type="button" role="tab" aria-controls="nav-due-in" aria-selected="false">
                                                     <span>
                                                         @HtmlHelperExtra.Resource("DueIn", l, c, d)
-                                                        (<span data-bind="text: totalDueIn"></span>)
+                                                        <span>
+                                                            (<span data-bind="text: totalDueIn"></span>)
+                                                        </span>
                                                     </span>
                                                 </button>
                                                 @*<button class="btn nav-link" id="nav-supplier-tab" data-bs-toggle="tab" data-bs-target="#nav-supplier" type="button" role="tab" aria-controls="nav-supplier" aria-selected="false">
@@ -489,7 +493,7 @@
     </div>
 </div>
 <div id="tracking-modal" class="modal fade">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-fullscreen-lg-down">
         <div class="modal-content" data-bind="with: orderStatusModel">
             <div class="modal-header">
                 <h4 class="modal-title">
@@ -516,7 +520,7 @@
     </div>
 </div>
 <div id="order-detail-modal" class="modal fade">
-    <div class="modal-dialog modal-lg modal-xl">
+    <div class="modal-dialog modal-fullscreen-lg-down modal-lg modal-xl">
         <div class="modal-content" data-bind="with: orderStatusModel">
             <div class="modal-header">
                 <h4 class="modal-title">
@@ -571,6 +575,9 @@
                 <div data-bind="with: orderDetailsDeliveryInfo">
 
                 </div>
+                <span class="mobile-hint d-md-block d-lg-none">
+                    @HtmlHelperExtra.Resource("TouchGridNavigation", l, c, d)
+                </span>
                 <div data-bind="kendoGrid: ordersDetailsGrid"></div>
             </div>
         </div>

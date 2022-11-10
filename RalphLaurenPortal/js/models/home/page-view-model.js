@@ -25,6 +25,8 @@
 
     self.inspectingProduct = ko.observable();
 
+    self.pageSize = ko.observable('50');
+
     //#endregion
 
 
@@ -54,6 +56,7 @@
         }).then(window.handleFetchResponse)
             .then(data => {
                 self.availableCollections(data.Collections);
+                self.pageSize.valueHasMutated();
             })
             .catch(window.catchFetchErrors);
     });
@@ -86,15 +89,16 @@
             body: JSON.stringify({
                 searchTerm: self.searchTerm.peek(),
                 productTypeId: self.productTypeId.peek(),
-                collectionId: self.collection()?.CollectionID
+                collectionId: self.collection()?.CollectionID,
+                pageSize: self.pageSize()
             })
         })
             .then(window.handleFetchResponse)
             .then((data) => {
                 self.haveSearchedOnce(true);
+                self.busy(false);
                 self.searchResults(data);
                 setTimeout(() => {
-                    self.busy(false);
                     document.querySelectorAll('.card-body .btn').forEach(function (element) {
                         new bootstrap.Ripple(element)
                     });

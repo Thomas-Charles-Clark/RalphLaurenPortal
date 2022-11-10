@@ -321,6 +321,9 @@ li.all-accounts {
     }
 }
 
+#page-size-select {
+    width: auto;
+}
 
 ul.dropdown-menu {
     li.dropdown-item {
@@ -836,5 +839,27 @@ tr.k-state-selected {
 @keyframes barberpole {
     100% {
         background-position: 100% 100%;
+    }
+}
+
+.long-search {
+    text-align: center;
+}
+
+.modal-dialog {
+    .blocker {
+        border-radius: 0;
+    }
+}
+
+#stock-tab-menu {
+    .nav {
+        .btn {
+            > span {
+                > span {
+                    display: block;
+                }
+            }
+        }
     }
 }

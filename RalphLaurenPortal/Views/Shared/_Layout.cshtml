@@ -33,14 +33,11 @@
 
     <!-- #region Global CSS -->
     @Render.Styles("~/bundles/css/common")
-    @*@if (!dgFramework.IsMobileDevice())
+
+   @if (Framework.IsMobileDevice)
     {
-    @Render.Styles("~/bundles/css/desktop")
+        @Render.Styles("~/bundles/css/mobile")
     }
-    else
-    {*@
-    @Render.Styles("~/bundles/css/mobile")
-    @*}*@
     <!-- #endregion -->
 
     <!-- #region JS Libraries (Up front) -->
@@ -101,59 +98,62 @@
             </a>*@
             <a id="navbar-rl-logo-anchor" href="https://www.ralphlaurenhome.com" target="_blank" title="@HtmlHelperExtra.Resource("StockistBrandRalphLauren", l, c, d)" target="_self">
                 <img id="navbar-rl-logo" width="256" height="14" title="@HtmlHelperExtra.Resource("StockistBrandRalphLauren", l, c, d)" alt="@HtmlHelperExtra.Resource("StockistBrandRalphLauren", l, c, d)" 
-                        src="/img/logo/rl-logo-256-14.webp" 
-                        srcset="/img/logo/rl-logo-256-14.webp 1x, /img/logo/rl-logo-512-28.webp 3x, /img/logo/rl-logo-1024-56.webp 4x"
-                        sizes="(max-width: 420px) 256px, (max-width: 992px) 512px, (max-width: 1200px) 1024px"/>
+                        src="/img/logo/rl-logo-512-28.webp" 
+                        srcset="/img/logo/rl-logo-512-28.webp 512w, /img/logo/rl-logo-1024-56.webp 1024w"
+                        sizes="(max-width: 420px) 512px, (max-width: 992px) 1024, 1024px"/>
             </a>
             <ul id="trade-account-dropdown-wrapper" class="navbar-nav">
                 <li class="d-none" data-bind="init: { convert: createInitialTradeAccount }, text: tradeAccount">
                     @Html.Raw(JsonConvert.SerializeObject(Model.CurrentTradeAccount))
                 </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        @HtmlHelperExtra.Resource("TradeAccount", l, c, d):
-                       @if (Model.User?.TradeAccount != null)
-                        {
-                            <span data-bind="text: tradeAccountLabel">
-                                @Model.User.TradeAccount.Code - @Model.User.TradeAccount.Name 
-                            </span>
-                        }
-                        else 
-                        { 
-                            <span>
-                                @HtmlHelperExtra.Resource("All", l, c, d)
-                            </span>
-                        }
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <!-- ko foreachInit: { name: 'ko-trade-dropdown-template', data: availableTradeAccounts, createElement: createTradeAccount } -->
-                       @if (Model.User != null)
-                       {
-                           foreach (var ta in Model.User.AvailableTradeAccounts.OrderBy(ta => ta.TradeAccount.Name))
-                           {
-                            <li>
-                                <span class="d-none" data-bind="init: { convert: JSON.parse }, text: data, remove">
-                                    @Html.Raw(JsonConvert.SerializeObject(ta.TradeAccount))
+               @if (User.Identity.IsAuthenticated)
+                {
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            @HtmlHelperExtra.Resource("TradeAccount", l, c, d):
+                           @if (Model.User?.TradeAccount != null)
+                            {
+                                <span data-bind="text: tradeAccountLabel">
+                                    @Model.User.TradeAccount.Code - @Model.User.TradeAccount.Name 
                                 </span>
-                                <a class="dropdown-item" href="#" data-bind="text: label, click: () => { $parent.tradeAccount($data) }">
-                                    @ta.TradeAccount.Code - @ta.TradeAccount.Name
-                                </a>
-                            </li>
+                            }
+                            else 
+                            { 
+                                <span>
+                                    @HtmlHelperExtra.Resource("All", l, c, d)
+                                </span>
+                            }
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <!-- ko foreachInit: { name: 'ko-trade-dropdown-template', data: availableTradeAccounts, createElement: createTradeAccount } -->
+                           @if (Model.User != null)
+                           {
+                               foreach (var ta in Model.User.AvailableTradeAccounts.OrderBy(ta => ta.TradeAccount.Name))
+                               {
+                                <li>
+                                    <span class="d-none" data-bind="init: { convert: JSON.parse }, text: data, remove">
+                                        @Html.Raw(JsonConvert.SerializeObject(ta.TradeAccount))
+                                    </span>
+                                    <a class="dropdown-item" href="#" data-bind="text: label, click: () => { $parent.tradeAccount($data) }">
+                                        @ta.TradeAccount.Code - @ta.TradeAccount.Name
+                                    </a>
+                                </li>
+                               }
                            }
-                       }
-                        <!-- /ko -->
-                        <li class="all-accounts">
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li class="all-accounts">
-                             <a id="all-accounts-btn"
-                                class="btn btn-link"
-                                 data-bind="click: () => { tradeAccount(null) }">
-                                 @HtmlHelperExtra.Resource("AllAccounts", l, c, d)
-                             </a>
-                        </li>
-                    </ul>
-                </li>
+                            <!-- /ko -->
+                            <li class="all-accounts">
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li class="all-accounts">
+                                 <a id="all-accounts-btn"
+                                    class="btn btn-link"
+                                     data-bind="click: () => { tradeAccount(null) }">
+                                     @HtmlHelperExtra.Resource("AllAccounts", l, c, d)
+                                 </a>
+                            </li>
+                        </ul>
+                    </li>
+                } 
             </ul>
         </div>
         @if (Request.IsAuthenticated)

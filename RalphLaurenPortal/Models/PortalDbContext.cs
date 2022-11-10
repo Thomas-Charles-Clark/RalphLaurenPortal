@@ -126,7 +126,8 @@ namespace RalphLaurenPortal.Models
                 ProductTypeID = objSearch.ProductTypeID,
                 CollectionID = objSearch.CollectionID,
                 MemberID = memberId,
-                TradeAccountID = tradeAccountId
+                TradeAccountID = tradeAccountId,
+                ResultSetSize  = objSearch.PageSize
             }, null, 30, CommandType.StoredProcedure);
         }
 
