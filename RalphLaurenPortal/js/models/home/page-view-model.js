@@ -258,13 +258,18 @@ getResource([
     })
 
     window.pageModel = pageViewModel(resources);
-    window.pageModel.orderStatusModel.search();
-    window.pageModel.orderStatusModel.ready(true);
     ko.applyBindings(window.pageModel, document.querySelector('#ko-wrapper'));
+
+    document.querySelector('#nav-order-history-tab').addEventListener('click', (e) => {
+        if (!window.pageModel.orderStatusModel.ready()) {
+            window.pageModel.orderStatusModel.search();
+            window.pageModel.orderStatusModel.ready(true);
+        }
+    });
 
     var triggerTabList = [].slice.call(document.querySelectorAll('#order-status-tabs button'))
     triggerTabList.forEach(function (triggerEl) {
-        var tabTrigger = bootstrap.Tab.getOrCreateInstance(triggerEl)
+        var tabTrigger = bootstrap.Tab.getOrCreateInstance(triggerEl);
 
         var targetPane = document.querySelector(triggerEl.dataset.bsTarget);
 

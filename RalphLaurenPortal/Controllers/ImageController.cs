@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
 
@@ -53,88 +54,102 @@ namespace RalphLaurenPortal.Controllers
             if (bytes == null)
             {
                 //  Read image from disk
-                var jpegPath = String.Format("{0}\\{1}\\{2}.jpeg", _imagePath, _width, _imageId);
-                var webpPath = String.Format("{0}\\{1}\\{2}.webp", _imagePath, _width, _imageId);
+#if DEBUG
+                var jpegPath = $"{_imagePath}\\{_width}\\{_imageId}.jpeg";
+                var webpPath = $"{_imagePath}\\{_width}\\{_imageId}.webp";
+#else
+                var jpegPath = $"{HttpContext.Current.Server.MapPath($"~/{_imagePath}")}/{_width}/{_imageId}.jpeg";
+                var webpPath = $"{HttpContext.Current.Server.MapPath($"~/{_imagePath}")}/{_width}/{_imageId}.webp";
+#endif
 
-                if (File.Exists(webpPath))
-                {
-                    bytes = File.ReadAllBytes(webpPath);
-                    webp = true;
-                }
-                else
-                {
-                    if (File.Exists(jpegPath))
-                    {
-                        bytes = File.ReadAllBytes(jpegPath);
-                    }
-                    else
-                    {
-                        return;
-                    }
-                }
+                bytes = File.ReadAllBytes(jpegPath);
+
+                //if (File.Exists(webpPath))
+                //{
+                //    bytes = File.ReadAllBytes(webpPath);
+                //    webp = true;
+                //}
+                //else
+                //{
+                //    if (File.Exists(jpegPath))
+                //    {
+                //        bytes = File.ReadAllBytes(jpegPath);
+                //    }
+                //    else
+                //    {
+                //        var response = context.HttpContext.Response;
+                //        response.ContentType = "text/html";
+                //        response.BufferOutput = true;
+                //        response.Clear();
+
+                //        byte[] buffer = System.Text.Encoding.UTF8.GetBytes($"{jpegPath}\r\n{webpPath}");
+
+                //        response.OutputStream.Write(buffer, 0, buffer.Length);
+                        
+                //        response.OutputStream.Flush();
+                //        response.End();
+
+                //        return;
+                //    }
+                //}
 
                 //objImageCache.Set("IMAGE", _width, _imageId, bytes, _cacheTimeMinutes);
             }
 
-            try
+            
+            if (webp)
             {
-                if (webp)
+                var imageStream = new MemoryStream(bytes);
+
+                //  Output image to browser
+                var response = context.HttpContext.Response;
+                response.ContentType = "image/webp";
+                response.BufferOutput = true;
+                response.Clear();
+                byte[] buffer = new byte[4096];
+
+                while (true)
                 {
-                    var imageStream = new MemoryStream(bytes);
+                    int read = imageStream.Read(buffer, 0, buffer.Length);
 
-                    //  Output image to browser
-                    var response = context.HttpContext.Response;
-                    response.ContentType = "image/webp";
-                    response.BufferOutput = true;
-                    response.Clear();
-                    byte[] buffer = new byte[4096];
-
-                    while (true)
+                    if (read == 0)
                     {
-                        int read = imageStream.Read(buffer, 0, buffer.Length);
-
-                        if (read == 0)
-                        {
-                            break;
-                        }
-
-                        response.OutputStream.Write(buffer, 0, read);
+                        break;
                     }
-                    response.OutputStream.Flush();
-                    response.End();
-                    imageStream.Close();
+
+                    response.OutputStream.Write(buffer, 0, read);
                 }
-                else
-                {
-                    var imageStream = new MemoryStream(bytes);
-
-                    //  Output image to browser
-                    var response = context.HttpContext.Response;
-                    response.ContentType = "image/jpeg";
-                    response.BufferOutput = true;
-                    response.Clear();
-                    byte[] buffer = new byte[4096];
-
-                    while (true)
-                    {
-                        int read = imageStream.Read(buffer, 0, buffer.Length);
-
-                        if (read == 0)
-                        {
-                            break;
-                        }
-
-                        response.OutputStream.Write(buffer, 0, read);
-                    }
-                    response.OutputStream.Flush();
-                    response.End();
-                    imageStream.Close();
-                }
+                response.OutputStream.Flush();
+                response.End();
+                imageStream.Close();
             }
-            catch (Exception)
+            else
             {
-                //  Ignore error
+                var imageStream = new MemoryStream(bytes);
+
+                //  Output image to browser
+                var response = context.HttpContext.Response;
+                response.ContentType = "image/jpeg";
+                response.BufferOutput = true;
+                response.Clear();
+                byte[] buffer = new byte[4096];
+
+                while (true)
+                {
+                    int read = imageStream.Read(buffer, 0, buffer.Length);
+
+                    if (read == 0)
+                    {
+                        break;
+                    }
+
+                    response.OutputStream.Write(buffer, 0, read);
+                }
+                response.OutputStream.Flush();
+                response.End();
+                imageStream.Close();
             }
+           
         }
     }
 }

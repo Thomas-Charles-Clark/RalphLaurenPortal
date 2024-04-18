@@ -1054,12 +1054,13 @@
                         self.showLongSearch(true);
                     }, 30000);
 
-                    $.ajax({
-                        url: '/api/generalapi/OutstandingOrderSearch',
-                        type: 'POST',
-                        dataType: 'json',
-                        data: data,
-                        success: function (data) {
+                    fetch('/api/generalapi/OutstandingOrderSearch', {
+                        method: 'POST',
+                        headers: window.fetchHeaders,
+                        body: JSON.stringify(data)
+                    })
+                        .then(window.handleFetchResponse)
+                        .then(data => {
                             window.clearTimeout(self.longSearchTimeout);
                             self.showLongSearch(false);
                             affectingArray(data);
@@ -1070,13 +1071,35 @@
                                 pageSize: affectingGrid().dataSource.pageSize(),
                                 sort: affectingGrid().dataSource.sort()
                             });
-                        },
-                        error: function (xhr, s, a) {
-                            showError();
+                        })
+                        .catch(err => {
                             affectingBusy(false);
-                        },
-                        timeout: 120000
-                    });
+                            window.catchFetchErrors(err);
+                        })
+
+                    //$.ajax({
+                    //    url: '/api/generalapi/OutstandingOrderSearch',
+                    //    type: 'POST',
+                    //    dataType: 'json',
+                    //    data: data,
+                    //    success: function (data) {
+                    //        window.clearTimeout(self.longSearchTimeout);
+                    //        self.showLongSearch(false);
+                    //        affectingArray(data);
+                    //        affectingBusy(false);
+                    //        self.validateSearchNow(false);
+                    //        affectingGrid().dataSource.query({
+                    //            page: 1,
+                    //            pageSize: affectingGrid().dataSource.pageSize(),
+                    //            sort: affectingGrid().dataSource.sort()
+                    //        });
+                    //    },
+                    //    error: function (xhr, s, a) {
+                    //        showError();
+                    //        affectingBusy(false);
+                    //    },
+                    //    timeout: 120000
+                    //});
                 }
             }
         }, 0);

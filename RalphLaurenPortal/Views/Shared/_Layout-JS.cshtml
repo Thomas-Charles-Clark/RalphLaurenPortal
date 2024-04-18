@@ -25,7 +25,8 @@
     }
     window.fetchHeaders = {
         'Accept': 'application/json',
-        'Content-type': 'application/json'
+        'Content-type': 'application/json',
+        'cache-control': 'no-cache'
     }
     //window.onerror = function (message, source, lineno, colno, error) {
     //    try {
@@ -149,7 +150,7 @@
     <div class="carousel-item ripple">
         <div class="d-none" data-bind="init: { convert: JSON.parse }, text: data, remove">
         </div>
-        <img src="/image/986/0" width="986" height="986" class="d-block w-100" alt="" />
+        <img src="/image/986/0?v=1" width="986" height="986" class="d-block w-100" alt="" />
     </div>|
 </script>
 <script id="ko-blank-template" type="text/html">
