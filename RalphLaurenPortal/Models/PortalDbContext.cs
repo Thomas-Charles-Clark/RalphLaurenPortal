@@ -21,14 +21,14 @@ namespace RalphLaurenPortal.Models
 {
     public partial class PortalDbContext : IdentityDbContext<Member, Role, int, Member_Login, Member_Role, Member_Claim>
     {
-        public PortalDbContext() : base("VM-SQL1")
+        public PortalDbContext() : base("VM-SQL")
         {
             // for debugging with - this throws every time fetchAlerts is called on the signalR hub...
             // but that can be ignored. Very handy way to get dbContext output, this:
             //this.Database.Log = (s) => System.Diagnostics.Debug.WriteLine(s);
         }
 
-        public PortalDbContext(string connectionName = "VM-SQL1")
+        public PortalDbContext(string connectionName = "VM-SQL")
             : base(connectionName)
         {
         }
