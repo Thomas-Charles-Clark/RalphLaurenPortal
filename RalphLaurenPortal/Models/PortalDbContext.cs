@@ -161,8 +161,7 @@ namespace RalphLaurenPortal.Models
 
             // pub.Stock_Message piggybacks on portal.Stock_Message which actually outputs what we're after but doesn't
             // bother translating it - and won't ever bother translating it. Skip this result set:
-            _ = results.Read().ToList();
-
+            
             result.SupplierAvailabilityMessage = results.ReadSingleOrDefault<string>();
 
             if (preresult.Any())

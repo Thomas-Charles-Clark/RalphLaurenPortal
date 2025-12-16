@@ -48,8 +48,9 @@
     <Reference Include="Dapper, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Dapper.2.0.123\lib\net461\Dapper.dll</HintPath>
     </Reference>
-    <Reference Include="MertexerV2">
-      <HintPath>..\..\MertexerV2\MertexerV2\bin\Release\MertexerV2.dll</HintPath>
+    <Reference Include="MertexerV2, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c602798f13fc5144, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\MertexerV2\MertexerV2\bin\Debug\MertexerV2.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.3\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>

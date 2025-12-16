@@ -246,7 +246,7 @@
             field: 'Status',
             title: self.resources.Status,
             width: 100,
-            template: '<span class="grid-msg" title="' + self.resources.StockistClickHere + '">#: Status.replace(" - Credit Reason", " for Sales") #</span>'
+            template: '<span class="grid-msg" title="' + self.resources.StockistClickHere + '">#: Status #</span>'
         }, {
             field: 'Tracking',
             title: self.resources.Tracking,
@@ -624,7 +624,7 @@
             field: 'Status',
             title: self.resources.Status,
             width: 100,
-            template: '<span class="grid-msg" title="' + self.resources.StockistClickHere + '">#: Status.replace(" - Credit Reason", " for Sales") #</span>'
+            template: '<span class="grid-msg" title="' + self.resources.StockistClickHere + '">#: Status #</span>'
         }],
         sortable: true,
         noRecords: {
@@ -800,7 +800,7 @@
             headerAttributes: {
                 'class': 'text-right'
             },
-            template: '#: OrderStatus.replace(" - Credit Reason", " for Sales") #'
+            template: '#: OrderStatus #'
         }, {
             field: 'DespatchStatus',
             title: self.resources.Despatch,
@@ -1321,7 +1321,7 @@
                 var cellValue = data[i][gridColumns[j].field];
                 if (typeof cellValue === 'string') {
                     cellValue = cellValue.replace(/T00:00:00/g, '');
-                    cellValue = cellValue.replace(" - Credit Reason", " for Sales")
+                    cellValue = cellValue
                 }
 
                 rowCells.push({ value: cellValue });
