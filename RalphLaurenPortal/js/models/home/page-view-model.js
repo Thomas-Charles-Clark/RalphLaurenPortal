@@ -260,12 +260,14 @@ getResource([
     window.pageModel = pageViewModel(resources);
     ko.applyBindings(window.pageModel, document.querySelector('#ko-wrapper'));
 
-    document.querySelector('#nav-order-history-tab').addEventListener('click', (e) => {
-        if (!window.pageModel.orderStatusModel.ready()) {
-            window.pageModel.orderStatusModel.search();
-            window.pageModel.orderStatusModel.ready(true);
-        }
-    });
+    if (document.querySelector('#nav-order-history-tab')) {
+        document.querySelector('#nav-order-history-tab').addEventListener('click', (e) => {
+            if (!window.pageModel.orderStatusModel.ready()) {
+                window.pageModel.orderStatusModel.search();
+                window.pageModel.orderStatusModel.ready(true);
+            }
+        });
+    }
 
     var triggerTabList = [].slice.call(document.querySelectorAll('#order-status-tabs button'))
     triggerTabList.forEach(function (triggerEl) {
