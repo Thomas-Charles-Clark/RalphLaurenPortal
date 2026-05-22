@@ -1148,22 +1148,22 @@
             body: JSON.stringify({
                 documentNumber: text
             })
-                .then(window.handleFetchResponse)
-                .then(data => {
-                    affectingBusy(false);
-                    if (data.Results.length == 1) {
-                        window.open(data.Results[0].TrackingURL, '_blank');
-                    } else {
-                        self.trackingOrderNumber(text.split(',')[1]);
-                        self.trackingResults(data.Results);
-                        self.showTrackingModal();
-                    }
-                })
-                .catch(err => {
-                    affectingBusy(false);
-                    window.catchFetchErrors(err);
-                })
-        });
+        })
+            .then(window.handleFetchResponse)
+            .then(data => {
+                affectingBusy(false);
+                if (data.Results.length == 1) {
+                    window.open(data.Results[0].TrackingURL, '_blank');
+                } else {
+                    self.trackingOrderNumber(text.split(',')[1]);
+                    self.trackingResults(data.Results);
+                    self.showTrackingModal();
+                }
+            })
+            .catch(err => {
+                affectingBusy(false);
+                window.catchFetchErrors(err);
+            })
     }
 
     self.showTrackingModal = function () {
@@ -1243,25 +1243,25 @@
             body: JSON.stringify({
                 orderNumber: orderNumber
             })
-                .then(window.handleFetchResponse)
-                .then(data => {
-
-                    console.log('GetOrderDeliveryInfo returned', data);
-
-                    self.orderDetailsOrderDate(kendo.toString(kendo.parseDate(orderDate, 'yyyy-MM-ddTHH:mm:ss'), 'MM/dd/yyyy'));
-                    self.orderDetailsOrderNumber(orderNumber);
-                    self.orderDetailsDeliveryInfo(data.DeliveryInfo);
-                    self.orderDetailsOrderLines(data.OrderLines);
-
-                    affectingBusy(false);
-
-                    self.showOrderDetailModal();
-                })
-                .catch(err => {
-                    affectingBusy(false);
-                    window.catchFetchErrors(err);
-                })
         })
+            .then(window.handleFetchResponse)
+            .then(data => {
+
+                console.log('GetOrderDeliveryInfo returned', data);
+
+                self.orderDetailsOrderDate(kendo.toString(kendo.parseDate(orderDate, 'yyyy-MM-ddTHH:mm:ss'), 'MM/dd/yyyy'));
+                self.orderDetailsOrderNumber(orderNumber);
+                self.orderDetailsDeliveryInfo(data.DeliveryInfo);
+                self.orderDetailsOrderLines(data.OrderLines);
+
+                affectingBusy(false);
+
+                self.showOrderDetailModal();
+            })
+            .catch(err => {
+                affectingBusy(false);
+                window.catchFetchErrors(err);
+            })
     }
 
     self.saveAsExcel = function (grid) {
@@ -1305,18 +1305,18 @@
                         body: JSON.stringify({
                             documentNumber: text
                         })
-                            .then(window.handleFetchResponse)
-                            .then(data => {
-                                grid.widget().dataSource.data()[i].Tracking = data.Results.map(function (x) { return x.TrackingURL }).join("\r\n");
-                                //console.log('resolved promise', i);
-                                self.exportingProgress(self.exportingProgress() + increment);
-                                resolve();
-                            })
-                            .catch(err => {
-                                window.catchFetchErrors(err);
-                                reject();
-                            })
-                    });
+                    })
+                        .then(window.handleFetchResponse)
+                        .then(data => {
+                            grid.widget().dataSource.data()[i].Tracking = data.Results.map(function (x) { return x.TrackingURL }).join("\r\n");
+                            //console.log('resolved promise', i);
+                            self.exportingProgress(self.exportingProgress() + increment);
+                            resolve();
+                        })
+                        .catch(err => {
+                            window.catchFetchErrors(err);
+                            reject();
+                        })
                 });
             }
 

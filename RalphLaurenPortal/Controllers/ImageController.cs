@@ -145,8 +145,12 @@ namespace RalphLaurenPortal.Controllers
 
                     response.OutputStream.Write(buffer, 0, read);
                 }
+                
                 response.OutputStream.Flush();
-                response.End();
+                
+                if (response.OutputStream.CanWrite)
+                    response.End();
+                
                 imageStream.Close();
             }
            

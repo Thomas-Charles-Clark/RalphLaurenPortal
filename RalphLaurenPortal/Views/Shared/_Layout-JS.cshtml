@@ -57,10 +57,8 @@
 			console.error(error);
 			window.showError();
 			window.logClientSideError(JSON.stringify({
-				message: message + '\n' + (error.stack || ''),
-				source: source,
-				lineno: lineno,
-				colno: colno,
+				message: message,
+                stack: source,
 				error: error,
 				url: window.location.href
 			}));
@@ -115,7 +113,11 @@
         console.error(error);
         if (error instanceof TypeError)
             error = { message: error.message };
-        window.logClientSideError(JSON.stringify(error));
+        window.logClientSideError(JSON.stringify({
+            url: window.location.href,
+            message: error.toString(),
+            stack: error.stack
+        }));
     }
     window.getResource = function (resources) {
         let singular = false;
