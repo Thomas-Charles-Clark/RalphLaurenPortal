@@ -863,3 +863,11 @@ tr.k-state-selected {
         }
     }
 }
+
+#error-modal {
+    .modal-body {
+        p:last-of-type {
+            margin-bottom: 0;
+        }
+    }
+}

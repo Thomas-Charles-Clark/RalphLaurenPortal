@@ -104,7 +104,10 @@
                     });
                 });
             })
-            .catch(window.catchFetchErrors)
+            .catch(err => {
+                self.busy(false);
+                window.catchFetchErrors(err);
+            })
     }, self).extend({
         rateLimit: {
             timeout: 100,
@@ -162,7 +165,11 @@
                 a.remove();
                 self.busy(false);
                 self.busyMessage(self.resources.Searching);
-            });
+            })
+            .catch(err => {
+                self.busy(false);
+                window.catchFetchErrors(err);
+            })
     }
 
     self.showProductModal = (product, tab) => {

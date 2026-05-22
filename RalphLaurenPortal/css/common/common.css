@@ -716,4 +716,8 @@ tr.k-state-selected .grid-msg {
 #stock-tab-menu .nav .btn > span > span {
   display: block;
 }
+
+#error-modal .modal-body p:last-of-type {
+  margin-bottom: 0;
+}
 /*# sourceMappingURL=common.css.map */

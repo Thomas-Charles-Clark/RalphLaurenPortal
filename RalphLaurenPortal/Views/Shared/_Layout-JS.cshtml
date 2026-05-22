@@ -23,29 +23,15 @@
             }
         }
     }
+
     window.fetchHeaders = {
         'Accept': 'application/json',
         'Content-type': 'application/json',
         'cache-control': 'no-cache'
     }
-    //window.onerror = function (message, source, lineno, colno, error) {
-    //    try {
-    //        console.error(error);
-    //        showError();
-    //        window.logClientSideError(JSON.stringify({
-    //            message: message + '\n' + (error.stack || ''),
-    //            source: source,
-    //            lineno: lineno,
-    //            colno: colno,
-    //            error: error,
-    //            url: window.location.href
-    //        }));
-    //    } catch (e) {
-    //        console.error(e)
-    //    }
-    //}
+
     window.onunhandledrejection = function (errorEvent) {
-        showError();
+        window.showError();
         try {
             window.logClientSideError(JSON.stringify({
                 message: errorEvent.reason
@@ -54,21 +40,43 @@
             console.error(e);
         }
     }
+
     window.logClientSideError = function (message) {
-        //fetch('/api/generalapi/LogClientError', {
-        //    method: 'POST',
-        //    headers: window.fetchHeaders,
-        //    body: message
-        //}).catch((e) => {
-        //    console.error(e);
-        //})
+        fetch('/api/generalapi/LogClientError', {
+            method: 'POST',
+            headers: window.fetchHeaders,
+            body: message
+        }).catch((e) => {
+            console.error(e);
+        });
+        window.showError();
     }
+
+	window.onerror = function (message, source, lineno, colno, error) {
+		try {
+			console.error(error);
+			window.showError();
+			window.logClientSideError(JSON.stringify({
+				message: message + '\n' + (error.stack || ''),
+				source: source,
+				lineno: lineno,
+				colno: colno,
+				error: error,
+				url: window.location.href
+			}));
+		} catch (e) {
+			console.error(e)
+		}
+    }
+
     if (window.navigator.userAgent.match(/MSIE|Trident/) !== null) {
         alert('@HtmlHelperExtra.EscapeForJS(HtmlHelperExtra.Resource("IE11Warning", l, c, d))');
     }
+
     if (typeof window.operamini != 'undefined') {
         alert('@HtmlHelperExtra.EscapeForJS(HtmlHelperExtra.Resource("OperaMiniWarning", l, c, d))');
     }
+
     function getCountryId() {
         return @c;
     }

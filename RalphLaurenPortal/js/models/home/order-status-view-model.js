@@ -1140,26 +1140,29 @@
 
         affectingBusy(true);
 
-        $.ajax({
-            url: '/api/generalapi/GetParcelCount',
-            type: 'POST',
-            dataType: 'json',
-            data: {
+        fetch('/api/generalapi/GetParcelCount', {
+            method: 'POST',
+            headers: window.fetchHeaders,
+            cache: 'no-cache',
+            credentials: 'same-origin',
+            body: JSON.stringify({
                 documentNumber: text
-            },
-            success: function (data) {
-                affectingBusy(false);
-                if (data.Results.length == 1) {
-                    window.open(data.Results[0].TrackingURL, '_blank');
-                } else {
-                    self.trackingOrderNumber(text.split(',')[1]);
-                    self.trackingResults(data.Results);
-                    self.showTrackingModal();
-                }
-            },
-            error: function (xhr, s, a) {
-                window.location.href = '/l102?redirect=115'
-            }
+            })
+                .then(window.handleFetchResponse)
+                .then(data => {
+                    affectingBusy(false);
+                    if (data.Results.length == 1) {
+                        window.open(data.Results[0].TrackingURL, '_blank');
+                    } else {
+                        self.trackingOrderNumber(text.split(',')[1]);
+                        self.trackingResults(data.Results);
+                        self.showTrackingModal();
+                    }
+                })
+                .catch(err => {
+                    affectingBusy(false);
+                    window.catchFetchErrors(err);
+                })
         });
     }
 
@@ -1207,29 +1210,58 @@
 
         affectingBusy(true);
 
-        $.ajax({
-            url: '/api/generalapi/GetOrderDeliveryInfo',
-            type: 'POST',
-            dataType: 'json',
-            data: {
+        //$.ajax({
+        //    url: '/api/generalapi/GetOrderDeliveryInfo',
+        //    type: 'POST',
+        //    dataType: 'json',
+        //    data: {
+        //        orderNumber: orderNumber
+        //    },
+        //    success: function (data) {
+        //        console.log('GetOrderDeliveryInfo returned', data);
+
+        //        self.orderDetailsOrderDate(kendo.toString(kendo.parseDate(orderDate, 'yyyy-MM-ddTHH:mm:ss'), 'MM/dd/yyyy'));
+        //        self.orderDetailsOrderNumber(orderNumber);
+        //        self.orderDetailsDeliveryInfo(data.DeliveryInfo);
+        //        self.orderDetailsOrderLines(data.OrderLines);
+
+        //        affectingBusy(false);
+
+        //        self.showOrderDetailModal();
+        //    },
+        //    error: function (xhr, s, a) {
+        //        affectingBusy(false);
+        //        window.catchFetchError(err);
+        //    }
+        //});
+
+        fetch('/api/generalapi/GetOrderDeliveryInfo', {
+            method: 'POST',
+            headers: window.fetchHeaders,
+            cache: 'no-cache',
+            credentials: 'same-origin',
+            body: JSON.stringify({
                 orderNumber: orderNumber
-            },
-            success: function (data) {
-                console.log('GetOrderDeliveryInfo returned', data);
+            })
+                .then(window.handleFetchResponse)
+                .then(data => {
 
-                self.orderDetailsOrderDate(kendo.toString(kendo.parseDate(orderDate, 'yyyy-MM-ddTHH:mm:ss'), 'MM/dd/yyyy'));
-                self.orderDetailsOrderNumber(orderNumber);
-                self.orderDetailsDeliveryInfo(data.DeliveryInfo);
-                self.orderDetailsOrderLines(data.OrderLines);
+                    console.log('GetOrderDeliveryInfo returned', data);
 
-                affectingBusy(false);
+                    self.orderDetailsOrderDate(kendo.toString(kendo.parseDate(orderDate, 'yyyy-MM-ddTHH:mm:ss'), 'MM/dd/yyyy'));
+                    self.orderDetailsOrderNumber(orderNumber);
+                    self.orderDetailsDeliveryInfo(data.DeliveryInfo);
+                    self.orderDetailsOrderLines(data.OrderLines);
 
-                self.showOrderDetailModal();
-            },
-            error: function (xhr, s, a) {
-                window.location.href = '/l102?redirect=115'
-            }
-        });
+                    affectingBusy(false);
+
+                    self.showOrderDetailModal();
+                })
+                .catch(err => {
+                    affectingBusy(false);
+                    window.catchFetchErrors(err);
+                })
+        })
     }
 
     self.saveAsExcel = function (grid) {
@@ -1247,22 +1279,43 @@
 
             function updateTrackingCell(grid, i, text, increment) {
                 return new Promise(function (resolve, reject) {
-                    $.ajax({
-                        url: '/api/generalapi/GetParcelCount',
-                        type: 'POST',
-                        dataType: 'json',
-                        data: {
+                    //$.ajax({
+                    //    url: '/api/generalapi/GetParcelCount',
+                    //    type: 'POST',
+                    //    dataType: 'json',
+                    //    data: {
+                    //        documentNumber: text
+                    //    },
+                    //    success: function (data) {
+                    //        grid.widget().dataSource.data()[i].Tracking = data.Results.map(function (x) { return x.TrackingURL }).join("\r\n");
+                    //        //console.log('resolved promise', i);
+                    //        self.exportingProgress(self.exportingProgress() + increment);
+                    //        resolve();
+                    //    },
+                    //    error: function (xhr, s, a) {
+                    //        reject();
+                    //    }
+                    //});
+
+                    fetch('/api/generalapi/GetParcelCount', {
+                        method: 'POST',
+                        headers: window.fetchHeaders,
+                        cache: 'no-cache',
+                        credentials: 'same-origin',
+                        body: JSON.stringify({
                             documentNumber: text
-                        },
-                        success: function (data) {
-                            grid.widget().dataSource.data()[i].Tracking = data.Results.map(function (x) { return x.TrackingURL }).join("\r\n");
-                            //console.log('resolved promise', i);
-                            self.exportingProgress(self.exportingProgress() + increment);
-                            resolve();
-                        },
-                        error: function (xhr, s, a) {
-                            reject();
-                        }
+                        })
+                            .then(window.handleFetchResponse)
+                            .then(data => {
+                                grid.widget().dataSource.data()[i].Tracking = data.Results.map(function (x) { return x.TrackingURL }).join("\r\n");
+                                //console.log('resolved promise', i);
+                                self.exportingProgress(self.exportingProgress() + increment);
+                                resolve();
+                            })
+                            .catch(err => {
+                                window.catchFetchErrors(err);
+                                reject();
+                            })
                     });
                 });
             }

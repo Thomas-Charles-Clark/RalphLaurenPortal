@@ -224,6 +224,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\ClientErrorDTO.cs" />
     <Compile Include="Models\Collection\Collection.cs" />
     <Compile Include="Models\Collection\CollectionCacheProvider.cs" />
     <Compile Include="Models\IdentityModels.cs" />
@@ -247,7 +248,9 @@
     <Compile Include="Models\TradeAccount\TradeAccount.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="Utilities\ErrorHandlingHTTPModule.cs" />
     <Compile Include="Utilities\Framework.cs" />
+    <Compile Include="Utilities\GlobalAPIExceptionHandler.cs" />
     <Compile Include="Utilities\HtmlHelperExtra.cs" />
     <Compile Include="Utilities\IdentityExtensions.cs" />
     <Compile Include="Utilities\Render.cs" />

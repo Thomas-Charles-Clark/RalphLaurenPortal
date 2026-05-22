@@ -116,8 +116,8 @@ namespace RalphLaurenPortal.Controllers
         [HttpPost]
         [Authorize]
         public IHttpActionResult ProductSearch([FromBody]PassProductSearch objSearch)
-        {
-            var user = UserManager.FindById<Member, int>(RequestContext.Principal.Identity.GetUserId<int>());
+		{
+			var user = UserManager.FindById<Member, int>(RequestContext.Principal.Identity.GetUserId<int>());
 
             var tradeAccountId = user.TradeAccountID;
 
@@ -336,5 +336,32 @@ namespace RalphLaurenPortal.Controllers
 
             return Ok(results);
         }
-    }
+
+		[HttpPost]
+		public IHttpActionResult LogClientError([FromBody] ClientErrorDTO objError)
+		{
+			var userId = User.Identity.GetUserId<int>();
+
+			if (objError?.message?.StartsWith("QuotaExceededError") == true)
+			{
+				return Ok(new { });
+			}
+
+			PortalDbContext.SaveToErrorLog(
+				memberId: HttpContext.Current.User.Identity.GetUserId<int>(),
+				exceptionType: "Client-Side Error",
+                exceptionMessage: objError?.name,
+                exceptionSource: objError?.message,
+                stackTrace: objError?.stack,
+				innerExceptionType: null,
+			    innerExceptionMessage: null,
+				innerExceptionSource: null,
+			    innerExceptionStackTrace: null,
+				urlOfPage: objError?.url,
+				userAgent: HttpContext.Current.Request.UserAgent,
+				ipAddress: HttpContext.Current.Request.UserHostAddress);
+
+			return Ok(new { });
+		}
+	}
 }

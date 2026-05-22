@@ -1,7 +1,11 @@
-﻿using System;
+﻿using RalphLaurenPortal.Utilities;
+
+using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Web.Http;
+using System.Web.Http.ExceptionHandling;
 
 namespace RalphLaurenPortal
 {
@@ -20,6 +24,8 @@ namespace RalphLaurenPortal
                 routeTemplate: "api/{controller}/{action}/{id}",
                 defaults: new { id = RouteParameter.Optional }
             );
+
+            config.Services.Replace(typeof(IExceptionHandler), new GlobalAPIExceptionHandler());
         }
     }
 }

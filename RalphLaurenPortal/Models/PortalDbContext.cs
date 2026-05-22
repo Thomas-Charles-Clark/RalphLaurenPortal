@@ -317,5 +317,49 @@ namespace RalphLaurenPortal.Models
 
             return result;
         }
-    }
+
+		public void SaveToErrorLog(
+			int memberId,
+			string exceptionType,
+			string exceptionMessage,
+			string exceptionSource,
+			string stackTrace,
+			string innerExceptionType,
+			string innerExceptionMessage,
+			string innerExceptionSource,
+			string innerExceptionStackTrace,
+			string urlOfPage,
+			string userAgent,
+			string ipAddress)
+		{
+			try
+			{
+                var now = DateTime.Now;
+
+				var _ = this.Database.Connection.QuerySingleOrDefault("pub.LogError", new {
+                    VisitorID = (long?)null,
+                    ErrorDT = now,
+					ExceptionType = exceptionType,
+					ExceptionMessage = exceptionMessage,
+					ExceptionSource = exceptionSource,
+					StackTrace = stackTrace,
+					InnerExceptionType = innerExceptionType,
+					InnerExceptionMessage = innerExceptionMessage,
+                    InnerExceptionSource = innerExceptionSource,
+                    InnerExceptionStackTrace = innerExceptionStackTrace,
+					URL = urlOfPage,
+					UserAgent = userAgent,
+					IP = ipAddress,
+                    PlatformSwitch = (byte)8, // dbo.Platform
+                    MemberID = memberId
+                }, null, 30, CommandType.StoredProcedure);
+			}
+			catch (Exception ex)
+			{
+				throw ex;
+			}
+
+			return;
+		}
+	}
 }

@@ -71,6 +71,10 @@
                         showError()
                     }
                 })
+                .catch(err => {
+                    affectingBusy(false);
+                    window.catchFetchErrors(err);
+                });
         }
     })
 
